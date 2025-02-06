@@ -1,6 +1,9 @@
 import { FC } from 'react';
 // import Header from './Header';
 import { useLocation } from 'react-router-dom';
+
+import SidebarAdmin from './SidebarAdmin';
+import Header from './header';
 // import Footer from './Footer';
 // import { Messenger, Phone } from '../components/icon';
 
@@ -14,12 +17,10 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 	const name = location.pathname;
 
 	if (name === '/') {
-		return <div className='max-h-fit'>{children}</div>;
+		return <div className={`relative flex min-h-screen flex-col`}>{children}</div>;
 	}
 	return (
-		<div
-			className={`relative flex min-h-screen flex-col ${name === '/menu' ? 'bg-[#e6e6e6]' : ''}`}
-		>
+		<div className={`relative flex min-h-screen`}>
 			{/* <Header />
 			<main className={`flex-grow ${name === '/menu' ? 'pt-[120px]' : ''}`}>{children}</main>
 			<Footer />
@@ -31,6 +32,12 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 					<Messenger />
 				</div>
 			</div> */}
+
+			<SidebarAdmin />
+			<div className='w-full'>
+				<Header />
+				{children}
+			</div>
 		</div>
 	);
 };

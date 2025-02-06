@@ -4,7 +4,12 @@
 .App {
 	text-align: center;
 }
-
+@font-face {
+	font-family: 'Mulish';
+	src: url('/public/Mulish-VariableFont_wght.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
 .App-logo {
 	height: 40vmin;
 	pointer-events: none;

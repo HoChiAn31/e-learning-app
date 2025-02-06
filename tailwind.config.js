@@ -4,10 +4,10 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				// primary: '#c75d15',
+				primary: '#ff7506',
 			},
 			fontFamily: {
-				// mtdValky: ['MTDValky', 'sans-serif'],
+				Mulish: ['Mulish', 'sans-serif'],
 			},
 		},
 	},
