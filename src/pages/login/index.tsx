@@ -36,7 +36,7 @@ const LoginPage = () => {
 			}}
 			className='relative flex h-[100vh] w-full items-center justify-end'
 		>
-			<div className='absolute top-6 right-16'>
+			<div className='absolute right-16 top-6'>
 				<img src='https://i.imgur.com/cpna06J.png' alt='' />
 			</div>
 
@@ -53,7 +53,7 @@ const LoginPage = () => {
 						size='large'
 						placeholder='Nhập tên'
 						prefix={<UserCircle />}
-						className={`h-[52px] ${form.username !== '' ? '' : 'bg-[#f2f2f2]'}`}
+						className={`h-[52px] w-[430px] ${form.username !== '' ? '' : 'bg-[#f2f2f2]'}`}
 						onChange={handleChangeInput}
 					/>
 				</div>
@@ -66,13 +66,13 @@ const LoginPage = () => {
 						placeholder='Nhập mật khẩu'
 						// iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
 						prefix={<Password />}
-						className={`h-[52px] ${form.password !== '' ? '' : 'bg-[#f2f2f2]'}`}
+						className={`h-[52px] w-[430px] ${form.password !== '' ? '' : 'bg-[#f2f2f2]'}`}
 						onChange={handleChangeInput}
 					/>
 				</div>
 
 				<div>
-					<div className="font-['Source Sans Pro'] cursor-pointer text-right text-base leading-tight font-normal text-[#ff7506]">
+					<div className="font-['Source Sans Pro'] cursor-pointer text-right text-base font-normal leading-tight text-[#ff7506]">
 						Quên mật khẩu?
 					</div>
 				</div>

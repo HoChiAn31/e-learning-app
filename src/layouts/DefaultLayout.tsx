@@ -4,6 +4,8 @@ import { useLocation } from 'react-router-dom';
 
 import SidebarAdmin from './SidebarAdmin';
 import Header from './header';
+import SideBarDataDeclaration from './SideBarDataDeclaration';
+import { ConfigProvider } from 'antd';
 // import Footer from './Footer';
 // import { Messenger, Phone } from '../components/icon';
 
@@ -19,24 +21,41 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 	if (name === '/') {
 		return <div className={`relative flex min-h-screen flex-col`}>{children}</div>;
 	}
+	if (name.startsWith('/dataDeclaration')) {
+		return (
+			<ConfigProvider
+				theme={{
+					token: {
+						colorPrimary: 'FF7506',
+					},
+				}}
+			>
+				<div className={`relative flex min-h-screen`}>
+					<SidebarAdmin />
+					<div className='ml-[112px] w-full'>
+						<Header />
+						<div className='px-16'>
+							<div className="font-['Mulish'] text-5xl font-extrabold tracking-wide text-[#373839]">
+								Khai báo dữ liệu
+							</div>
+							<div className='pt-5'>
+								<SideBarDataDeclaration />
+								<div className='pl-[278px]'>
+									<div className='px-6'>{children}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</ConfigProvider>
+		);
+	}
 	return (
 		<div className={`relative flex min-h-screen`}>
-			{/* <Header />
-			<main className={`flex-grow ${name === '/menu' ? 'pt-[120px]' : ''}`}>{children}</main>
-			<Footer />
-			<div className='fixed bottom-4 right-2 z-50 flex flex-col gap-2'>
-				<div className='cursor-pointer'>
-					<Phone />
-				</div>
-				<div className='cursor-pointer'>
-					<Messenger />
-				</div>
-			</div> */}
-
 			<SidebarAdmin />
-			<div className='w-full'>
+			<div className='ml-[112px] w-full'>
 				<Header />
-				{children}
+				<div className='px-16'>{children}</div>
 			</div>
 		</div>
 	);
