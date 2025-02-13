@@ -39,7 +39,7 @@ const SideBarDataDeclaration = () => {
 		console.log(`selected ${value}`);
 	};
 	return (
-		<div className='fixed h-[80vh] w-[278px] overflow-hidden rounded-2xl bg-white shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
+		<div className='fixed z-50 h-[80vh] w-[278px] overflow-hidden rounded-2xl bg-white shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
 			{/*  */}
 			<div className='relative h-[150px] w-[278px] space-y-4 overflow-hidden bg-[#373839] p-6'>
 				<div className="font-['Source Sans Pro'] text-base font-normal leading-tight text-white">

@@ -7,6 +7,7 @@ import DepartmentPage from '../pages/dataDeclaration/department';
 import FacultiePage from '../pages/dataDeclaration/facultie';
 import ScoreTypePage from '../pages/dataDeclaration/scoreType';
 import SubjectPage from '../pages/dataDeclaration/subject';
+import { studentProfileListPage } from '../pages/studentProfileList';
 
 interface RouteConfig {
 	path: string;
@@ -23,6 +24,7 @@ const publicRoutes: RouteConfig[] = [
 	{ path: config.subject, component: SubjectPage, layout: DefaultLayout },
 	{ path: config.class, component: ClassPage, layout: DefaultLayout },
 	{ path: config.scoreType, component: ScoreTypePage, layout: DefaultLayout },
+	{ path: config.studentProfileList, component: studentProfileListPage, layout: DefaultLayout },
 ];
 
 export { publicRoutes };

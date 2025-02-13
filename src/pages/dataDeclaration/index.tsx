@@ -377,15 +377,14 @@ const DataDeclarationPage = () => {
 
 			{/* Modal Delete */}
 			<Modal
-				title='Xóa niên khoá'
+				title='Xóa Tổ - Bộ môn'
 				open={isModalOpenDelete}
 				onOk={handleOkDelete}
 				onCancel={handleCancelDelete}
 				styles={modalStyles}
-				// width={800}
 			>
 				<div className="font-['Source Sans Pro'] text-center text-base font-normal leading-tight text-[#373839]">
-					Xác nhận muốn xoá niên khoá này và toàn bộ thông tin bên trong? Sau khi xoá sẽ không thể
+					Xác nhận muốn xoá Tổ - Bộ môn này và toàn bộ thông tin bên trong? Sau khi xoá sẽ không thể
 					hoàn tác.
 				</div>
 			</Modal>

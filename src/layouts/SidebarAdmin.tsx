@@ -1,85 +1,68 @@
 'use client';
-// import { Image } from '@nextui-org/react';
-// import {
-// 	ChartBarStacked,
-// 	CirclePercent,
-// 	Clapperboard,
-// 	House,
-// 	MessageCircleMore,
-// 	NotebookTabs,
-// 	NotepadText,
-// 	Phone,
-// 	Popcorn,
-// 	Store,
-// 	UserRound,
-// } from 'lucide-react';
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import { FC, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import TabItem from '../components/TabItem';
-import { Bag, BookOpen, ChartLine, Eye, Setting, User } from '../components/icon';
+import { Bag, BookOpen, BookOpens, ChartLine, Eye, Eyes, Setting, User } from '../components/icon';
 import { Image } from 'antd';
-// import { useRouter } from 'next/navigation';
-// import { useLocale } from 'next-intl';
-// import { useTranslations } from 'next-intl';
-// import TabItem from '../components/TabItem';
-// import { useTheme } from '../context/ThemeContext';
 const SidebarAdmin: FC = () => {
 	const [activeMainTab, setActiveMainTab] = useState<string>('');
 	const [activeSubTab, setActiveSubTab] = useState<string>('');
 	const [isLoaded, setIsLoaded] = useState<boolean>(false);
-	// const { isCollapsedAdmin, isDarkMode } = useTheme();
 	const nav = useNavigate();
 	const divWidth = useRef<HTMLDivElement>(null);
-
-	// useEffect(() => {
-	// 	const storedMainTab = localStorage.getItem('activeMainTab');
-	// 	const storedSubTab = localStorage.getItem('activeSubTab');
-	// 	if (storedMainTab) {
-	// 		setActiveMainTab(storedMainTab);
-	// 		if (storedSubTab) {
-	// 			setActiveSubTab(storedSubTab);
-	// 			nav(`/admin/${storedMainTab}/${storedSubTab}`);
-	// 		} else {
-	// 			nav(`/admin/${storedMainTab}`);
-	// 		}
-	// 	}
-	// 	setIsLoaded(true);
-	// }, []);
-
-	// useEffect(() => {
-	// 	if (isLoaded) {
-	// 		localStorage.setItem('activeMainTab', activeMainTab);
-	// 		localStorage.setItem('activeSubTab', activeSubTab);
-	// 	}
-	// }, [activeMainTab, activeSubTab, isLoaded]);
-
-	// useEffect(() => {
-	// 	if (isLoaded) {
-	// 		// Use a timeout to ensure the states are fully updated before storing in localStorage
-	// 		const timeoutId = setTimeout(() => {
-	// 			localStorage.setItem('activeMainTab', activeMainTab);
-	// 			localStorage.setItem('activeSubTab', activeSubTab);
-	// 		}); // You can adjust the delay if needed
-
-	// 		return () => clearTimeout(timeoutId); // Clean up the timeout
-	// 	}
-	// }, [activeMainTab, activeSubTab, isLoaded]);
-
-	// if (!isLoaded) {
-	// 	return null;
-	// }
+	const location = useLocation();
+	const name = location.pathname;
 	const [isHovered, setIsHovered] = useState(false);
+	useEffect(() => {
+		if (name) {
+			setActiveMainTab(name);
+		}
+	}, []);
+	console.log(activeMainTab);
+	useEffect(() => {
+		const storedMainTab = localStorage.getItem('activeMainTab');
+		const storedSubTab = localStorage.getItem('activeSubTab');
+		if (storedMainTab) {
+			setActiveMainTab(storedMainTab);
+			if (storedSubTab) {
+				setActiveSubTab(storedSubTab);
+				nav(`${storedMainTab}/${storedSubTab}`);
+			} else {
+				nav(`${storedMainTab}`);
+			}
+		}
+		setIsLoaded(true);
+	}, []);
+
+	useEffect(() => {
+		if (isLoaded) {
+			localStorage.setItem('activeMainTab', activeMainTab);
+			localStorage.setItem('activeSubTab', activeSubTab);
+		}
+	}, [activeMainTab, activeSubTab, isLoaded]);
+	console.log('activeMainTab:', activeMainTab);
+	console.log('activeSubTab:', activeSubTab);
+	useEffect(() => {
+		if (isLoaded) {
+			const timeoutId = setTimeout(() => {
+				localStorage.setItem('activeMainTab', activeMainTab);
+				localStorage.setItem('activeSubTab', activeSubTab);
+			});
+
+			return () => clearTimeout(timeoutId);
+		}
+	}, [activeMainTab, activeSubTab, isLoaded]);
+
 	return (
 		<div
 			ref={divWidth}
-			className={`fixed bottom-0 left-0 top-0 min-h-screen w-[112px] bg-primary shadow`}
+			className={`fixed bottom-0 left-0 top-0 z-[999999] min-h-screen w-[112px] bg-primary shadow`}
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
-			// className={`fixed top-0 bottom-0 left-0 min-h-screen shadow transition-all duration-500`}
 		>
 			<div className=''>
-				<div className='my-14 flex items-center justify-center'>
-					{/* <Image src='/images/logo1.png' width={80} height={60} alt='Logo' /> */}
+				<div className='my-10 flex items-center justify-center 2xl:my-14'>
 					<img width={74} src='https://i.imgur.com/srQH9kX.png' />
 				</div>
 
@@ -89,9 +72,9 @@ const SidebarAdmin: FC = () => {
 						setActiveMainTab={setActiveMainTab}
 						activeSubTab={activeSubTab}
 						setActiveSubTab={setActiveSubTab}
-						tabName='home'
+						tabName='/home'
 						title={'Tổng quan'}
-						icon={<Eye color='#ffffff' />}
+						icon={<Eye />}
 						isIcon
 						onCheckClick={() => setIsHovered(false)}
 					/>
@@ -101,7 +84,7 @@ const SidebarAdmin: FC = () => {
 						setActiveMainTab={setActiveMainTab}
 						activeSubTab={activeSubTab}
 						setActiveSubTab={setActiveSubTab}
-						tabName='dataDeclaration'
+						tabName='/dataDeclaration'
 						title={'Khai báo dữ liệu'}
 						icon={<ChartLine color='white' />}
 						isIcon
@@ -113,19 +96,20 @@ const SidebarAdmin: FC = () => {
 						setActiveMainTab={setActiveMainTab}
 						activeSubTab={activeSubTab}
 						setActiveSubTab={setActiveSubTab}
-						tabName='admin-order'
+						tabName='/studentProfileList/all'
 						title='Hồ sơ học viên'
 						isIcon
 						icon={<User color='#ffffff' />}
 						onCheckClick={() => setIsHovered(false)}
+						// isSubTab
 					/>
 					<TabItem
 						activeMainTab={activeMainTab}
 						setActiveMainTab={setActiveMainTab}
 						activeSubTab={activeSubTab}
 						setActiveSubTab={setActiveSubTab}
-						tabName='admin-order'
-						title='Hồ sơ học viên'
+						tabName='/teacherProfileLists'
+						title='Hồ sơ giảng viên'
 						isIcon
 						icon={<Bag color='white' />}
 						onCheckClick={() => setIsHovered(false)}
@@ -135,8 +119,8 @@ const SidebarAdmin: FC = () => {
 						setActiveMainTab={setActiveMainTab}
 						activeSubTab={activeSubTab}
 						setActiveSubTab={setActiveSubTab}
-						tabName='admin-order'
-						title='Hồ sơ học viên'
+						tabName='/exam'
+						title='Thi cử'
 						isIcon
 						icon={<img src='https://i.imgur.com/ZABUPOo.png' />}
 						onCheckClick={() => setIsHovered(false)}
@@ -146,8 +130,8 @@ const SidebarAdmin: FC = () => {
 						setActiveMainTab={setActiveMainTab}
 						activeSubTab={activeSubTab}
 						setActiveSubTab={setActiveSubTab}
-						tabName='admin-order'
-						title='Hồ sơ học viên'
+						tabName='/setting'
+						title={'Cài đặt hệ thống'}
 						isIcon
 						icon={<Setting color='#ffffff' />}
 						onCheckClick={() => setIsHovered(false)}
@@ -155,30 +139,138 @@ const SidebarAdmin: FC = () => {
 				</ul>
 			</div>
 			{isHovered && (
-				<div className='absolute -right-[100%] top-0 z-50 flex min-h-screen bg-white shadow'>
-					<div>
-						<div>hehehe</div>
+				<div className='absolute -right-[286px] top-0 flex min-h-screen w-[286px] bg-white py-[19vh] shadow 2xl:py-[18vh]'>
+					<div className='flex w-full flex-col'>
 						<TabItem
 							activeMainTab={activeMainTab}
 							setActiveMainTab={setActiveMainTab}
 							activeSubTab={activeSubTab}
 							setActiveSubTab={setActiveSubTab}
-							tabName='admin-order'
-							title='Hồ sơ học viên'
-							icon={<ChartLine color='#ffffff' />}
+							tabName='/home'
+							title={'Tổng quan'}
+							icon={
+								<Eyes
+									height={24}
+									width={24}
+									color={`${name === '/home' ? '#ff7506' : '#373839'}`}
+								/>
+							}
+							isIcon
 							onCheckClick={() => setIsHovered(false)}
+							isSidebarSub
+						/>
+						<TabItem
+							activeMainTab={activeMainTab}
+							setActiveMainTab={setActiveMainTab}
+							activeSubTab={activeSubTab}
+							setActiveSubTab={setActiveSubTab}
+							tabName='/dataDeclaration'
+							title={'Khai báo dữ liệu'}
+							icon={
+								<ChartLine
+									height={24}
+									width={24}
+									color={`${name === '/dataDeclaration' ? '#ff7506' : '#373839'}`}
+								/>
+							}
+							isIcon
+							onCheckClick={() => setIsHovered(false)}
+							isSidebarSub
+						/>
+
+						<TabItem
+							activeMainTab={activeMainTab}
+							setActiveMainTab={setActiveMainTab}
+							activeSubTab={activeSubTab}
+							setActiveSubTab={setActiveSubTab}
+							tabName='/studentProfileList'
+							title='Hồ sơ học viên'
+							icon={
+								<User
+									height={24}
+									width={24}
+									color={`${activeMainTab === '/studentProfileList' ? '#ff7506' : '#373839'}`}
+								/>
+							}
+							onCheckClick={() => setIsHovered(false)}
+							isSidebarSub
 							subItems={[
 								{
-									name: 'chat',
+									name: 'all',
 									label: 'Tất cả hồ sơ', // Use translation for chat
-									icon: <Eye />,
+									// icon: <Eye />,
 								},
 								{
 									name: 'tickets',
 									label: 'Tiếp nhận chuyển trường', // Use translation for support requests
-									icon: <Eye />,
+									// icon: <Eye />,
+								},
+								{
+									name: 'tickets',
+									label: 'Bảo lưu', // Use translation for support requests
+									// icon: <Eye />,
 								},
 							]}
+						/>
+
+						<TabItem
+							activeMainTab={activeMainTab}
+							setActiveMainTab={setActiveMainTab}
+							activeSubTab={activeSubTab}
+							setActiveSubTab={setActiveSubTab}
+							tabName='/teacherProfileLists'
+							title='Hồ sơ giảng viên'
+							icon={
+								<Bag
+									height={24}
+									width={24}
+									color={`${activeMainTab === '/teacherProfileList' ? '#ff7506' : '#373839'}`}
+								/>
+							}
+							onCheckClick={() => setIsHovered(false)}
+							isSidebarSub
+							subItems={[
+								{
+									name: 'alls',
+									label: 'Tất cả hồ sơ', // Use translation for chat
+									// icon: <Eye />,
+								},
+								{
+									name: 'tickets',
+									label: 'Phân công giảng dạy', // Use translation for support requests
+									// icon: <Eye />,
+								},
+							]}
+						/>
+						<TabItem
+							activeMainTab={activeMainTab}
+							setActiveMainTab={setActiveMainTab}
+							activeSubTab={activeSubTab}
+							setActiveSubTab={setActiveSubTab}
+							tabName='/exam'
+							title={'Thi cử'}
+							icon={<BookOpens color={`${name === '/exam' ? '#ff7506' : '#373839'}`} />}
+							isIcon
+							onCheckClick={() => setIsHovered(false)}
+							isSidebarSub
+						/>
+						<TabItem
+							activeMainTab={activeMainTab}
+							setActiveMainTab={setActiveMainTab}
+							activeSubTab={activeSubTab}
+							setActiveSubTab={setActiveSubTab}
+							tabName='/setting'
+							title={'Cài đặt hệ thống'}
+							icon={
+								<Setting
+									height={24}
+									width={24}
+									color={`${name === '/setting' ? '#ff7506' : '#373839'}`}
+								/>
+							}
+							isIcon
+							onCheckClick={() => setIsHovered(false)}
+							isSidebarSub
 						/>
 					</div>
 				</div>

@@ -189,6 +189,12 @@ function DepartmentPage() {
 	const removeSubject = (subject: string) => {
 		setSubjectList(subjectList.filter((sub) => sub !== subject));
 	};
+	const handleOkDelete = () => {
+		setIsModalOpenDelete(false);
+	};
+	const handleCancelDelete = () => {
+		setIsModalOpenDelete(false);
+	};
 	return (
 		<div>
 			<div className='flex w-full items-end justify-end'>
@@ -287,13 +293,6 @@ function DepartmentPage() {
 										className='mt-2'
 										options={subjects}
 									/>
-									// >
-									// 	{subjects.map((subject) => (
-									// 		<Option key={subject.id} value={subject.name}>
-									// 			{subject.name}
-									// 		</Option>
-									// 	))}
-									// </Select>
 								)}
 
 								{subjectList.length > 0 && (
@@ -368,6 +367,18 @@ function DepartmentPage() {
 					</ConfigProvider>
 				</div>
 			</div>
+			<Modal
+				title='Xóa niên khoá'
+				open={isModalOpenDelete}
+				onOk={handleOkDelete}
+				onCancel={handleCancelDelete}
+				styles={modalStyles}
+			>
+				<div className="font-['Source Sans Pro'] text-center text-base font-normal leading-tight text-[#373839]">
+					Xác nhận muốn xoá niên khoá này và toàn bộ thông tin bên trong? Sau khi xoá sẽ không thể
+					hoàn tác.
+				</div>
+			</Modal>
 		</div>
 	);
 }

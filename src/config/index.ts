@@ -7,5 +7,6 @@ const config = {
 	subject: '/dataDeclaration/subject',
 	class: '/dataDeclaration/class',
 	scoreType: '/dataDeclaration/scoreType',
+	studentProfileList: '/studentProfileList/all',
 };
 export default config;
