@@ -80,7 +80,7 @@ const SideBarDataDeclaration = () => {
 				</div>
 			</div>
 
-			<div className='space-y-6 py-14'>
+			<div className='space-y-4 py-4 2xl:space-y-6 2xl:py-14'>
 				{cardLinkData.map((card) => (
 					<CardLink key={card.id} link={card.link} label={card.label} />
 				))}

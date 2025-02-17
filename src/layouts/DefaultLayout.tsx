@@ -26,7 +26,7 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 			<ConfigProvider
 				theme={{
 					token: {
-						colorPrimary: 'FF7506',
+						colorPrimary: '#F7506',
 					},
 				}}
 			>
@@ -51,13 +51,21 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 		);
 	}
 	return (
-		<div className={`relative flex min-h-screen`}>
-			<SidebarAdmin />
-			<div className='ml-[112px] w-full'>
-				<Header />
-				<div className='px-16'>{children}</div>
+		<ConfigProvider
+			theme={{
+				token: {
+					colorPrimary: 'FF7506',
+				},
+			}}
+		>
+			<div className={`relative flex min-h-screen`}>
+				<SidebarAdmin />
+				<div className='ml-[112px] w-full'>
+					<Header />
+					<div className='px-16'>{children}</div>
+				</div>
 			</div>
-		</div>
+		</ConfigProvider>
 	);
 };
 

@@ -7,7 +7,7 @@ import DepartmentPage from '../pages/dataDeclaration/department';
 import FacultiePage from '../pages/dataDeclaration/facultie';
 import ScoreTypePage from '../pages/dataDeclaration/scoreType';
 import SubjectPage from '../pages/dataDeclaration/subject';
-import { studentProfileListPage } from '../pages/studentProfileList';
+import studentProfileListPage from '../pages/studentProfileList';
 
 interface RouteConfig {
 	path: string;

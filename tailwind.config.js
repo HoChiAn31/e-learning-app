@@ -10,6 +10,7 @@ export default {
 			},
 			fontFamily: {
 				Mulish: ['Mulish', 'sans-serif'],
+				'Source Sans Pro': ['Source Sans Pro', 'sans-serif'],
 			},
 		},
 	},
