@@ -41,8 +41,8 @@ const SidebarAdmin: FC = () => {
 			localStorage.setItem('activeSubTab', activeSubTab);
 		}
 	}, [activeMainTab, activeSubTab, isLoaded]);
-	console.log('activeMainTab:', activeMainTab);
-	console.log('activeSubTab:', activeSubTab);
+	// console.log('activeMainTab:', activeMainTab);
+	// console.log('activeSubTab:', activeSubTab);
 	useEffect(() => {
 		if (isLoaded) {
 			const timeoutId = setTimeout(() => {
@@ -108,7 +108,7 @@ const SidebarAdmin: FC = () => {
 						setActiveMainTab={setActiveMainTab}
 						activeSubTab={activeSubTab}
 						setActiveSubTab={setActiveSubTab}
-						tabName='/teacherProfileLists'
+						tabName='/instructorProfileList/all'
 						title='Hồ sơ giảng viên'
 						isIcon
 						icon={<Bag color='white' />}
@@ -201,12 +201,12 @@ const SidebarAdmin: FC = () => {
 									// icon: <Eye />,
 								},
 								{
-									name: 'tickets',
+									name: 'transfer',
 									label: 'Tiếp nhận chuyển trường', // Use translation for support requests
 									// icon: <Eye />,
 								},
 								{
-									name: 'tickets',
+									name: 'reserve',
 									label: 'Bảo lưu', // Use translation for support requests
 									// icon: <Eye />,
 								},
@@ -218,7 +218,7 @@ const SidebarAdmin: FC = () => {
 							setActiveMainTab={setActiveMainTab}
 							activeSubTab={activeSubTab}
 							setActiveSubTab={setActiveSubTab}
-							tabName='/teacherProfileLists'
+							tabName='/instructorProfileList'
 							title='Hồ sơ giảng viên'
 							icon={
 								<Bag
@@ -231,12 +231,12 @@ const SidebarAdmin: FC = () => {
 							isSidebarSub
 							subItems={[
 								{
-									name: 'alls',
+									name: 'all',
 									label: 'Tất cả hồ sơ', // Use translation for chat
 									// icon: <Eye />,
 								},
 								{
-									name: 'tickets',
+									name: 'assignment',
 									label: 'Phân công giảng dạy', // Use translation for support requests
 									// icon: <Eye />,
 								},

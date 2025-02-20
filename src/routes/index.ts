@@ -1,13 +1,20 @@
 import config from '../config';
 import DefaultLayout from '../layouts/DefaultLayout';
-import { HomePage, LoginPage } from '../pages';
-import dataDeclarationPage from '../pages/dataDeclaration';
-import ClassPage from '../pages/dataDeclaration/class';
-import DepartmentPage from '../pages/dataDeclaration/department';
-import FacultiePage from '../pages/dataDeclaration/facultie';
-import ScoreTypePage from '../pages/dataDeclaration/scoreType';
-import SubjectPage from '../pages/dataDeclaration/subject';
-import studentProfileListPage from '../pages/studentProfileList';
+import {
+	ClassPage,
+	DepartmentPage,
+	FacultiePage,
+	HomePage,
+	InstructorAssignmentPage,
+	InstructorProfileListPage,
+	LoginPage,
+	ScoreTypePage,
+	StudentReservePage,
+	StudentTransferPage,
+	SubjectPage,
+	dataDeclarationPage,
+	studentProfileListPage,
+} from '../pages';
 
 interface RouteConfig {
 	path: string;
@@ -25,6 +32,14 @@ const publicRoutes: RouteConfig[] = [
 	{ path: config.class, component: ClassPage, layout: DefaultLayout },
 	{ path: config.scoreType, component: ScoreTypePage, layout: DefaultLayout },
 	{ path: config.studentProfileList, component: studentProfileListPage, layout: DefaultLayout },
+	{ path: config.studentTransfer, component: StudentTransferPage, layout: DefaultLayout },
+	{ path: config.studentReserve, component: StudentReservePage, layout: DefaultLayout },
+	{
+		path: config.instructorProfileList,
+		component: InstructorProfileListPage,
+		layout: DefaultLayout,
+	},
+	{ path: config.instructorAssignment, component: InstructorAssignmentPage, layout: DefaultLayout },
 ];
 
 export { publicRoutes };
