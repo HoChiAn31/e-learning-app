@@ -11,6 +11,9 @@ import StudentReservePage from './studentProfileList/reserve';
 import ClassPage from './dataDeclaration/class';
 import InstructorProfileListPage from './instructorProfileList';
 import InstructorAssignmentPage from './instructorProfileList/assignment';
+import SystemSettingsPage from './systemSettings';
+import InforSchoolPage from './systemSettings/inforSchool';
+import EditInforSchoolPage from './systemSettings/inforSchool/editInforSchool';
 
 export {
 	HomePage,
@@ -26,4 +29,7 @@ export {
 	StudentReservePage,
 	InstructorProfileListPage,
 	InstructorAssignmentPage,
+	SystemSettingsPage,
+	InforSchoolPage,
+	EditInforSchoolPage,
 };

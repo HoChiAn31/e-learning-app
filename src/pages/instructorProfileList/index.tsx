@@ -19,16 +19,16 @@ import {
 	Update,
 } from '../../components/icon';
 import { Key, useState } from 'react';
-import AddStudent from './AddStudent';
-import EditStudent from './EditStudent';
-import InforStudent from './InforStudent';
+import AddInstructor from './AddInstructor';
+import EditInstructor from './EditInstructor';
+import InforInstructor from './InforInstructor';
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 interface SemesterData {
 	// key: React.Key;
 	key: string;
-	studentCode: string;
-	studentName: string;
+	instructorCode: string;
+	instructorName: string;
 	birthDay: string;
 	gender: string;
 	nation: string;
@@ -38,8 +38,8 @@ interface SemesterData {
 const data: SemesterData[] = [
 	{
 		key: '1',
-		studentCode: 'SV001',
-		studentName: 'Nguyễn Văn A',
+		instructorCode: 'SV001',
+		instructorName: 'Nguyễn Văn A',
 		birthDay: '2000-05-15',
 		gender: 'Nam',
 		nation: 'Kinh',
@@ -48,8 +48,8 @@ const data: SemesterData[] = [
 	},
 	{
 		key: '2',
-		studentCode: 'SV002',
-		studentName: 'Trần Thị B',
+		instructorCode: 'SV002',
+		instructorName: 'Trần Thị B',
 		birthDay: '2001-08-20',
 		gender: 'Nữ',
 		nation: 'Kinh',
@@ -58,8 +58,8 @@ const data: SemesterData[] = [
 	},
 	{
 		key: '3',
-		studentCode: 'SV003',
-		studentName: 'Lê Văn C',
+		instructorCode: 'SV003',
+		instructorName: 'Lê Văn C',
 		birthDay: '1999-12-05',
 		gender: 'Nam',
 		nation: 'Kinh',
@@ -68,8 +68,8 @@ const data: SemesterData[] = [
 	},
 	{
 		key: '4',
-		studentCode: 'SV004',
-		studentName: 'Phạm Thị D',
+		instructorCode: 'SV004',
+		instructorName: 'Phạm Thị D',
 		birthDay: '2002-01-10',
 		gender: 'Nữ',
 		nation: 'Kinh',
@@ -78,8 +78,8 @@ const data: SemesterData[] = [
 	},
 	{
 		key: '5',
-		studentCode: 'SV005',
-		studentName: 'Hoàng Văn E',
+		instructorCode: 'SV005',
+		instructorName: 'Hoàng Văn E',
 		birthDay: '2000-11-25',
 		gender: 'Nam',
 		nation: 'Kinh',
@@ -88,8 +88,8 @@ const data: SemesterData[] = [
 	},
 	{
 		key: '6',
-		studentCode: 'SV005',
-		studentName: 'Hoàng Văn E',
+		instructorCode: 'SV005',
+		instructorName: 'Hoàng Văn E',
 		birthDay: '2000-11-25',
 		gender: 'Nam',
 		nation: 'Kinh',
@@ -98,8 +98,8 @@ const data: SemesterData[] = [
 	},
 	{
 		key: '7',
-		studentCode: 'SV005',
-		studentName: 'Hoàng Văn E',
+		instructorCode: 'SV005',
+		instructorName: 'Hoàng Văn E',
 		birthDay: '2000-11-25',
 		gender: 'Nam',
 		nation: 'Kinh',
@@ -109,23 +109,23 @@ const data: SemesterData[] = [
 ];
 const InstructorProfileListPage = () => {
 	const [isModalFile, setIsModalFile] = useState<boolean>(false);
-	const [isAddStudent, setIsAddStudent] = useState<boolean>(false);
-	const [isEditStudent, setIsEditStudent] = useState<boolean>(false);
-	const [isInforStudent, setIsInforStudent] = useState<boolean>(false);
+	const [isAddInstructor, setIsAddInstructor] = useState<boolean>(false);
+	const [isEditInstructor, setIsEditInstructor] = useState<boolean>(false);
+	const [isInforInstructor, setIsInforInstructor] = useState<boolean>(false);
 	// const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-	console.log('isAddStudent: ', isAddStudent);
-	console.log('isEditStudent: ', isEditStudent);
-	const handleIsAddStudent = () => {
-		setIsAddStudent(!isAddStudent);
+	console.log('isAddInstructor: ', isAddInstructor);
+	console.log('isEditInstructor: ', isEditInstructor);
+	const handleIsAddInstructor = () => {
+		setIsAddInstructor(!isAddInstructor);
 	};
 
-	const handleIsEditStudent = () => {
-		setIsEditStudent(!isAddStudent);
+	const handleIsEditInstructor = () => {
+		setIsEditInstructor(!isAddInstructor);
 	};
 
-	const handleIsInforStudent = () => {
-		setIsInforStudent(!isInforStudent);
+	const handleIsInforInstructor = () => {
+		setIsInforInstructor(!isInforInstructor);
 	};
 	const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
 		console.log('selectedRowKeys changed: ', newSelectedRowKeys);
@@ -142,13 +142,13 @@ const InstructorProfileListPage = () => {
 	const onChange: TableProps<SemesterData>['onChange'] = (pagination, filters, sorter, extra) => {
 		console.log('params', pagination, filters, sorter, extra);
 	};
-	const handleInforStudent = (record: SemesterData) => {
+	const handleInforInstructor = (record: SemesterData) => {
 		console.log('Edit academic year:', record);
-		setIsInforStudent(!isInforStudent);
+		setIsInforInstructor(!isInforInstructor);
 	};
-	const handleEditStudent = (record: SemesterData) => {
+	const handleEditInstructor = (record: SemesterData) => {
 		console.log('Edit academic year:', record);
-		setIsEditStudent(!isEditStudent);
+		setIsEditInstructor(!isEditInstructor);
 	};
 
 	const handleDelete = (record: SemesterData) => {
@@ -159,15 +159,15 @@ const InstructorProfileListPage = () => {
 	const columns: TableColumnsType<SemesterData> = [
 		{
 			title: 'Mã giảng viên',
-			dataIndex: 'studentCode',
-			sorter: (a, b) => a.studentCode.localeCompare(b.studentCode),
+			dataIndex: 'instructorCode',
+			sorter: (a, b) => a.instructorCode.localeCompare(b.instructorCode),
 			width: '15%',
 		},
 
 		{
 			title: 'Tên giảng viên',
-			dataIndex: 'studentName',
-			sorter: (a, b) => a.studentName.localeCompare(b.studentName),
+			dataIndex: 'instructorName',
+			sorter: (a, b) => a.instructorName.localeCompare(b.instructorName),
 			width: '20%',
 		},
 		{
@@ -205,10 +205,10 @@ const InstructorProfileListPage = () => {
 			dataIndex: 'action',
 			render: (_, record) => (
 				<div className='flex'>
-					<Button type='link' onClick={() => handleInforStudent(record)}>
+					<Button type='link' onClick={() => handleInforInstructor(record)}>
 						<Eyes color='#ff7506' />
 					</Button>
-					<Button type='link' onClick={() => handleEditStudent(record)}>
+					<Button type='link' onClick={() => handleEditInstructor(record)}>
 						<Update />
 					</Button>
 					<Button type='link' onClick={() => handleDelete(record)}>
@@ -235,23 +235,23 @@ const InstructorProfileListPage = () => {
 			textAlign: 'center' as 'center',
 		},
 	};
-	// AddStudent
-	const handleCancelAddStudent = () => {
-		setIsAddStudent(false);
+	// AddInstructor
+	const handleCancelAddInstructor = () => {
+		setIsAddInstructor(false);
 	};
-	const handleCancelEditStudent = () => {
-		setIsAddStudent(false);
+	const handleCancelEditInstructor = () => {
+		setIsAddInstructor(false);
 	};
 
 	return (
 		<div>
 			{/* title */}
-			{isAddStudent ? (
+			{isAddInstructor ? (
 				<div className='inline-flex h-[60px] items-center justify-center'>
 					<div className='inline-flex items-center justify-start gap-2 px-2.5'>
 						<div
 							className="cursor-pointer font-['Mulish'] text-lg font-extrabold tracking-tight text-[#c8c4c0]"
-							onClick={() => setIsAddStudent(false)}
+							onClick={() => setIsAddInstructor(false)}
 						>
 							Hồ sơ giảng viên
 						</div>
@@ -263,12 +263,12 @@ const InstructorProfileListPage = () => {
 						</div>
 					</div>
 				</div>
-			) : isEditStudent ? (
+			) : isEditInstructor ? (
 				<div className='inline-flex h-[60px] items-center justify-center'>
 					<div className='inline-flex items-center justify-start gap-2 px-2.5'>
 						<div
 							className="cursor-pointer font-['Mulish'] text-lg font-extrabold tracking-tight text-[#c8c4c0]"
-							onClick={() => setIsEditStudent(false)}
+							onClick={() => setIsEditInstructor(false)}
 						>
 							Hồ sơ giảng viên
 						</div>
@@ -280,12 +280,12 @@ const InstructorProfileListPage = () => {
 						</div>
 					</div>
 				</div>
-			) : isInforStudent ? (
+			) : isInforInstructor ? (
 				<div className='inline-flex h-[60px] items-center justify-center'>
 					<div className='inline-flex items-center justify-start gap-2 px-2.5'>
 						<div
 							className="cursor-pointer font-['Mulish'] text-lg font-extrabold tracking-tight text-[#c8c4c0]"
-							onClick={() => setIsInforStudent(false)}
+							onClick={() => setIsInforInstructor(false)}
 						>
 							Hồ sơ giảng viên
 						</div>
@@ -304,12 +304,21 @@ const InstructorProfileListPage = () => {
 			)}
 			{/* header */}
 
-			{isAddStudent ? (
-				<AddStudent onAddStudent={handleIsAddStudent} onCancel={handleCancelAddStudent} />
-			) : isEditStudent ? (
-				<EditStudent onEditStudent={handleIsEditStudent} onCancel={handleCancelEditStudent} />
-			) : isInforStudent ? (
-				<InforStudent onInforStudent={handleIsInforStudent} onCancel={handleCancelEditStudent} />
+			{isAddInstructor ? (
+				<AddInstructor
+					onAddInstructor={handleIsAddInstructor}
+					onCancel={handleCancelAddInstructor}
+				/>
+			) : isEditInstructor ? (
+				<EditInstructor
+					onEditInstructor={handleIsEditInstructor}
+					onCancel={handleCancelEditInstructor}
+				/>
+			) : isInforInstructor ? (
+				<InforInstructor
+					onInforInstructor={handleIsInforInstructor}
+					onCancel={handleCancelEditInstructor}
+				/>
 			) : (
 				<>
 					<div className='flex items-center justify-end'>
@@ -333,7 +342,7 @@ const InstructorProfileListPage = () => {
 								type='primary'
 								icon={<Plus />}
 								size='middle'
-								onClick={handleIsAddStudent}
+								onClick={handleIsAddInstructor}
 							>
 								<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
 									Thêm mới

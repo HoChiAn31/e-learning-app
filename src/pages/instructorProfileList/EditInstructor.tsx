@@ -2,11 +2,11 @@ import { FC } from 'react';
 import { ArrowRight, Camera, UserAvatar } from '../../components/icon';
 import { Button, Input } from 'antd';
 
-interface AddStudentProps {
-	onAddStudent: () => void;
+interface EditInstructorProps {
+	onEditInstructor: () => void;
 	onCancel: () => void;
 }
-const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
+const EditInstructor: FC<EditInstructorProps> = ({ onEditInstructor, onCancel }) => {
 	return (
 		<div className=''>
 			{/* <div className='inline-flex h-[60px] w-[548px] items-center justify-center'>
@@ -286,7 +286,7 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 			</div>
 			<div className='flex items-center justify-center pt-12'>
 				<div className='flex items-center gap-4'>
-					<Button onClick={onAddStudent} className='w-[146px]'>
+					<Button onClick={onEditInstructor} className='w-[146px]'>
 						Hủy
 					</Button>
 					<Button onClick={onCancel} className='w-[146px]'>
@@ -297,4 +297,4 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 		</div>
 	);
 };
-export default AddStudent;
+export default EditInstructor;

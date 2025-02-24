@@ -130,7 +130,7 @@ const SidebarAdmin: FC = () => {
 						setActiveMainTab={setActiveMainTab}
 						activeSubTab={activeSubTab}
 						setActiveSubTab={setActiveSubTab}
-						tabName='/setting'
+						tabName='/systemSettings'
 						title={'Cài đặt hệ thống'}
 						isIcon
 						icon={<Setting color='#ffffff' />}
@@ -259,13 +259,13 @@ const SidebarAdmin: FC = () => {
 							setActiveMainTab={setActiveMainTab}
 							activeSubTab={activeSubTab}
 							setActiveSubTab={setActiveSubTab}
-							tabName='/setting'
+							tabName='/systemSettings'
 							title={'Cài đặt hệ thống'}
 							icon={
 								<Setting
 									height={24}
 									width={24}
-									color={`${name === '/setting' ? '#ff7506' : '#373839'}`}
+									color={`${name === '/systemSettings' ? '#ff7506' : '#373839'}`}
 								/>
 							}
 							isIcon

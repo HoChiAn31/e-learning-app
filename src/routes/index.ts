@@ -3,8 +3,10 @@ import DefaultLayout from '../layouts/DefaultLayout';
 import {
 	ClassPage,
 	DepartmentPage,
+	EditInforSchoolPage,
 	FacultiePage,
 	HomePage,
+	InforSchoolPage,
 	InstructorAssignmentPage,
 	InstructorProfileListPage,
 	LoginPage,
@@ -12,6 +14,7 @@ import {
 	StudentReservePage,
 	StudentTransferPage,
 	SubjectPage,
+	SystemSettingsPage,
 	dataDeclarationPage,
 	studentProfileListPage,
 } from '../pages';
@@ -25,21 +28,30 @@ interface RouteConfig {
 const publicRoutes: RouteConfig[] = [
 	{ path: config.home, component: HomePage, layout: DefaultLayout },
 	{ path: config.login, component: LoginPage, layout: DefaultLayout },
+	// page dataDeclaration
 	{ path: config.dataDeclaration, component: dataDeclarationPage, layout: DefaultLayout },
 	{ path: config.department, component: DepartmentPage, layout: DefaultLayout },
 	{ path: config.facultie, component: FacultiePage, layout: DefaultLayout },
 	{ path: config.subject, component: SubjectPage, layout: DefaultLayout },
 	{ path: config.class, component: ClassPage, layout: DefaultLayout },
 	{ path: config.scoreType, component: ScoreTypePage, layout: DefaultLayout },
+	// page student
+
 	{ path: config.studentProfileList, component: studentProfileListPage, layout: DefaultLayout },
 	{ path: config.studentTransfer, component: StudentTransferPage, layout: DefaultLayout },
 	{ path: config.studentReserve, component: StudentReservePage, layout: DefaultLayout },
+	// page instructor
 	{
 		path: config.instructorProfileList,
 		component: InstructorProfileListPage,
 		layout: DefaultLayout,
 	},
 	{ path: config.instructorAssignment, component: InstructorAssignmentPage, layout: DefaultLayout },
+
+	// page Settings
+	{ path: config.systemSettings, component: SystemSettingsPage, layout: DefaultLayout },
+	{ path: config.inforSchool, component: InforSchoolPage, layout: DefaultLayout },
+	{ path: config.inforSchoolEditor, component: EditInforSchoolPage, layout: DefaultLayout },
 ];
 
 export { publicRoutes };

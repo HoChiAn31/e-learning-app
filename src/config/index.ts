@@ -12,5 +12,9 @@ const config = {
 	studentReserve: '/studentProfileList/reserve',
 	instructorProfileList: '/instructorProfileList/all',
 	instructorAssignment: '/instructorProfileList/assignment',
+
+	systemSettings: '/systemSettings',
+	inforSchool: '/systemSettings/inforSchool',
+	inforSchoolEditor: '/systemSettings/inforSchool/editor',
 };
 export default config;
