@@ -16,5 +16,10 @@ const config = {
 	systemSettings: '/systemSettings',
 	inforSchool: '/systemSettings/inforSchool',
 	inforSchoolEditor: '/systemSettings/inforSchool/editor',
+	userSettings: '/systemSettings/users',
+	classSettings: '/systemSettings/class',
+	subjectSettings: '/systemSettings/subject',
+	tranningSettings: '/systemSettings/tranning',
+	configSettings: '/systemSettings/config',
 };
 export default config;

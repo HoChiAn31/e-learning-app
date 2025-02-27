@@ -58,7 +58,17 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 				},
 			}}
 		>
-			<div className={`relative flex min-h-screen`}>
+			<div
+				className={`relative flex min-h-screen`}
+				style={{
+					backgroundImage: "url('https://i.imgur.com/cycXAQ7.png')",
+					backgroundSize: 'cover',
+					backgroundPosition: 'center',
+					backgroundRepeat: 'no-repeat',
+					width: '100vw',
+					height: '100vh',
+				}}
+			>
 				<SidebarAdmin />
 				<div className='ml-[112px] w-full'>
 					<Header />

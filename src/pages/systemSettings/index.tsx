@@ -1,6 +1,10 @@
 import { CardItem } from '../../components/CardItem';
 const cardItems = [
-	{ title: 'Cấu hình', description: 'Theme, các thông tin khác về cấu hình', to: '#' },
+	{
+		title: 'Cấu hình',
+		description: 'Theme, các thông tin khác về cấu hình',
+		to: '/systemSettings/config',
+	},
 	{
 		title: 'Thông tin trường',
 		description: 'Thông tin chung của trường, các cơ sở',
@@ -9,14 +13,22 @@ const cardItems = [
 	{
 		title: 'Người dùng hệ thống',
 		description: 'Phần nhóm người dùng, quản lý thông tin người dùng và phân quyền sử dụng',
-		to: '#',
+		to: '/systemSettings/users',
 	},
-	{ title: 'Thiết lập lớp học', description: 'Loại lớp cơ bản, nâng cao', to: '#' },
-	{ title: 'Thiết lập môn học', description: 'Thông tin các hệ đào tạo của trường', to: '#' },
+	{
+		title: 'Thiết lập lớp học',
+		description: 'Loại lớp cơ bản, nâng cao',
+		to: '/systemSettings/class',
+	},
+	{
+		title: 'Thiết lập môn học',
+		description: 'Thông tin các hệ đào tạo của trường',
+		to: '/systemSettings/subject',
+	},
 	{
 		title: 'Quản lý trình độ đào tạo',
 		description: 'Thông tin các hệ đào tạo của trường',
-		to: '#',
+		to: '/systemSettings/tranning',
 	},
 ];
 function SystemSettingsPage() {

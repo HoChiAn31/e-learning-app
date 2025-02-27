@@ -2,6 +2,7 @@ import config from '../config';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {
 	ClassPage,
+	ClassSettingPage,
 	DepartmentPage,
 	EditInforSchoolPage,
 	FacultiePage,
@@ -14,10 +15,14 @@ import {
 	StudentReservePage,
 	StudentTransferPage,
 	SubjectPage,
+	SubjectSettingPage,
 	SystemSettingsPage,
+	TranningSettingPage,
+	UserSettingPage,
 	dataDeclarationPage,
 	studentProfileListPage,
 } from '../pages';
+import ConfigPage from '../pages/systemSettings/config';
 
 interface RouteConfig {
 	path: string;
@@ -52,6 +57,11 @@ const publicRoutes: RouteConfig[] = [
 	{ path: config.systemSettings, component: SystemSettingsPage, layout: DefaultLayout },
 	{ path: config.inforSchool, component: InforSchoolPage, layout: DefaultLayout },
 	{ path: config.inforSchoolEditor, component: EditInforSchoolPage, layout: DefaultLayout },
+	{ path: config.userSettings, component: UserSettingPage, layout: DefaultLayout },
+	{ path: config.classSettings, component: ClassSettingPage, layout: DefaultLayout },
+	{ path: config.subjectSettings, component: SubjectSettingPage, layout: DefaultLayout },
+	{ path: config.tranningSettings, component: TranningSettingPage, layout: DefaultLayout },
+	{ path: config.configSettings, component: ConfigPage, layout: DefaultLayout },
 ];
 
 export { publicRoutes };

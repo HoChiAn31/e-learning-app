@@ -14,7 +14,10 @@ import InstructorAssignmentPage from './instructorProfileList/assignment';
 import SystemSettingsPage from './systemSettings';
 import InforSchoolPage from './systemSettings/inforSchool';
 import EditInforSchoolPage from './systemSettings/inforSchool/editInforSchool';
-
+import UserSettingPage from './systemSettings/users';
+import ClassSettingPage from './systemSettings/class';
+import SubjectSettingPage from './systemSettings/subject';
+import TranningSettingPage from './systemSettings/tranning';
 export {
 	HomePage,
 	LoginPage,
@@ -32,4 +35,8 @@ export {
 	SystemSettingsPage,
 	InforSchoolPage,
 	EditInforSchoolPage,
+	UserSettingPage,
+	ClassSettingPage,
+	SubjectSettingPage,
+	TranningSettingPage,
 };
