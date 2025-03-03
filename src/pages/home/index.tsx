@@ -107,7 +107,7 @@ const HomePage = () => {
 							]}
 						/>
 					</div>
-					<div className='flex flex-col'>
+					<div className='flex flex-col space-y-6 pt-6'>
 						<CustomSlider grade={6} value={1500} />
 						<CustomSlider grade={7} value={1000} />
 						<CustomSlider grade={8} value={1200} />

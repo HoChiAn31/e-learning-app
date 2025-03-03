@@ -1,8 +1,15 @@
+import { useNavigate } from 'react-router-dom';
 import { UserCircle } from '../components/icon';
 
 const Header = () => {
+	const nav = useNavigate();
+	const handleLogout = () => {
+		localStorage.removeItem('activeMainTab');
+		localStorage.removeItem('activeSubTab');
+		nav('/');
+	};
 	return (
-		<div className='mt-2 mr-6 flex justify-end'>
+		<div className='mr-6 mt-2 flex justify-end'>
 			<div className='relative flex h-10 items-center justify-start gap-2'>
 				<div className='flex items-center gap-2'>
 					<UserCircle color='#FF7506' />
@@ -11,9 +18,14 @@ const Header = () => {
 					</div>
 					<div className='h-9 w-px bg-[#823b00]' />
 				</div>
-				<p className="font-['Source Sans Pro'] cursor-pointer text-base leading-tight font-normal text-[#ff7506]">
-					Đăng xuất
-				</p>
+				<div>
+					<p
+						className="font-['Source Sans Pro'] cursor-pointer text-base font-normal leading-tight text-[#ff7506]"
+						onClick={handleLogout}
+					>
+						Đăng xuất
+					</p>
+				</div>
 			</div>
 		</div>
 	);

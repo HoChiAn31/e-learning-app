@@ -1,7 +1,8 @@
 import { Button, ConfigProvider, Input } from 'antd';
 import { Password, UserCircle } from '../../components/icon';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
 
 interface formUser {
 	username: string;
@@ -10,7 +11,8 @@ interface formUser {
 
 const LoginPage = () => {
 	const nav = useNavigate();
-
+	const { role } = useUser();
+	const [url, setUrl] = useState<string>('');
 	const [form, setForm] = useState({
 		username: '',
 		password: '',
@@ -22,8 +24,19 @@ const LoginPage = () => {
 			[name]: value,
 		}));
 	};
+	useEffect(() => {
+		if (role === 'teacher') {
+			setUrl('/teacher/dashboard');
+		} else {
+			setUrl('/home');
+		}
+	}, [role]);
 	const handleLogin = () => {
-		nav('/home');
+		if (role === 'teacher') {
+			nav(url);
+		} else {
+			nav(url);
+		}
 	};
 
 	return (

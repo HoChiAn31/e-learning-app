@@ -77,7 +77,7 @@ const LineChart: React.FC = () => {
 					max: 250, // Giá trị lớn nhất là 250
 				},
 				title: {
-					display: true,
+					display: false,
 					text: 'Số lượt truy cập',
 				},
 			},
@@ -85,7 +85,7 @@ const LineChart: React.FC = () => {
 	};
 
 	return (
-		<div className='h-[328px] p-5'>
+		<div className='h-[328px] w-[1600px] p-5'>
 			<div className='mb-4 flex items-center justify-between'>
 				<h2 className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-primary">
 					Thống kê lượng truy cập
@@ -96,7 +96,9 @@ const LineChart: React.FC = () => {
 					style={{ padding: '5px 10px', borderRadius: '5px', border: '1px solid #ccc' }}
 				/>
 			</div>
-			<Line data={chartData} options={options} />
+			<div className='flex items-center justify-center'>
+				<Line data={chartData} options={options} width={1800} height={300} />
+			</div>
 		</div>
 	);
 };

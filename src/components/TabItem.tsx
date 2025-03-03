@@ -5,6 +5,7 @@ import React, { ElementType, FC, useEffect, useState } from 'react';
 // import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 interface TabItemProps {
 	activeMainTab: string;
@@ -39,16 +40,26 @@ const TabItem: FC<TabItemProps> = ({
 	const [isExpanded, setIsExpanded] = useState(true);
 	const isActive = activeMainTab === tabName;
 	const hasSubItems = subItems && subItems.length > 0;
-	console.log('tabName', tabName);
-	console.log('activeMainTab', activeMainTab);
-	console.log('activeSubTab', activeSubTab);
-	console.log('subItems', subItems);
+	const { role } = useUser();
+	// console.log('tabName', tabName);
+	// console.log('activeMainTab', activeMainTab);
+	// console.log('activeSubTab', activeSubTab);
+	// console.log('subItems', subItems);
 	const handleClick = () => {
 		if (isSubTab) {
-			const firstPart = tabName.split('/')[1]; // "studentProfileList"
-			const lastPart = tabName.substring(tabName.lastIndexOf('/') + 1); // "all"
-			console.log('firstPart:', firstPart);
-			console.log('lastPart:', lastPart);
+			let firstPart, lastPart;
+			if (role === 'teacher') {
+				console.log(1);
+				const parts = tabName.split('/'); // ["", "teacher", "class", "add"]
+				firstPart = `/${parts[1]}/${parts[2]}`; // "/teacher/class"
+				lastPart = tabName.substring(tabName.lastIndexOf('/') + 1); // "add"
+			} else {
+				firstPart = tabName.split('/')[1]; // "studentProfileList"
+				lastPart = tabName.substring(tabName.lastIndexOf('/') + 1); // "all"
+			}
+
+			// console.log('firstPart:', firstPart);
+			// console.log('lastPart:', lastPart);
 			setActiveMainTab(firstPart);
 			setActiveSubTab(lastPart);
 		} else {
@@ -103,6 +114,13 @@ const TabItem: FC<TabItemProps> = ({
 											<Link
 												to={`${tabName}/${subItem.name}`}
 												onClick={() => {
+													console.log('hehe');
+													// console.log('tabName', tabName);
+													// console.log('subItem', subItem.name);
+													if (role === 'teacher') {
+														localStorage.setItem('activeMainTab', tabName);
+														localStorage.setItem('activeSubTab', subItem.name);
+													}
 													setActiveMainTab(tabName);
 													setActiveSubTab(subItem.name);
 												}}

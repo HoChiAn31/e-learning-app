@@ -18,9 +18,14 @@ import UserSettingPage from './systemSettings/users';
 import ClassSettingPage from './systemSettings/class';
 import SubjectSettingPage from './systemSettings/subject';
 import TranningSettingPage from './systemSettings/tranning';
+import TeacherClassPage from './teacher/class';
+import TeacherDashBoardPage from './teacher/dashboard';
+import TeacherClassAddPage from './teacher/classAdd';
+import TeacherClassMeetingPage from './teacher/classMeeting';
 export {
-	HomePage,
 	LoginPage,
+	// *************************** leadership ***************************
+	HomePage,
 	dataDeclarationPage,
 	DepartmentPage,
 	FacultiePage,
@@ -39,4 +44,9 @@ export {
 	ClassSettingPage,
 	SubjectSettingPage,
 	TranningSettingPage,
+	// *************************** teacher ***************************
+	TeacherClassPage,
+	TeacherDashBoardPage,
+	TeacherClassAddPage,
+	TeacherClassMeetingPage,
 };

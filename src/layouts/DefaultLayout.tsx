@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 // import Header from './Header';
 import { useLocation } from 'react-router-dom';
 
@@ -6,6 +6,7 @@ import SidebarAdmin from './SidebarAdmin';
 import Header from './header';
 import SideBarDataDeclaration from './SideBarDataDeclaration';
 import { ConfigProvider } from 'antd';
+import { useUser } from '../context/UserContext';
 // import Footer from './Footer';
 // import { Messenger, Phone } from '../components/icon';
 
@@ -15,12 +16,46 @@ interface DefaultLayoutProps {
 
 const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 	const location = useLocation();
-
+	const { role } = useUser();
 	const name = location.pathname;
+	// console.log('name', name);
+	// console.log('role', role);
 
 	if (name === '/') {
 		return <div className={`relative flex min-h-screen flex-col`}>{children}</div>;
 	}
+	if (role === 'teacher') {
+		return (
+			<ConfigProvider
+				theme={{
+					token: {
+						colorPrimary: '#FF7506',
+					},
+				}}
+			>
+				<div
+					className={`relative flex min-h-screen`}
+					style={{
+						backgroundImage: "url('https://i.imgur.com/cycXAQ7.png')",
+						backgroundSize: 'cover',
+						backgroundPosition: 'center',
+						backgroundRepeat: 'no-repeat',
+						width: '100vw',
+						height: '100vh',
+					}}
+				>
+					<SidebarAdmin />
+					<div className='ml-[112px] w-full'>
+						<Header />
+						<div className='px-16'>
+							<div className='pt-5'>{children}</div>
+						</div>
+					</div>
+				</div>
+			</ConfigProvider>
+		);
+	}
+
 	if (name.startsWith('/dataDeclaration')) {
 		return (
 			<ConfigProvider

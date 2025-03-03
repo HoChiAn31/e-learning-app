@@ -50,3 +50,12 @@
 		transform: rotate(360deg);
 	}
 }
+
+.scrollbar-hidden {
+	-ms-overflow-style: none; /* IE và Edge */
+	scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+	display: none; /* Chrome, Safari và Opera */
+}

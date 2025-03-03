@@ -120,7 +120,7 @@ const BarChart: React.FC = () => {
 		console.log(`selected ${value}`);
 	};
 	return (
-		<div className='w-[100%] p-5'>
+		<div className='p-5'>
 			<div className='mb-4 flex items-center justify-between'>
 				<h2 className="font-['Source Sans Pro'] text-base font-bold tracking-tight">
 					Thống kê kết quả học tập
@@ -136,7 +136,9 @@ const BarChart: React.FC = () => {
 					]}
 				/>
 			</div>
-			<Bar data={chartData} options={options} />
+			<div className='flex h-[360px] items-center justify-center'>
+				<Bar data={chartData} options={options} width={800} height={400} />
+			</div>
 		</div>
 	);
 };

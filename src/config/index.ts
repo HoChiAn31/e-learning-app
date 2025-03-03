@@ -1,4 +1,5 @@
 const config = {
+	// Leadership
 	home: '/home',
 	login: '/',
 	dataDeclaration: '/dataDeclaration',
@@ -21,5 +22,11 @@ const config = {
 	subjectSettings: '/systemSettings/subject',
 	tranningSettings: '/systemSettings/tranning',
 	configSettings: '/systemSettings/config',
+
+	// teacher
+	teacherDashboard: '/teacher/dashboard',
+	teacherClass: '/teacher/class/list',
+	teacherClassAdd: '/teacher/class/add',
+	teacherClassMeeting: '/teacher/class/meeting',
 };
 export default config;
