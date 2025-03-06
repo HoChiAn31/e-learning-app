@@ -1,7 +1,18 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import TabItem from '../components/TabItem';
-import { Bag, BookOpen, BookOpens, ChartLine, Eye, Eyes, Setting, User } from '../components/icon';
+import {
+	Bag,
+	BookOpen,
+	BookOpens,
+	ChartLine,
+	Edit,
+	Edits,
+	Eye,
+	Eyes,
+	Setting,
+	User,
+} from '../components/icon';
 import { useUser } from '../context/UserContext';
 
 const SidebarAdmin: FC = () => {
@@ -101,6 +112,17 @@ const SidebarAdmin: FC = () => {
 								tabName='/teacher/class/list'
 								title={'Quản lý lớp học'}
 								icon={<BookOpens color='white' />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName='/teacher/listTest/all'
+								title={'Bài kiểm tra'}
+								icon={<Edits color='white' />}
 								isIcon
 								onCheckClick={() => setIsHovered(false)}
 							/>
@@ -226,6 +248,24 @@ const SidebarAdmin: FC = () => {
 									]}
 									onCheckClick={() => setIsHovered(false)}
 									isSidebarSub
+								/>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName={'/teacher/listTest'}
+									title={'Bài kiểm tra'}
+									icon={<Edits color={`${name === '/teacher/listTest' ? '#ff7506' : '#373839'}`} />}
+									isIcon
+									onCheckClick={() => setIsHovered(false)}
+									isSidebarSub
+									subItems={[
+										{ name: 'all', label: 'Danh sách bài kiểm tra' },
+										{ name: 'add', label: 'Thêm bài kiểm tra mới' },
+										{ name: 'meeting', label: 'Nhập điểm' },
+										{ name: 'meeting', label: 'Bảng điểm' },
+									]}
 								/>
 							</>
 						)}

@@ -60,17 +60,6 @@ const TeacherClassMeetingPage: React.FC = () => {
 
 			{/* Main content area */}
 			<Layout className='relative'>
-				{/* <Header className='flex items-center justify-between bg-white p-4'>
-					<div className='flex items-center space-x-2'>
-						<VideoCameraOutlined />
-						<span>Lịch Sử Tiết: Tìm hiểu về Lớp 6 - GV: Trần Thanh Tam</span>
-					</div>
-					<div className='flex space-x-2'>
-						<Button icon={<AudioOutlined />} />
-						<Button>90% | 04:35 / slides</Button>
-					</div>
-				</Header> */}
-
 				<Content className='flex items-center justify-center bg-gray-200'>
 					<div
 						className='relative h-full w-full bg-cover bg-center'

@@ -26,7 +26,10 @@ const config = {
 	// teacher
 	teacherDashboard: '/teacher/dashboard',
 	teacherClass: '/teacher/class/list',
+	teacherClassDetail: '/teacher/class/list/:id',
+
 	teacherClassAdd: '/teacher/class/add',
 	teacherClassMeeting: '/teacher/class/meeting',
+	teacherListTest: '/teacher/listTest/all',
 };
 export default config;

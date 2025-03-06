@@ -22,6 +22,9 @@ import TeacherClassPage from './teacher/class';
 import TeacherDashBoardPage from './teacher/dashboard';
 import TeacherClassAddPage from './teacher/classAdd';
 import TeacherClassMeetingPage from './teacher/classMeeting';
+import TeacherClassDetailPage from './teacher/class/classDetail';
+import TeacherListTestPage from './teacher/listTest';
+
 export {
 	LoginPage,
 	// *************************** leadership ***************************
@@ -49,4 +52,6 @@ export {
 	TeacherDashBoardPage,
 	TeacherClassAddPage,
 	TeacherClassMeetingPage,
+	TeacherClassDetailPage,
+	TeacherListTestPage,
 };

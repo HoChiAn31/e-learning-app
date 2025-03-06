@@ -1,7 +1,9 @@
 import { Button, ConfigProvider, Input, Select, Tag } from 'antd';
 import Table, { ColumnsType, TableProps } from 'antd/es/table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Info, Search } from '../../../components/icon';
+import { Link } from 'react-router-dom';
+import { Data } from './semester';
 
 type TabProps = {
 	active: boolean;
@@ -30,102 +32,23 @@ const Tab: React.FC<TabProps> = ({ active, label, onClick }) => {
 	);
 };
 
-const data: DataType[] = [
-	{
-		key: '1',
-		courseCode: '125.1469 854',
-		courseName: 'Lịch sử',
-		time: 'Thứ 3, 19/08/2020 09:00 AM',
-		instructor: 'GV Nguyễn Văn A',
-		status: true,
-	},
-	{
-		key: '2',
-		courseCode: '125.1469 854',
-		courseName: 'Toán Hình học',
-		time: 'Thứ 3, 19/08/2020 12:00 PM',
-		instructor: 'GV Nguyễn Văn A',
-		status: false,
-	},
-	{
-		key: '3',
-		courseCode: '125.1469 854',
-		courseName: 'Toán Đệ Sĩ',
-		time: 'Thứ 4, 20/08/2020 14:00 PM',
-		instructor: 'GV Nguyễn Văn A',
-		status: true,
-	},
-	{
-		key: '4',
-		courseCode: '125.1469 854',
-		courseName: 'Tiếng Anh',
-		time: 'Thứ 6, 22/08/2020 12:00 PM',
-		instructor: 'GV Nguyễn Văn A',
-		status: false,
-	},
-	{
-		key: '5',
-		courseCode: '125.1469 854',
-		courseName: 'Ngữ Văn',
-		time: 'Thứ 7, 23/08/2020 09:30 AM',
-		instructor: 'GV Nguyễn Văn A',
-		status: true,
-	},
-	{
-		key: '6',
-		courseCode: '125.1469 854',
-		courseName: 'Lý',
-		time: 'Thứ 2, 18/08/2020 10:00 AM',
-		instructor: 'GV Nguyễn Văn A',
-		status: false,
-	},
-	{
-		key: '7',
-		courseCode: '125.1469 854',
-		courseName: 'Tiếng Anh',
-		time: 'Thứ 7, 16/08/2020 13:00 PM',
-		instructor: 'GV Nguyễn Văn B',
-		status: true,
-	},
-	{
-		key: '8',
-		courseCode: '125.1469 855',
-		courseName: 'Nghệ thuật',
-		time: 'Thứ 6, 15/08/2020 09:00 AM',
-		instructor: 'GV Nguyễn Văn A',
-		status: false,
-	},
-	{
-		key: '9',
-		courseCode: '125.1469 854',
-		courseName: 'Hóa',
-		time: 'Thứ 5, 14/08/2020 14:00 PM',
-		instructor: 'GV Nguyễn Văn A',
-		status: true,
-	},
-	{
-		key: '10',
-		courseCode: '125.1469 854',
-		courseName: 'Địa',
-		time: 'Thứ 5, 14/08/2020 14:00 PM',
-		instructor: 'GV Nguyễn Văn A',
-		status: false,
-	},
-];
-
 function TeacherClassPage() {
 	const [active, setActive] = useState<string>('upcoming');
 	const [selectedGroup, setSelectedGroup] = useState<string>('');
 	const [selectedSubject, setSelectedSubject] = useState<string>('');
 	const [searchTerm, setSearchTerm] = useState<string>(''); // New state for search input
-
+	const [data, setData] = useState<DataType[]>([]);
 	// Define valid subjects for each group
 	const groupSubjects: { [key: string]: string[] } = {
 		'THCS-ToanLyHoa': ['Toán', 'Lý', 'Hóa', 'Tiếng Anh'],
 		'THCS-SinhSuDia': ['Văn', 'Sử', 'Địa', 'Tiếng Anh'],
 		'THCS-NgheThuat': ['Nghệ thuật', 'Tiếng Anh'],
 	};
-
+	useEffect(() => {
+		if (Data.length > 0) {
+			setData(Data);
+		}
+	}, []);
 	// Update subjects based on selected group
 	const subjectOptions = selectedGroup
 		? groupSubjects[selectedGroup].map((subject) => ({
@@ -183,9 +106,9 @@ function TeacherClassPage() {
 			key: 'action',
 			render: (_, record) => (
 				<div className=''>
-					<Button type='link'>
+					<Link to={`/teacher/class/list/${record.key}`}>
 						<Info />
-					</Button>
+					</Link>
 				</div>
 			),
 		},

@@ -18,9 +18,11 @@ import {
 	SubjectSettingPage,
 	SystemSettingsPage,
 	TeacherClassAddPage,
+	TeacherClassDetailPage,
 	TeacherClassMeetingPage,
 	TeacherClassPage,
 	TeacherDashBoardPage,
+	TeacherListTestPage,
 	TranningSettingPage,
 	UserSettingPage,
 	dataDeclarationPage,
@@ -69,8 +71,11 @@ const publicRoutes: RouteConfig[] = [
 	// *************************** teacher ***************************
 	{ path: config.teacherDashboard, component: TeacherDashBoardPage, layout: DefaultLayout },
 	{ path: config.teacherClass, component: TeacherClassPage, layout: DefaultLayout },
+	{ path: config.teacherClassDetail, component: TeacherClassDetailPage, layout: DefaultLayout },
+
 	{ path: config.teacherClassAdd, component: TeacherClassAddPage, layout: DefaultLayout },
 	{ path: config.teacherClassMeeting, component: TeacherClassMeetingPage, layout: DefaultLayout },
+	{ path: config.teacherListTest, component: TeacherListTestPage, layout: DefaultLayout },
 ];
 
 export { publicRoutes };

@@ -5,9 +5,10 @@ import { ArrowRight } from './icon';
 interface BreadcrumbLinkProps {
 	to: string; // Đường dẫn điều hướng
 	onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
-	setIsAddStudent?: (value: boolean) => void; // Hàm set state từ component cha
-	currentPage: string; // Tiêu đề trang hiện tại (ví dụ: "Thêm học viên")
+	setIsAddStudent?: (value: boolean) => void;
+	currentPage: string;
 	parentPage: string;
+	middleTitle?: string; // Tiêu đề giữa (tuỳ chọn)
 }
 
 const BreadcrumbLink: React.FC<BreadcrumbLinkProps> = ({
@@ -16,6 +17,7 @@ const BreadcrumbLink: React.FC<BreadcrumbLinkProps> = ({
 	setIsAddStudent,
 	currentPage,
 	parentPage,
+	middleTitle,
 }) => {
 	return (
 		<div className='inline-flex h-[60px] items-center justify-center'>
@@ -30,9 +32,19 @@ const BreadcrumbLink: React.FC<BreadcrumbLinkProps> = ({
 				<div data-svg-wrapper className='relative'>
 					<ArrowRight />
 				</div>
-				<div className="font-['Mulish'] text-5xl font-extrabold tracking-wide text-[#373839]">
+				{middleTitle && (
+					<>
+						<span className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#c8c4c0]">
+							{middleTitle}
+						</span>
+						<div data-svg-wrapper className='relative'>
+							<ArrowRight />
+						</div>
+					</>
+				)}
+				<span className="font-['Mulish'] text-5xl font-extrabold tracking-wide text-[#373839]">
 					{currentPage}
-				</div>
+				</span>
 			</div>
 		</div>
 	);
