@@ -5,6 +5,7 @@ import {
 	Bag,
 	BookOpen,
 	BookOpens,
+	Calendar,
 	ChartLine,
 	Edit,
 	Edits,
@@ -123,6 +124,17 @@ const SidebarAdmin: FC = () => {
 								tabName='/teacher/listTest/all'
 								title={'Bài kiểm tra'}
 								icon={<Edits color='white' />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName='/teacher/examSchedule'
+								title={'Lịch thi'}
+								icon={<Calendar color='#ffffff' />}
 								isIcon
 								onCheckClick={() => setIsHovered(false)}
 							/>

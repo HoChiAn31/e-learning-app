@@ -24,6 +24,8 @@ import TeacherClassAddPage from './teacher/classAdd';
 import TeacherClassMeetingPage from './teacher/classMeeting';
 import TeacherClassDetailPage from './teacher/class/classDetail';
 import TeacherListTestPage from './teacher/listTest';
+import TeacherListAdd from './teacher/listTest/add';
+import TeacherExamSchedulePage from './teacher/examSchedule';
 
 export {
 	LoginPage,
@@ -54,4 +56,6 @@ export {
 	TeacherClassMeetingPage,
 	TeacherClassDetailPage,
 	TeacherListTestPage,
+	TeacherListAdd,
+	TeacherExamSchedulePage,
 };

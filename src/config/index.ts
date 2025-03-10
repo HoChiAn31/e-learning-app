@@ -31,5 +31,7 @@ const config = {
 	teacherClassAdd: '/teacher/class/add',
 	teacherClassMeeting: '/teacher/class/meeting',
 	teacherListTest: '/teacher/listTest/all',
+	teacherListTestAdd: '/teacher/listTestAdd',
+	teacherExamSchedule: '/teacher/examSchedule',
 };
 export default config;
