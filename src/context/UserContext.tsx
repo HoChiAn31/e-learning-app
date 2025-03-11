@@ -19,7 +19,7 @@ export const AuthContext = createContext<UserContextType>({
 
 export const UserProvider = ({ children }: AuthProviderProps): JSX.Element => {
 	const [isLogin, setIsLogin] = useState<boolean>(false);
-	const [role, setRole] = useState<string>('teacher');
+	const [role, setRole] = useState<string>('student');
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [user, setUser] = useState<User | null>({
 		id: '',
@@ -32,7 +32,7 @@ export const UserProvider = ({ children }: AuthProviderProps): JSX.Element => {
 		try {
 			setIsLoading(true);
 			setIsLogin(true);
-			setRole('user');
+			setRole('student');
 		} catch (error) {
 			console.error('Login failed:', error);
 			throw error;

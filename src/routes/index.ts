@@ -12,6 +12,13 @@ import {
 	InstructorProfileListPage,
 	LoginPage,
 	ScoreTypePage,
+	SharedContactFormPage,
+	SharedExamSchedulePage,
+	SharedNotificationPage,
+	StudentClassDetailPage,
+	StudentDashBoardPage,
+	StudentMeetingPage,
+	StudentMyClassPage,
 	StudentReservePage,
 	StudentTransferPage,
 	SubjectPage,
@@ -21,7 +28,6 @@ import {
 	TeacherClassDetailPage,
 	TeacherClassMeetingPage,
 	TeacherClassPage,
-	TeacherContactFormPage,
 	TeacherDashBoardPage,
 	TeacherExamSchedulePage,
 	TeacherListAdd,
@@ -82,7 +88,16 @@ const publicRoutes: RouteConfig[] = [
 	{ path: config.teacherListTestAdd, component: TeacherListAdd, layout: DefaultLayout },
 	{ path: config.teacherExamSchedule, component: TeacherExamSchedulePage, layout: DefaultLayout },
 	{ path: config.teacherNotification, component: TeacherNotificationPage, layout: DefaultLayout },
-	{ path: config.teacherContactForm, component: TeacherContactFormPage, layout: DefaultLayout },
+	// *************************** teacher ***************************
+	{ path: config.studentDashboard, component: StudentDashBoardPage, layout: DefaultLayout },
+	{ path: config.studentMeeting, component: StudentMeetingPage, layout: DefaultLayout },
+	{ path: config.studentMyClass, component: StudentMyClassPage, layout: DefaultLayout },
+	{ path: config.studentClassDetail, component: StudentClassDetailPage, layout: DefaultLayout },
+
+	// *************************** shared: student & teacher ***************************
+	{ path: config.sharedContactForm, component: SharedContactFormPage, layout: DefaultLayout },
+	{ path: config.sharedExamSchedule, component: SharedExamSchedulePage, layout: DefaultLayout },
+	{ path: config.sharedNotification, component: SharedNotificationPage, layout: DefaultLayout },
 ];
 
 export { publicRoutes };

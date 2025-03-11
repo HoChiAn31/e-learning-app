@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom';
-import BreadcrumbLink from '../../../../components/BreadcrumbLinkProps';
+import BreadcrumbLink from '../../../components/BreadcrumbLinkProps';
 import { Button, Card, Checkbox, Form, Input } from 'antd';
-import { useState } from 'react';
-import { Plus } from '../../../../components/icon';
-import ChatInterface from '../../../../components/ChatInterface';
+import { useEffect, useState } from 'react';
+import { Plus } from '../../../components/icon';
+import ChatInterface from '../../../components/ChatInterface';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import { courseProps } from '../dashboard/components/type';
+import { Data, dataCourses } from '../myClass/semester';
 interface ScheduleCardProps {
 	date: string;
 	time: string;
@@ -42,16 +44,26 @@ const ScheduleCard: React.FC<ScheduleCardProps> = ({
 		</Card>
 	);
 };
-function TeacherClassDetailPage() {
+function StudentClassDetailPage() {
+	const { id } = useParams<{ id: string }>();
 	const [isActive, setIsActive] = useState('general'); //qa
-
+	const [inforClass, setInforClass] = useState<courseProps | null>(null);
+	useEffect(() => {
+		if (dataCourses.length > 0) {
+			const course = dataCourses.find((item) => item.key === id);
+			console.log(course);
+			if (course) {
+				setInforClass(course);
+			}
+		}
+	}, []);
 	return (
 		<div>
 			<BreadcrumbLink
-				to='/teacher/class/list'
+				to='/student/dashboard'
 				parentPage='Thông tin lớp học'
 				currentPage='Hỏi đáp'
-				middleTitle='Toán đại số'
+				middleTitle={inforClass?.name}
 			/>
 			<div className='mb-4 flex w-[561px] items-center gap-2 rounded-2xl bg-[#F2F2F2] p-1'>
 				<Button
@@ -101,7 +113,7 @@ function TeacherClassDetailPage() {
 											Bộ môn:
 										</div>
 										<div className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
-											Lịch sử
+											{inforClass?.name}
 										</div>
 									</div>
 								</div>
@@ -121,7 +133,7 @@ function TeacherClassDetailPage() {
 										</div>
 
 										<div className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
-											10A1
+											{inforClass?.class}
 										</div>
 									</div>
 								</div>
@@ -280,4 +292,4 @@ function TeacherClassDetailPage() {
 	);
 }
 
-export default TeacherClassDetailPage;
+export default StudentClassDetailPage;

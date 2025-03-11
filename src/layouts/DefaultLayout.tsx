@@ -55,7 +55,37 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 			</ConfigProvider>
 		);
 	}
-
+	if (role === 'student') {
+		return (
+			<ConfigProvider
+				theme={{
+					token: {
+						colorPrimary: '#FF7506',
+					},
+				}}
+			>
+				<div
+					className={`relative flex min-h-screen`}
+					style={{
+						backgroundImage: "url('https://i.imgur.com/cycXAQ7.png')",
+						backgroundSize: 'cover',
+						backgroundPosition: 'center',
+						backgroundRepeat: 'no-repeat',
+						width: '100vw',
+						height: '100vh',
+					}}
+				>
+					<SidebarAdmin />
+					<div className='ml-[112px] w-full'>
+						<Header />
+						<div className='px-16'>
+							<div className='pt-5'>{children}</div>
+						</div>
+					</div>
+				</div>
+			</ConfigProvider>
+		);
+	}
 	if (name.startsWith('/dataDeclaration')) {
 		return (
 			<ConfigProvider

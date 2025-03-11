@@ -3,8 +3,11 @@ import { CardItem } from '../../../components/CardItem';
 import { courseProps } from './components/type';
 import { Button, ConfigProvider, Table, TableColumnsType, TableProps } from 'antd';
 import { Info } from '../../../components/icon';
+import PieChart from '../../../components/charts/PieChart';
+import { Link, useNavigate } from 'react-router-dom';
 const data: courseProps[] = [
 	{
+		key: '1',
 		name: 'Toán',
 		class: '10A1',
 		time: 'Thứ 2 - 8:00',
@@ -12,6 +15,7 @@ const data: courseProps[] = [
 		status: 'Chưa hoàn thành',
 	},
 	{
+		key: '2',
 		name: 'Lý',
 		class: '10A1',
 		time: 'Thứ 3 - 9:00',
@@ -19,6 +23,7 @@ const data: courseProps[] = [
 		status: 'Đã hoàn thành',
 	},
 	{
+		key: '3',
 		name: 'Hóa',
 		class: '10A1',
 		time: 'Thứ 4 - 10:00',
@@ -26,6 +31,7 @@ const data: courseProps[] = [
 		status: 'Chưa hoàn thành',
 	},
 	{
+		key: '4',
 		name: 'Văn',
 		class: '10A1',
 		time: 'Thứ 5 - 8:00',
@@ -33,6 +39,7 @@ const data: courseProps[] = [
 		status: 'Đã hoàn thành',
 	},
 	{
+		key: '5',
 		name: 'Sử',
 		class: '10A1',
 		time: 'Thứ 6 - 9:00',
@@ -40,6 +47,7 @@ const data: courseProps[] = [
 		status: 'Chưa hoàn thành',
 	},
 	{
+		key: '6',
 		name: 'Địa',
 		class: '10A1',
 		time: 'Thứ 2 - 10:00',
@@ -47,6 +55,7 @@ const data: courseProps[] = [
 		status: 'Đã hoàn thành',
 	},
 	{
+		key: '7',
 		name: 'Sinh',
 		class: '10A1',
 		time: 'Thứ 3 - 8:00',
@@ -54,6 +63,7 @@ const data: courseProps[] = [
 		status: 'Chưa hoàn thành',
 	},
 	{
+		key: '8',
 		name: 'Anh',
 		class: '10A1',
 		time: 'Thứ 4 - 9:00',
@@ -61,8 +71,11 @@ const data: courseProps[] = [
 		status: 'Đã hoàn thành',
 	},
 ];
-function TeacherDashBoardPage() {
+
+function StudentDashBoardPage() {
+	const nav = useNavigate();
 	const [semester, SetSemester] = useState<number>(0);
+
 	const columns: TableColumnsType<courseProps> = [
 		{
 			// title: 'Tên môn học',
@@ -98,20 +111,15 @@ function TeacherDashBoardPage() {
 			// title: 'Hành động',
 			dataIndex: 'action',
 			render: (_, record) => (
-				<div className='flex'>
-					<Button type='link' onClick={() => handleViewCourse(record)}>
+				<div className=''>
+					<Link to={`/student/class/detail/${record.key}`}>
 						<Info />
-					</Button>
+					</Link>
 				</div>
 			),
 			width: '10%',
 		},
 	];
-
-	// Hàm xử lý hành động (cần được triển khai trong component của bạn)
-	const handleViewCourse = (record: courseProps) => {
-		console.log('View course:', record);
-	};
 
 	const onChange: TableProps<courseProps>['onChange'] = (pagination, filters, sorter, extra) => {
 		console.log('params', pagination, filters, sorter, extra);
@@ -124,111 +132,48 @@ function TeacherDashBoardPage() {
 					Tổng quan
 				</div>
 				<div className='grid grid-cols-2'>
-					<CardItem
-						id='3'
-						title='Khóa học của tôi'
-						quantity={25}
-						bgType='default' // Optional
-					/>
-					<CardItem
-						id='3'
-						title='Khóa học của tôi'
-						quantity={25}
-						bgType='default' // Optional
-					/>
-					<CardItem
-						id='3'
-						title='Khóa học của tôi'
-						quantity={25}
-						bgType='default' // Optional
-					/>
-					<CardItem
-						id='3'
-						title='Khóa học của tôi'
-						quantity={25}
-						bgType='default' // Optional
-					/>
+					<CardItem id='3' title='Khóa học của tôi' quantity={10} bgType='default' />
+					<CardItem id='3' title='Khóa học đã hoàn thành' quantity={2} bgType='blue' />
+					<CardItem id='3' title='Khóa học chưa hoàn thành' quantity={8} bgType='default' />
+					<CardItem id='3' title='Tổng điểm trung bình' quantity={5.0} bgType='blue' />
 				</div>
-				<div>
+				<div className='relative'>
 					<div className="font-['Mulish'] text-[28px] font-extrabold tracking-wide text-[#373839]">
 						Thống kê kết quả học tập của học viên
 					</div>
-					{/*  */}
-					<div className='relative h-[427px] w-[595px]'>
-						<div className='absolute left-0 top-0 h-[427px] w-[595px] rounded-2xl bg-white shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]' />
-						<div className='absolute left-[307px] top-[65px] h-[165px] w-[235px]'>
-							<div className='absolute left-0 top-[30px] h-[235px] w-px origin-top-left -rotate-90 bg-[#823b00]' />
-							<div className='absolute left-0 top-[102px] h-[235px] w-px origin-top-left -rotate-90 bg-[#823b00]' />
-							<div className="font-['Source Sans Pro'] absolute left-0 top-[36px] text-base font-normal leading-tight text-[#373839]">
-								Tổng số học sinh giỏi:
-							</div>
-							<div className="font-['Source Sans Pro'] absolute left-0 top-[108px] text-base font-normal leading-tight text-[#373839]">
-								Tổng số học sinh trung bình:
-							</div>
-							<div className="font-['Source Sans Pro'] absolute left-0 top-0 text-base font-normal leading-tight text-[#373839]">
-								Tổng số lớp:
-							</div>
-							<div className="font-['Source Sans Pro'] absolute left-0 top-[72px] text-base font-normal leading-tight text-[#373839]">
-								Tổng số học sinh khá:
-							</div>
-							<div className="font-['Source Sans Pro'] absolute left-0 top-[144px] text-base font-normal leading-tight text-[#373839]">
-								Tổng số học sinh yếu:
-							</div>
-							<div className="font-['Source Sans Pro'] absolute left-[208px] top-[38px] text-base font-bold tracking-tight text-[#2dacee]">
-								300
-							</div>
-							<div className="font-['Source Sans Pro'] absolute left-[217px] top-[1px] text-base font-bold tracking-tight text-[#373839]">
-								10
-							</div>
-							<div className="font-['Source Sans Pro'] absolute left-[208px] top-[72px] text-base font-bold tracking-tight text-[#ff7506]">
-								125
-							</div>
-							<div className="font-['Source Sans Pro'] absolute left-[217px] top-[108px] text-base font-bold tracking-tight text-[#49c40f]">
-								75
-							</div>
-							<div className="font-['Source Sans Pro'] absolute left-[225px] top-[144px] text-base font-bold tracking-tight text-[#c8c4c0]">
-								0
-							</div>
-							<div className='absolute left-0 top-[66px] h-[235px] w-px origin-top-left -rotate-90 bg-[#823b00]' />
-							<div className='absolute left-0 top-[138px] h-[235px] w-px origin-top-left -rotate-90 bg-[#823b00]' />
-						</div>
-						<div className='absolute left-[74px] top-[65px] h-[166px] w-[166px]'>
-							<div className='absolute left-[6px] top-[5px] h-40 w-40'>
-								<div className='absolute left-[160px] top-0 h-40 w-40 origin-top-left rotate-90 rounded-full bg-gradient-to-bl from-[#5445b6] to-[#cf5be3]' />
-								<div className="font-['Source Sans Pro'] absolute left-[112px] top-[90px] text-lg font-semibold tracking-tight text-white">
-									15%
+
+					<div className='flex items-center bg-white'>
+						<PieChart />
+						<div className=''>
+							{/* <div className='left-0 top-[30px] h-[235px] w-px origin-top-left rotate-90 bg-[#823b00]' /> */}
+
+							<div className='flex items-center justify-between py-2'>
+								<div className="w-60 justify-start font-['Source_Sans_Pro'] text-base font-normal leading-tight text-[#373839]">
+									Tổng số môn:
+								</div>
+								<div className="justify-start font-['Source_Sans_Pro'] text-base font-bold tracking-tight text-[#373839]">
+									10
 								</div>
 							</div>
-							<div className='absolute left-[6px] top-0 h-40 w-40'>
-								<div className='absolute left-[160px] top-0 h-40 w-40 origin-top-left rotate-90 rounded-full bg-gradient-to-r from-[#fdc830] to-[#f37335]' />
-								<div className="font-['Source Sans Pro'] absolute left-[100px] top-[34px] text-lg font-semibold tracking-tight text-white">
-									25%
+
+							<div className='flex items-center justify-between border-y border-[#823b00] py-2'>
+								<div className="w-60 justify-start font-['Source_Sans_Pro'] text-base font-normal leading-tight text-[#373839]">
+									Số môn đã hoàn thành:
+								</div>
+								<div className="justify-start font-['Source_Sans_Pro'] text-base font-bold tracking-tight text-[#2dacee]">
+									7
 								</div>
 							</div>
-							<div className='absolute left-0 top-[6px] h-40 w-40'>
-								<div className='absolute left-0 top-[160px] h-40 w-40 origin-top-left -rotate-90 rounded-full bg-gradient-to-r from-[#56ccf2] to-[#2f80ed]' />
-								<div className="font-['Source Sans Pro'] absolute left-[29px] top-[69px] text-lg font-semibold tracking-tight text-white">
-									60%
+							<div className='flex items-center justify-between py-2'>
+								<div className="w-60 justify-start font-['Source_Sans_Pro'] text-base font-normal leading-tight text-[#373839]">
+									Số môn chưa hoàn thành:
+								</div>
+
+								<div className="justify-start font-['Source_Sans_Pro'] text-base font-bold tracking-tight text-[#ff7506]">
+									3
 								</div>
 							</div>
-						</div>
-						<div className='absolute left-[74px] top-[268px]'>
-							<div className='absolute left-0 top-[2px] h-4 w-8 rounded-sm bg-gradient-to-r from-[#56ccf2] to-[#2f80ed]' />
-							<div className="font-['Source Sans Pro'] absolute left-[44px] top-0 w-40 text-base font-normal leading-tight text-[#373839] opacity-50">
-								Tổng số học sinh giỏi
-							</div>
-						</div>
-						<div className='absolute left-[74px] top-[297px]'>
-							<div className='absolute left-0 top-[2px] h-4 w-8 rounded-sm bg-gradient-to-r from-[#fdc830] to-[#f37335]' />
-							<div className="font-['Source Sans Pro'] absolute left-[44px] top-0 w-40 text-base font-normal leading-tight text-[#373839] opacity-50">
-								Tổng số học sinh khá
-							</div>
-						</div>
-						<div className='absolute left-[74px] top-[326px]'>
-							<div className='absolute left-0 top-[2px] h-4 w-8 rounded-sm bg-gradient-to-l from-[#45b649] to-[#dce35b]' />
-							<div className="font-['Source Sans Pro'] absolute left-[44px] top-0 w-60 text-base font-normal leading-tight text-[#373839] opacity-50">
-								Tổng số học sinh trung bình
-							</div>
+							{/* <div className='left-0 top-[66px] h-[235px] w-px origin-top-left rotate-90 bg-[#823b00]' /> */}
 						</div>
 					</div>
 				</div>
@@ -356,4 +301,4 @@ function TeacherDashBoardPage() {
 	);
 }
 
-export default TeacherDashBoardPage;
+export default StudentDashBoardPage;

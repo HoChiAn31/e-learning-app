@@ -22,6 +22,8 @@ const LoginPage = () => {
 	useEffect(() => {
 		if (role === 'teacher') {
 			setUrl('/teacher/dashboard');
+		} else if (role === 'student') {
+			setUrl('/student/dashboard');
 		} else {
 			setUrl('/home');
 		}

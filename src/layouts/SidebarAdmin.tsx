@@ -42,19 +42,51 @@ const SidebarAdmin: FC = () => {
 	}, [role, name, nav, isLoaded]);
 
 	// Load từ localStorage
+	// useEffect(() => {
+	// 	console.log(1_34);
+
+	// 	if (role !== 'teacher' && !activeMainTab.startsWith('/teacher/class')) {
+	// 		const storedMainTab = localStorage.getItem('activeMainTab');
+	// 		const storedSubTab = localStorage.getItem('activeSubTab');
+
+	// 		if (storedMainTab) {
+	// 			// Nếu là teacher thì ưu tiên /teacher, nếu không thì dùng stored value
+	// 			if (role === 'teacher' && !storedMainTab.startsWith(name)) {
+	// 				setActiveMainTab(name);
+	// 				nav(name);
+	// 			} else {
+	// 				setActiveMainTab(storedMainTab);
+	// 				if (storedSubTab) {
+	// 					setActiveSubTab(storedSubTab);
+	// 					nav(`${storedMainTab}/${storedSubTab}`);
+	// 				} else {
+	// 					nav(storedMainTab);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// 	setIsLoaded(true);
+	// }, [nav, role]);
 	useEffect(() => {
 		console.log(1_34);
 
-		if (role !== 'teacher' && !activeMainTab.startsWith('/teacher/class')) {
+		if (role !== 'teacher' && role !== 'student' && !activeMainTab.startsWith('/teacher/class')) {
 			const storedMainTab = localStorage.getItem('activeMainTab');
 			const storedSubTab = localStorage.getItem('activeSubTab');
 
 			if (storedMainTab) {
-				// Nếu là teacher thì ưu tiên /teacher, nếu không thì dùng stored value
+				// Nếu là teacher thì ưu tiên /teacher
 				if (role === 'teacher' && !storedMainTab.startsWith(name)) {
 					setActiveMainTab(name);
 					nav(name);
-				} else {
+				}
+				// Nếu là student thì ưu tiên /student
+				else if (role === 'student' && !storedMainTab.startsWith(name)) {
+					setActiveMainTab(name);
+					nav(name);
+				}
+				// Nếu không phải teacher/student thì dùng stored value
+				else {
 					setActiveMainTab(storedMainTab);
 					if (storedSubTab) {
 						setActiveSubTab(storedSubTab);
@@ -65,6 +97,7 @@ const SidebarAdmin: FC = () => {
 				}
 			}
 		}
+
 		setIsLoaded(true);
 	}, [nav, role]);
 
@@ -154,7 +187,7 @@ const SidebarAdmin: FC = () => {
 								setActiveMainTab={setActiveMainTab}
 								activeSubTab={activeSubTab}
 								setActiveSubTab={setActiveSubTab}
-								tabName='/teacher/contactForm'
+								tabName='/shared/contactForm'
 								title={'Trợ giúp'}
 								icon={<Question color='#ffffff' />}
 								isIcon
@@ -162,8 +195,77 @@ const SidebarAdmin: FC = () => {
 							/>
 						</>
 					)}
-
-					{role !== 'teacher' && (
+					{role === 'student' && (
+						<>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName={'/student/dashboard'}
+								title={'Tổng quan'}
+								icon={<Eye />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName='/student/myClass/list'
+								title={'Lớp học của tôi'}
+								icon={<BookOpens color='white' />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName='#'
+								title={'Bài kiểm tra'}
+								icon={<Edits color='white' />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName='/shared/calendar'
+								title={'Lịch thi'}
+								icon={<Calendar color='#ffffff' />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName='/shared/notification'
+								title={'Thông báo'}
+								icon={<Bell color='#ffffff' />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName='/shared/contactForm'
+								title={'Trợ giúp'}
+								icon={<Question color='#ffffff' />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+						</>
+					)}
+					{role === 'leadership' && (
 						<>
 							<TabItem
 								activeMainTab={activeMainTab}
@@ -316,7 +418,7 @@ const SidebarAdmin: FC = () => {
 									setActiveMainTab={setActiveMainTab}
 									activeSubTab={activeSubTab}
 									setActiveSubTab={setActiveSubTab}
-									tabName='/teacher/contactForm'
+									tabName='/shared/contactForm'
 									title={'Trợ giúp'}
 									icon={
 										<Question color={`${name === '/teacher/listTest' ? '#ff7506' : '#373839'}`} />
@@ -326,8 +428,104 @@ const SidebarAdmin: FC = () => {
 								/>
 							</>
 						)}
-
-						{role !== 'teacher' && (
+						{role === 'student' && (
+							<>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName={'/student/dashboard'}
+									title={'Tổng quan'}
+									icon={
+										<Eyes
+											height={24}
+											width={24}
+											color={`${name === '/teacher/dashboard' ? '#ff7506' : '#373839'}`}
+										/>
+									}
+									isIcon
+									onCheckClick={() => setIsHovered(false)}
+									isSidebarSub
+								/>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName={'/student/myClass'}
+									title={'Lớp học của tôi'}
+									icon={
+										<BookOpens
+											// height={24}
+											// width={24}
+											color={`${name === '/student/myClass' ? '#ff7506' : '#373839'}`}
+										/>
+									}
+									subItems={[
+										{ name: 'list', label: 'Danh sách lớp học' },
+										{ name: 'meeting', label: 'Tham gia vào lớp học' },
+									]}
+									onCheckClick={() => setIsHovered(false)}
+									isSidebarSub
+								/>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName={'/teacher/listTest'}
+									title={'Bài kiểm tra'}
+									icon={<Edits color={`${name === '/teacher/listTest' ? '#ff7506' : '#373839'}`} />}
+									onCheckClick={() => setIsHovered(false)}
+									isSidebarSub
+									subItems={[
+										{ name: 'all', label: 'Danh sách bài kiểm tra' },
+										{ name: 'meeting', label: 'Bảng điểm' },
+									]}
+								/>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName='/shared/calendar'
+									title={'Lịch thi'}
+									icon={
+										<Calendar color={`${name === '/shared/calendar' ? '#ff7506' : '#373839'}`} />
+									}
+									isSidebarSub
+									onCheckClick={() => setIsHovered(false)}
+								/>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName='/shared/notification'
+									title={'Thông báo'}
+									icon={
+										<Bell color={`${name === '/shared/notification' ? '#ff7506' : '#373839'}`} />
+									}
+									onCheckClick={() => setIsHovered(false)}
+									isSidebarSub
+								/>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName='/shared/contactForm'
+									title={'Trợ giúp'}
+									icon={
+										<Question color={`${name === '/shared/contactForm' ? '#ff7506' : '#373839'}`} />
+									}
+									isSidebarSub
+									onCheckClick={() => setIsHovered(false)}
+								/>
+							</>
+						)}
+						{role === 'leadership' && (
 							<>
 								<TabItem
 									activeMainTab={activeMainTab}

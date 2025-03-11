@@ -1,4 +1,5 @@
 import LoginPage from './login';
+// *************************** leadership ***************************
 import HomePage from './leadership/home';
 import dataDeclarationPage from './leadership/dataDeclaration';
 import DepartmentPage from './leadership/dataDeclaration/department';
@@ -18,6 +19,7 @@ import UserSettingPage from './leadership/systemSettings/users';
 import ClassSettingPage from './leadership/systemSettings/class';
 import SubjectSettingPage from './leadership/systemSettings/subject';
 import TranningSettingPage from './leadership/systemSettings/tranning';
+// *************************** teacher ***************************
 import TeacherClassPage from './teacher/class';
 import TeacherDashBoardPage from './teacher/dashboard';
 import TeacherClassAddPage from './teacher/classAdd';
@@ -27,8 +29,16 @@ import TeacherListTestPage from './teacher/listTest';
 import TeacherListAdd from './teacher/listTest/add';
 import TeacherExamSchedulePage from './teacher/examSchedule';
 import TeacherNotificationPage from './teacher/notification';
-import TeacherContactFormPage from './teacher/contactForm';
-
+// *************************** student ***************************
+import StudentDashBoardPage from './student/dashboard';
+import StudentMyClassPage from './student/myClass';
+import StudentMeetingPage from './student/classMeeting';
+import StudentClassDetailPage from './student/classDetail';
+import StudentListTestPage from './student/listTest';
+// *************************** shared: teacher & student ***************************
+import SharedContactFormPage from './shared/contactForm';
+import SharedExamSchedulePage from './shared/examSchedule';
+import SharedNotificationPage from './shared/notification';
 export {
 	LoginPage,
 	// *************************** leadership ***************************
@@ -61,5 +71,14 @@ export {
 	TeacherListAdd,
 	TeacherExamSchedulePage,
 	TeacherNotificationPage,
-	TeacherContactFormPage,
+	// *************************** student ***************************
+	StudentDashBoardPage,
+	StudentMyClassPage,
+	StudentMeetingPage,
+	StudentClassDetailPage,
+	StudentListTestPage,
+	// *************************** shared: teacher & student ***************************
+	SharedContactFormPage,
+	SharedExamSchedulePage,
+	SharedNotificationPage,
 };

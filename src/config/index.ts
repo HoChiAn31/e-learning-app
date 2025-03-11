@@ -34,6 +34,15 @@ const config = {
 	teacherListTestAdd: '/teacher/listTestAdd',
 	teacherExamSchedule: '/teacher/examSchedule',
 	teacherNotification: '/teacher/notification',
-	teacherContactForm: '/teacher/contactForm',
+
+	// student
+	studentDashboard: '/student/dashboard',
+	studentClassDetail: '/student/class/detail/:id',
+	studentMeeting: '/student/myClass/meeting',
+	studentMyClass: '/student/myClass/list',
+	// shared: teacher & student
+	sharedContactForm: '/shared/contactForm',
+	sharedExamSchedule: '/shared/calendar',
+	sharedNotification: '/shared/notification',
 };
 export default config;

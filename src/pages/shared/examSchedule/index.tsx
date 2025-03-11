@@ -33,7 +33,7 @@ const eventColors = {
 	submission: 'bg-blue-500',
 };
 
-const TeacherExamSchedulePage: React.FC = () => {
+const SharedExamSchedulePage: React.FC = () => {
 	const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs('2020-08-01'));
 
 	const dateCellRender = (value: Dayjs) => {
@@ -233,4 +233,4 @@ const TeacherExamSchedulePage: React.FC = () => {
 	);
 };
 
-export default TeacherExamSchedulePage;
+export default SharedExamSchedulePage;
