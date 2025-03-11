@@ -1,23 +1,23 @@
-import HomePage from './home';
 import LoginPage from './login';
-import dataDeclarationPage from './dataDeclaration';
-import DepartmentPage from './dataDeclaration/department';
-import FacultiePage from './dataDeclaration/facultie';
-import ScoreTypePage from './dataDeclaration/scoreType';
-import SubjectPage from './dataDeclaration/subject';
-import studentProfileListPage from './studentProfileList';
-import StudentTransferPage from './studentProfileList/transfer';
-import StudentReservePage from './studentProfileList/reserve';
-import ClassPage from './dataDeclaration/class';
-import InstructorProfileListPage from './instructorProfileList';
-import InstructorAssignmentPage from './instructorProfileList/assignment';
-import SystemSettingsPage from './systemSettings';
-import InforSchoolPage from './systemSettings/inforSchool';
-import EditInforSchoolPage from './systemSettings/inforSchool/editInforSchool';
-import UserSettingPage from './systemSettings/users';
-import ClassSettingPage from './systemSettings/class';
-import SubjectSettingPage from './systemSettings/subject';
-import TranningSettingPage from './systemSettings/tranning';
+import HomePage from './leadership/home';
+import dataDeclarationPage from './leadership/dataDeclaration';
+import DepartmentPage from './leadership/dataDeclaration/department';
+import FacultiePage from './leadership/dataDeclaration/facultie';
+import ScoreTypePage from './leadership/dataDeclaration/scoreType';
+import SubjectPage from './leadership/dataDeclaration/subject';
+import studentProfileListPage from './leadership/studentProfileList';
+import StudentTransferPage from './leadership/studentProfileList/transfer';
+import StudentReservePage from './leadership/studentProfileList/reserve';
+import ClassPage from './leadership/dataDeclaration/class';
+import InstructorProfileListPage from './leadership/instructorProfileList';
+import InstructorAssignmentPage from './leadership/instructorProfileList/assignment';
+import SystemSettingsPage from './leadership/systemSettings';
+import InforSchoolPage from './leadership/systemSettings/inforSchool';
+import EditInforSchoolPage from './leadership/systemSettings/inforSchool/editInforSchool';
+import UserSettingPage from './leadership/systemSettings/users';
+import ClassSettingPage from './leadership/systemSettings/class';
+import SubjectSettingPage from './leadership/systemSettings/subject';
+import TranningSettingPage from './leadership/systemSettings/tranning';
 import TeacherClassPage from './teacher/class';
 import TeacherDashBoardPage from './teacher/dashboard';
 import TeacherClassAddPage from './teacher/classAdd';
@@ -26,6 +26,8 @@ import TeacherClassDetailPage from './teacher/class/classDetail';
 import TeacherListTestPage from './teacher/listTest';
 import TeacherListAdd from './teacher/listTest/add';
 import TeacherExamSchedulePage from './teacher/examSchedule';
+import TeacherNotificationPage from './teacher/notification';
+import TeacherContactFormPage from './teacher/contactForm';
 
 export {
 	LoginPage,
@@ -58,4 +60,6 @@ export {
 	TeacherListTestPage,
 	TeacherListAdd,
 	TeacherExamSchedulePage,
+	TeacherNotificationPage,
+	TeacherContactFormPage,
 };

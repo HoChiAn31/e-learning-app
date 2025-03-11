@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar as AntCalendar, Badge, Button, Layout } from 'antd';
+import { Calendar, Button, Layout, Checkbox, ConfigProvider } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
@@ -41,20 +41,13 @@ const TeacherExamSchedulePage: React.FC = () => {
 		const dayEvents = events.filter((event) => event.date === formattedDate);
 
 		return (
-			<ul className='events'>
+			<div className='events'>
 				{dayEvents.map((event, index) => (
-					<li key={index}>
-						<Badge
-							status='success'
-							text={
-								<span className={`rounded p-1 text-white ${eventColors[event.type]}`}>
-									{event.title}
-								</span>
-							}
-						/>
-					</li>
+					<div key={index} className={`${eventColors[event.type]} rounded-sm px-2`}>
+						<span className={`rounded text-white`}>{event.title}</span>
+					</div>
 				))}
-			</ul>
+			</div>
 		);
 	};
 
@@ -82,12 +75,12 @@ const TeacherExamSchedulePage: React.FC = () => {
 
 	const renderSidebar = () => {
 		const formattedDate = selectedDate.format('YYYY-MM-DD');
-		const dayEvents = events.filter((event) => event.date === formattedDate);
+		// const dayEvents = events.filter((event) => event.date === formattedDate);
 
 		return (
 			<div className='flex flex-col gap-10 p-2'>
-				<div className='rounded-xl bg-white p-4 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
-					<div className='flex w-[161px] items-center gap-4'>
+				<div className='space-y-5 rounded-xl bg-white p-4 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+					<div className='flex items-center gap-4'>
 						<div className="justify-start font-['Mulish'] text-[64px] font-extrabold tracking-wide text-[#373839]">
 							12
 						</div>
@@ -103,7 +96,8 @@ const TeacherExamSchedulePage: React.FC = () => {
 							</div>
 						</div>
 					</div>
-					<div className='relative w-[214px]'>
+					<div className='relative h-1.5 w-[218px] rounded bg-[#ffa75e]' />
+					<div className=''>
 						<div className='relative flex w-[127px] items-center gap-1'>
 							<div className='h-2 w-2 rounded-full bg-[#2dacee]' />
 							<div className="relative justify-start font-['Mulish'] text-lg font-extrabold tracking-tight text-[#2dacee]">
@@ -112,22 +106,26 @@ const TeacherExamSchedulePage: React.FC = () => {
 						</div>
 						<div className='w-[214px]'>
 							<ul className="font-['Source_Sans_Pro'] text-base text-[#373839]">
-								<li className='font-semibold'>
-									Đối tượng: <span className='pl-1 text-[#9B9C9C]'>Kiểm tra tập trung</span>
+								<li className='flex font-semibold'>
+									<p className='w-20'>Đối tượng:</p>
+									<span className='text-[#9B9C9C]'>Kiểm tra tập trung</span>
 								</li>
-								<li className='font-semibold'>
-									Thời lượng: <span className='pl-1 text-[#9B9C9C]'>45 phút</span>
+								<li className='flex font-semibold'>
+									<p className='w-20'>Thời lượng:</p>
+									<span className='text-[#9B9C9C]'>45 phút</span>
 								</li>
-								<li className='font-semibold'>
-									Nội dung: <span className='pl-1 text-[#9B9C9C]'>Ôn tập chương 5</span>
+								<li className='flex font-semibold'>
+									<p className='w-20'>Nội dung:</p>
+									<span className='text-[#9B9C9C]'>Ôn tập chương 5</span>
 								</li>
-								<li className='font-semibold'>
-									Hình thức: <span className='pl-1 text-[#9B9C9C]'>Tự luận</span>
+								<li className='flex font-semibold'>
+									<p className='w-20'>Hình thức:</p>
+									<span className='text-[#9B9C9C]'>Tự luận</span>
 								</li>
 							</ul>
 						</div>
 					</div>
-					<div className='w-44'>
+					<div className=''>
 						<div className='relative flex w-[127px] items-center gap-1'>
 							<div className='h-2 w-2 rounded-full bg-[#ffb923]' />
 							<div className="justify-start font-['Mulish'] text-lg font-extrabold tracking-tight text-[#ffb923]">
@@ -136,59 +134,75 @@ const TeacherExamSchedulePage: React.FC = () => {
 						</div>
 						<div className='w-44'>
 							<ul className="w-44 font-['Source_Sans_Pro'] text-base text-[#373839]">
-								<li className='font-semibold'>
-									Đối tượng: <span className='pl-1 text-[#9B9C9C]'>10C1, 10C2</span>
+								<li className='flex font-semibold'>
+									<p className='w-20'>Đối tượng:</p>
+									<span className='text-[#9B9C9C]'>10C1, 10C2</span>
 								</li>
-								<li className='font-semibold'>
-									Thời lượng: <span className='pl-1 text-[#9B9C9C]'>15 phút</span>
+								<li className='flex font-semibold'>
+									<p className='w-20'>Thời lượng:</p>
+									<span className='text-[#9B9C9C]'>15 phút</span>
 								</li>
-								<li className='font-semibold'>
-									Nội dung:{' '}
-									<span className='pl-1 text-[#9B9C9C]'>
+								<li className='flex font-semibold'>
+									<p className='w-20'>Nội dung:</p>
+									<span className='text-[#9B9C9C]'>
 										Academic <br /> Vocabulary
 									</span>
 								</li>
-								<li className='font-semibold'>
-									Hình thức: <span className='pl-1 text-[#9B9C9C]'>Trắc nghiệm</span>
+								<li className='flex font-semibold'>
+									<p className='w-20'>Hình thức:</p>
+									<span className='text-[#9B9C9C]'>Trắc nghiệm</span>
 								</li>
 							</ul>
 						</div>
 					</div>
-					{/* <h3 className='text-lg font-semibold'>
-						{selectedDate.format('D')} Tháng {selectedDate.format('M')} Năm{' '}
-						{selectedDate.format('YYYY')}
-					</h3>
-					<div className='mt-4'>
-						<p className='text-gray-500'>Tổng lịch Số môn đang áp dụng: 5</p>
-						<p className='text-gray-500'>Nội dung: Ôn tập</p>
-						<p className='text-gray-500'>Hình thức: Trực tuyến</p>
+
+					<div className="pt-10 font-['Source_Sans_Pro'] text-sm font-normal italic text-[#ff5400] opacity-50">
+						Cố gắng ôn tập cho các bài kiểm tra sắp tới nhé!
 					</div>
-					<div className='mt-4'>
-						{dayEvents.length > 0 ? (
-							dayEvents.map((event, index) => (
-								<div key={index} className='mb-2'>
-									<span className={`mr-2 inline-block h-4 w-4 ${eventColors[event.type]}`}></span>
-									<span>{event.title}</span>
-								</div>
-							))
-						) : (
-							<p>Không có lịch thi</p>
-						)}
-					</div> */}
 				</div>
 				<div className='mt-4 rounded-xl bg-white p-4 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
-					<h4 className='font-semibold'>Lọc lịch thi</h4>
-					<div className='flex items-center'>
-						<span className='mr-2 h-4 w-4 bg-green-500'></span>
-						<span>Kiểm tra môn học</span>
-					</div>
-					<div className='flex items-center'>
-						<span className='mr-2 h-4 w-4 bg-orange-500'></span>
-						<span>Thi cuối học kỳ</span>
-					</div>
-					<div className='flex items-center'>
-						<span className='mr-2 h-4 w-4 bg-blue-500'></span>
-						<span>Ôn tập</span>
+					<h4 className='pb-4 font-semibold'>Lọc lịch thi</h4>
+					<div className='space-y-2'>
+						<div className='flex items-center'>
+							<ConfigProvider
+								theme={{
+									token: {
+										colorPrimary: '#FFB923',
+									},
+								}}
+							>
+								<Checkbox className='mr-2' />
+							</ConfigProvider>
+							<span>Kiểm tra 15 phút</span>
+						</div>
+						<div className='flex items-center'>
+							<ConfigProvider
+								theme={{
+									token: {
+										colorPrimary: '#2EACEE',
+									},
+								}}
+							>
+								<Checkbox className='mr-2' />
+							</ConfigProvider>
+							<span>Kiểm tra 45 phút</span>
+						</div>
+						<div className='flex items-center'>
+							<ConfigProvider
+								theme={{
+									token: {
+										colorPrimary: '#49C510',
+									},
+								}}
+							>
+								<Checkbox className='mr-2' />
+							</ConfigProvider>
+							<span>Thi giữa học kì</span>
+						</div>
+						<div className='flex items-center'>
+							<Checkbox className='mr-2' />
+							<span>Thi cuối học kì</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -200,17 +214,18 @@ const TeacherExamSchedulePage: React.FC = () => {
 			<div className="relative justify-start font-['Mulish'] text-5xl font-extrabold tracking-wide text-[#373839]">
 				Lịch thi
 			</div>
-			<Layout className='h-screen'>
-				<Content className='p-4'>
-					<AntCalendar
+			<Layout className=''>
+				<Content className='rounded-md bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
+					<Calendar
 						dateCellRender={dateCellRender}
 						headerRender={customHeaderRender}
 						onPanelChange={onPanelChange}
 						value={selectedDate}
-						locale={viVN as any} // Temporary type assertion (see notes below)
+						locale={viVN as any}
+						// onSelect={onSelect}
 					/>
 				</Content>
-				<Sider width={300} className='bg-gray-100'>
+				<Sider width={300} className='bg-white'>
 					{renderSidebar()}
 				</Sider>
 			</Layout>

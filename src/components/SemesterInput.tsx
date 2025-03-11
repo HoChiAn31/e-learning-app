@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Input, DatePicker } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 
-import moment, { Moment } from 'moment';
+import { Moment } from 'moment';
 import { Minus } from './icon';
 
 interface SemesterInputProps {

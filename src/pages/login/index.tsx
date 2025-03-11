@@ -4,11 +4,6 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
 
-interface formUser {
-	username: string;
-	password: string;
-}
-
 const LoginPage = () => {
 	const nav = useNavigate();
 	const { role } = useUser();

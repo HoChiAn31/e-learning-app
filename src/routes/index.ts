@@ -21,16 +21,18 @@ import {
 	TeacherClassDetailPage,
 	TeacherClassMeetingPage,
 	TeacherClassPage,
+	TeacherContactFormPage,
 	TeacherDashBoardPage,
 	TeacherExamSchedulePage,
 	TeacherListAdd,
 	TeacherListTestPage,
+	TeacherNotificationPage,
 	TranningSettingPage,
 	UserSettingPage,
 	dataDeclarationPage,
 	studentProfileListPage,
 } from '../pages';
-import ConfigPage from '../pages/systemSettings/config';
+import ConfigPage from '../pages/leadership/systemSettings/config';
 
 interface RouteConfig {
 	path: string;
@@ -79,6 +81,8 @@ const publicRoutes: RouteConfig[] = [
 	{ path: config.teacherListTest, component: TeacherListTestPage, layout: DefaultLayout },
 	{ path: config.teacherListTestAdd, component: TeacherListAdd, layout: DefaultLayout },
 	{ path: config.teacherExamSchedule, component: TeacherExamSchedulePage, layout: DefaultLayout },
+	{ path: config.teacherNotification, component: TeacherNotificationPage, layout: DefaultLayout },
+	{ path: config.teacherContactForm, component: TeacherContactFormPage, layout: DefaultLayout },
 ];
 
 export { publicRoutes };

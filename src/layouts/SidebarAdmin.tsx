@@ -3,14 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import TabItem from '../components/TabItem';
 import {
 	Bag,
-	BookOpen,
+	Bell,
 	BookOpens,
 	Calendar,
 	ChartLine,
-	Edit,
 	Edits,
 	Eye,
 	Eyes,
+	Question,
 	Setting,
 	User,
 } from '../components/icon';
@@ -135,6 +135,28 @@ const SidebarAdmin: FC = () => {
 								tabName='/teacher/examSchedule'
 								title={'Lịch thi'}
 								icon={<Calendar color='#ffffff' />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName='/teacher/notification'
+								title={'Thông báo'}
+								icon={<Bell color='#ffffff' />}
+								isIcon
+								onCheckClick={() => setIsHovered(false)}
+							/>
+							<TabItem
+								activeMainTab={activeMainTab}
+								setActiveMainTab={setActiveMainTab}
+								activeSubTab={activeSubTab}
+								setActiveSubTab={setActiveSubTab}
+								tabName='/teacher/contactForm'
+								title={'Trợ giúp'}
+								icon={<Question color='#ffffff' />}
 								isIcon
 								onCheckClick={() => setIsHovered(false)}
 							/>
@@ -269,7 +291,6 @@ const SidebarAdmin: FC = () => {
 									tabName={'/teacher/listTest'}
 									title={'Bài kiểm tra'}
 									icon={<Edits color={`${name === '/teacher/listTest' ? '#ff7506' : '#373839'}`} />}
-									isIcon
 									onCheckClick={() => setIsHovered(false)}
 									isSidebarSub
 									subItems={[
@@ -278,6 +299,30 @@ const SidebarAdmin: FC = () => {
 										{ name: 'meeting', label: 'Nhập điểm' },
 										{ name: 'meeting', label: 'Bảng điểm' },
 									]}
+								/>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName='/teacher/notification'
+									title={'Thông báo'}
+									icon={<Bell color={`${name === '/teacher/listTest' ? '#ff7506' : '#373839'}`} />}
+									onCheckClick={() => setIsHovered(false)}
+									isSidebarSub
+								/>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName='/teacher/contactForm'
+									title={'Trợ giúp'}
+									icon={
+										<Question color={`${name === '/teacher/listTest' ? '#ff7506' : '#373839'}`} />
+									}
+									isSidebarSub
+									onCheckClick={() => setIsHovered(false)}
 								/>
 							</>
 						)}

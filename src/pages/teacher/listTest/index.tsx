@@ -1,7 +1,6 @@
 // App.tsx
-import React, { useState, useEffect } from 'react';
-import { Table, Button, Input, DatePicker, Select, ConfigProvider, TableColumnsType } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
+import { Table, Button, DatePicker, Select, ConfigProvider, TableColumnsType } from 'antd';
 import BreadcrumbLink from '../../../components/BreadcrumbLinkProps';
 import { Tab } from '../../../components/Tab';
 import { Edit, Info } from '../../../components/icon';

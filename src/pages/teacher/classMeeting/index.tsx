@@ -1,6 +1,5 @@
 import React from 'react';
-import { Layout, Avatar, Input, Button } from 'antd';
-import { UserOutlined, VideoCameraOutlined, AudioOutlined } from '@ant-design/icons';
+import { Layout, Input, Button } from 'antd';
 import {
 	Exit,
 	Mic,
@@ -10,8 +9,8 @@ import {
 	ZooomIn,
 	ZooomOut,
 } from '../../../components/icon';
-const { Header, Content, Sider } = Layout;
-const { Search } = Input;
+const { Content, Sider } = Layout;
+
 //https://i.imgur.com/EfU74V3.png
 // https://i.imgur.com/5QzeVf3.png
 //https://i.imgur.com/fNBJTBc.png

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, List, Avatar, Typography, Input, Button, ConfigProvider, Modal } from 'antd';
 import { UserOutlined, SendOutlined } from '@ant-design/icons';
-import { Calendar, Clock, Comment, Dowload, PaperClip, View } from './icon';
+import { Calendar, Clock, Comment, View } from './icon';
 import TextArea from 'antd/es/input/TextArea';
 const { Text } = Typography;
 const { Sider, Content } = Layout;

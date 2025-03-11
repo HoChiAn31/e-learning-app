@@ -1,6 +1,6 @@
 'use client';
 // import Link from 'next/link';
-import React, { ElementType, FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 // import { ChevronDown, ChevronUp } from 'lucide-react';
 

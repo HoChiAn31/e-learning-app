@@ -83,6 +83,7 @@ function TeacherClassDetailPage() {
 							<img
 								className='h-[110px] w-[110px] rounded-full'
 								src='https://i.imgur.com/EfU74V3.png'
+								alt=''
 							/>
 						</div>
 						<div>
