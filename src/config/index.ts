@@ -40,6 +40,10 @@ const config = {
 	studentClassDetail: '/student/class/detail/:id',
 	studentMeeting: '/student/myClass/meeting',
 	studentMyClass: '/student/myClass/list',
+	studentListTest: '/student/listTest/all',
+	StudentTestEssay: '/student/test/essay',
+	StudentTestmultipleChoice: '/student/test/multipleChoice',
+
 	// shared: teacher & student
 	sharedContactForm: '/shared/contactForm',
 	sharedExamSchedule: '/shared/calendar',

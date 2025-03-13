@@ -1,6 +1,8 @@
 import { Select } from 'antd';
 
 import CardLink from '../components/CardLink';
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const cardLinkData = [
 	{
@@ -38,6 +40,11 @@ const SideBarDataDeclaration = () => {
 	const handleChange = (value: string) => {
 		console.log(`selected ${value}`);
 	};
+
+	const location = useLocation();
+	const path = location.pathname;
+
+	// console.log(path);
 	return (
 		<div className='fixed z-50 h-[80vh] w-[278px] overflow-hidden rounded-2xl bg-white shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
 			{/*  */}

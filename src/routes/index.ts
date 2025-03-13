@@ -17,9 +17,12 @@ import {
 	SharedNotificationPage,
 	StudentClassDetailPage,
 	StudentDashBoardPage,
+	StudentListTestPage,
 	StudentMeetingPage,
 	StudentMyClassPage,
 	StudentReservePage,
+	StudentTestEssayPage,
+	StudentTestMultipleChoicePage,
 	StudentTransferPage,
 	SubjectPage,
 	SubjectSettingPage,
@@ -93,6 +96,13 @@ const publicRoutes: RouteConfig[] = [
 	{ path: config.studentMeeting, component: StudentMeetingPage, layout: DefaultLayout },
 	{ path: config.studentMyClass, component: StudentMyClassPage, layout: DefaultLayout },
 	{ path: config.studentClassDetail, component: StudentClassDetailPage, layout: DefaultLayout },
+	{ path: config.studentListTest, component: StudentListTestPage, layout: DefaultLayout },
+	{ path: config.StudentTestEssay, component: StudentTestEssayPage, layout: DefaultLayout },
+	{
+		path: config.StudentTestmultipleChoice,
+		component: StudentTestMultipleChoicePage,
+		layout: DefaultLayout,
+	},
 
 	// *************************** shared: student & teacher ***************************
 	{ path: config.sharedContactForm, component: SharedContactFormPage, layout: DefaultLayout },

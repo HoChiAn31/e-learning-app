@@ -1,17 +1,20 @@
-import { Button, ConfigProvider, Input } from 'antd';
+import { Button, ConfigProvider, Input, message } from 'antd';
 import { Password, UserCircle } from '../../components/icon';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../context/UserContext';
+import { fetchUsers } from '../../firebase/fetchUser';
+import { User } from '../../types';
 
 const LoginPage = () => {
 	const nav = useNavigate();
-	const { role } = useUser();
-	const [url, setUrl] = useState<string>('');
+	const { setRole, setUser } = useUser();
+
 	const [form, setForm] = useState({
 		username: '',
 		password: '',
 	});
+
 	const handleChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setForm((prev) => ({
@@ -19,20 +22,36 @@ const LoginPage = () => {
 			[name]: value,
 		}));
 	};
-	useEffect(() => {
-		if (role === 'teacher') {
-			setUrl('/teacher/dashboard');
-		} else if (role === 'student') {
-			setUrl('/student/dashboard');
-		} else {
-			setUrl('/home');
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter' && form.username && form.password) {
+			handleLogin();
 		}
-	}, [role]);
-	const handleLogin = () => {
-		if (role === 'teacher') {
-			nav(url);
-		} else {
-			nav(url);
+	};
+	const handleLogin = async () => {
+		try {
+			const users = await fetchUsers();
+			const user = users.find(
+				(u: User) => u.username === form.username && u.password === form.password,
+			);
+			console.log(user);
+			if (user) {
+				setRole(user.role);
+				localStorage.setItem('userToken', JSON.stringify(user));
+				setUser(user);
+
+				if (user.role === 'teacher') {
+					nav('/teacher/dashboard');
+				} else if (user.role === 'student') {
+					nav('/student/dashboard');
+				} else {
+					nav('/home');
+				}
+			} else {
+				message.error('Sai tên tài khoản hoặc mật khẩu');
+			}
+		} catch (error) {
+			console.error(error);
+			message.error('Đã xảy ra lỗi, vui lòng thử lại!');
 		}
 	};
 
@@ -65,6 +84,7 @@ const LoginPage = () => {
 						prefix={<UserCircle />}
 						className={`h-[52px] w-[430px] ${form.username !== '' ? '' : 'bg-[#f2f2f2]'}`}
 						onChange={handleChangeInput}
+						onKeyDown={handleKeyDown}
 					/>
 				</div>
 				<div>
@@ -74,10 +94,10 @@ const LoginPage = () => {
 					<Input.Password
 						name='password'
 						placeholder='Nhập mật khẩu'
-						// iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
 						prefix={<Password />}
 						className={`h-[52px] w-[430px] ${form.password !== '' ? '' : 'bg-[#f2f2f2]'}`}
 						onChange={handleChangeInput}
+						onKeyDown={handleKeyDown}
 					/>
 				</div>
 
@@ -87,13 +107,6 @@ const LoginPage = () => {
 					</div>
 				</div>
 
-				{/* <div className='inline-flex h-[52px] w-[400px] flex-col items-center justify-center gap-2.5 rounded-lg bg-gradient-to-l from-[#ff5400] to-[#f17f21] 2xl:w-[430px]'>
-					<div className='inline-flex shrink grow basis-0 items-center justify-center gap-2.5 px-5 py-1.5'>
-						<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
-							Đăng nhập
-						</div>
-					</div>
-				</div> */}
 				<ConfigProvider
 					theme={{
 						token: {
@@ -107,6 +120,7 @@ const LoginPage = () => {
 						size='large'
 						className="h-[52px] w-[430px] rounded-lg bg-gradient-to-l from-[#ff5400] to-[#f17f21] font-['Mulish'] text-lg font-extrabold tracking-tight text-white"
 						onClick={handleLogin}
+						disabled={!form.username || !form.password}
 					>
 						Đăng nhập
 					</Button>

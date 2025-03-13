@@ -7,8 +7,6 @@ import Header from './header';
 import SideBarDataDeclaration from './SideBarDataDeclaration';
 import { ConfigProvider } from 'antd';
 import { useUser } from '../context/UserContext';
-// import Footer from './Footer';
-// import { Messenger, Phone } from '../components/icon';
 
 interface DefaultLayoutProps {
 	children: React.ReactNode;
@@ -18,8 +16,6 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 	const location = useLocation();
 	const { role } = useUser();
 	const name = location.pathname;
-	// console.log('name', name);
-	// console.log('role', role);
 
 	if (name === '/') {
 		return <div className={`relative flex min-h-screen flex-col`}>{children}</div>;

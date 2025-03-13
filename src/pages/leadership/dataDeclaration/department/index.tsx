@@ -1,104 +1,82 @@
+import { useEffect, useState } from 'react';
+import { Button, ConfigProvider, Input, Table, TableColumnsType, TableProps } from 'antd';
+import { Edit, List, Plus, Search, Trash } from '../../../../components/icon';
+import AddDepartmentModal from './AddDepartmentModal';
+import DeleteDepartmentModal from './DeleteDepartmentModal';
+import EditDepartmentModal from './EditDepartmentModal';
+import { getDepartments } from '../../../../firebase/dataDeclaration/fetchDepartment';
 import {
-	Button,
-	CheckboxProps,
-	ConfigProvider,
-	Input,
-	Modal,
-	Select,
-	Table,
-	TableColumnsType,
-	TableProps,
-} from 'antd';
-import { Edit, List, Minus, Plus, Search, Trash } from '../../../../components/icon';
-import { useState } from 'react';
-interface SemesterData {
-	id: string;
-	department: string;
-	headOfDepartment: string;
-}
+	dataDeclaration_department,
+	dataDeclaration_department_Add_Edit,
+} from '../../../../types/leadership';
 
-interface SemesterDataAdd {
-	department: string;
+// Interface cho department state
+interface DepartmentState {
+	departmentName: string;
 	headOfDepartment: string;
+	subjectList: string[];
 }
-const subjects = [
-	{ value: 'Toán học', label: 'Toán học' },
-	{ value: 'Vật lý', label: 'Vật lý' },
-	{ value: 'Hóa học', label: 'Hóa học' },
-	{ value: 'Sinh học', label: 'Sinh học' },
-	{ value: 'Lịch sử', label: 'Lịch sử' },
-];
-const data: SemesterData[] = [
-	{
-		id: '1e1a9d44-9f5a-4d52-9b5b-70a6f2e17415',
-		department: 'Tổ Toán – Tin học',
-		headOfDepartment: 'Nguyễn Văn A',
-	},
-	{
-		id: '2b4a7e55-3c2f-4563-a6bf-9c504321f717',
-		department: 'Tổ Vật lý – Công nghệ',
-		headOfDepartment: 'Trần Thị B',
-	},
-	{
-		id: '3c8a1e11-6c72-47e3-b3e2-567cbfa013ae',
-		department: 'Tổ Hóa học',
-		headOfDepartment: 'Phạm Văn C',
-	},
-	{
-		id: '4d6a5f22-8574-4988-b3e7-a023f15e9d18',
-		department: 'Tổ Sinh học',
-		headOfDepartment: 'Lê Thị D',
-	},
-	{
-		id: '5e9c2b33-2f6b-4a38-b6a5-f1742c5f22c1',
-		department: 'Tổ Ngữ văn',
-		headOfDepartment: 'Hoàng Thị E',
-	},
-	{
-		id: '6f5a1d44-4e81-41c9-b83f-60b2e1f75c28',
-		department: 'Tổ Lịch sử – Địa lý',
-		headOfDepartment: 'Đỗ Văn F',
-	},
-	{
-		id: '7g1e8d55-9b2a-4d71-a6b8-80c6f4a2f119',
-		department: 'Tổ Giáo dục công dân',
-		headOfDepartment: 'Nguyễn Thị G',
-	},
-	{
-		id: '8h2a3f66-2e5b-42f3-98bf-123e1b5c61fa',
-		department: 'Tổ Tiếng Anh',
-		headOfDepartment: 'Vũ Văn H',
-	},
-	{
-		id: '9i3b4d77-5c6f-4971-839f-9f204c612b19',
-		department: 'Tổ Giáo dục thể chất – Quốc phòng an ninh',
-		headOfDepartment: 'Phan Thị I',
-	},
-	{
-		id: '0j4c5f88-7d8e-4e92-a9bf-6a3b2c612d2b',
-		department: 'Tổ Tin học',
-		headOfDepartment: 'Đặng Văn K',
-	},
-];
 
 function DepartmentPage() {
-	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+	const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 	const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
-	const handleEdit = (record: SemesterData) => {
+	const [department, setDepartment] = useState<dataDeclaration_department_Add_Edit>({
+		departmentName: '',
+		headOfDepartment: '',
+		subjectList: [],
+	});
+	const [departmentEdit, setDepartmentEdit] = useState<dataDeclaration_department>({
+		id: '',
+		departmentName: '',
+		headOfDepartment: '',
+		subjectList: [],
+	});
+	const [showSelect, setShowSelect] = useState<boolean>(false);
+	const [departments, setDepartments] = useState<dataDeclaration_department[]>([]);
+	const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
+	useEffect(() => {
+		const fetchDepartments = async () => {
+			const data = await getDepartments();
+			console.log('Data department:', data);
+			setDepartments(data);
+		};
+
+		fetchDepartments();
+	}, []);
+
+	const handleEdit = (record: dataDeclaration_department) => {
 		console.log('Edit academic year:', record);
-		setIsModalOpen(true);
+		setDepartmentEdit({
+			id: record.id,
+			departmentName: record.departmentName,
+			headOfDepartment: record.headOfDepartment,
+			subjectList: record.subjectList || [], // Có thể load subjectList từ record nếu có
+		});
+		setIsEditModalOpen(true);
 	};
 
-	const handleDelete = (record: SemesterData) => {
+	const handleDelete = (record: dataDeclaration_department) => {
 		console.log('Remove academic year:', record);
 		console.log('Remove academic year key:', record.id);
+		setSelectedDepartmentId(record.id);
 		setIsModalOpenDelete(true);
 	};
-	const columns: TableColumnsType<SemesterData> = [
+	const handleDeleteSuccess = () => {
+		// Update the departments state by filtering out the deleted department
+		setDepartments(departments.filter((dept) => dept.id !== selectedDepartmentId));
+		setSelectedDepartmentId(null); // Reset the selected ID
+	};
+	const handleEditSuccess = async () => {
+		// Refetch the updated department list from Firebase
+		const updatedData = await getDepartments();
+		setDepartments(updatedData);
+	};
+	const columns: TableColumnsType<dataDeclaration_department> = [
 		{
 			title: 'Tên tổ - bộ môn',
-			dataIndex: 'department',
-			sorter: (a, b) => a.department.localeCompare(b.department),
+			dataIndex: 'departmentName',
+			sorter: (a, b) => a.departmentName.localeCompare(b.departmentName),
 			width: '15%',
 		},
 		{
@@ -132,195 +110,48 @@ function DepartmentPage() {
 			width: '20%',
 		},
 	];
-	const onChange: TableProps<SemesterData>['onChange'] = (pagination, filters, sorter, extra) => {
+
+	const onChange: TableProps<dataDeclaration_department>['onChange'] = (
+		pagination,
+		filters,
+		sorter,
+		extra,
+	) => {
 		console.log('params', pagination, filters, sorter, extra);
 	};
-	// Modal add
-	const handleOk = () => {
-		setIsModalOpen(false);
-	};
-	const handleCancel = () => {
-		setIsModalOpen(false);
-	};
-	const modalStyles = {
-		header: {
-			textAlign: 'center' as 'center',
-		},
-		footer: {
-			textAlign: 'center' as 'center',
-		},
-	};
-	// const onChangeBox: CheckboxProps['onChange'] = (e) => {
-	// 	console.log(`checked = ${e.target.checked}`);
-	// };
 
-	const [semesters, setSemesters] = useState<SemesterDataAdd[]>([
-		{ department: '', headOfDepartment: '' },
-	]);
-	// const removeSemester = (index: number) => {
-	// 	setSemesters(semesters.filter((_, i) => i !== index));
-	// };
-
-	// const updateSemester = (index: number, data: SemesterDataAdd) => {
-	// 	const newSemesters = [...semesters];
-	// 	newSemesters[index] = data;
-	// 	setSemesters(newSemesters);
-	// };
-	const addSemester = () => {
-		// setSemesters([...semesters, { department: `Học kì `, headOfDepartment: '' }]);
-		setShowSelect(true);
-	};
-	// modal add 1
-
-	const [subjectList, setSubjectList] = useState<string[]>([]);
-	const [showSelect, setShowSelect] = useState(false);
-
-	const addSubject = (value: string) => {
-		console.log(value);
-		if (!subjectList.includes(value)) {
-			setSubjectList([...subjectList, value]);
-		}
-		setShowSelect(false); // Ẩn select sau khi chọn xong
-	};
-	const removeSubject = (subject: string) => {
-		setSubjectList(subjectList.filter((sub) => sub !== subject));
-	};
-	const handleOkDelete = () => {
-		setIsModalOpenDelete(false);
-	};
-	const handleCancelDelete = () => {
-		setIsModalOpenDelete(false);
-	};
 	return (
 		<div>
 			<div className='flex w-full items-end justify-end'>
 				<Button
-					className='py-5'
+					className='bg-primary py-5'
 					type='primary'
 					icon={<Plus />}
 					size='middle'
-
-					// onClick={showModal}
+					onClick={() => setIsAddModalOpen(true)}
 				>
-					<div
-						onClick={() => setIsModalOpen(true)}
-						className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white"
-					>
+					<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
 						Thêm mới
 					</div>
 				</Button>
 
-				{/* Modal Add */}
-				<Modal
-					title='Thêm Tổ - Bộ môn mới'
-					open={isModalOpen}
-					onOk={handleOk}
-					onCancel={handleCancel}
-					styles={modalStyles}
-					width={800}
-					footer={[
-						<Button key='back' onClick={handleCancel}>
-							Hủy
-						</Button>,
-						<Button key='submit' type='primary' onClick={handleOk}>
-							Lưu
-						</Button>,
-					]}
-				>
-					<div className='py-5'>
-						<div className=''>
-							{/* left */}
-							<div className='space-y-10'>
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Tổ - Bộ môn:
-											</div>
-										</div>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										// prefix={<Search />}
-										variant='filled'
-									/>
-								</div>
+				<AddDepartmentModal
+					isModalOpen={isAddModalOpen}
+					setIsModalOpen={setIsAddModalOpen}
+					department={department}
+					setDepartment={setDepartment}
+					showSelect={showSelect}
+					setShowSelect={setShowSelect}
+				/>
 
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Trưởng tổ - Bộ môn:
-											</div>
-										</div>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										// prefix={<Search />}
-										variant='filled'
-									/>
-								</div>
-							</div>
-						</div>
-						<div className='my-8 h-[0px] w-[756px] border border-[#c8c4c0]'></div>
-						<div className='space-y-3'>
-							<p className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#cc5c00]">
-								Danh sách môn học
-							</p>
-							<div className='space-y-4'>
-								{/* Thêm môn học mới */}
-								{showSelect && (
-									<Select
-										placeholder='Chọn môn học'
-										style={{ width: '100%' }}
-										onChange={addSubject}
-										className='mt-2'
-										options={subjects}
-									/>
-								)}
-
-								{subjectList.length > 0 && (
-									<div className='grid grid-cols-3 gap-4'>
-										{subjectList.map((sub) => (
-											<div className='flex items-center gap-1'>
-												<div
-													onClick={() => removeSubject(sub)}
-													className='inline-flex h-6 w-6 cursor-pointer items-center justify-center overflow-hidden rounded-3xl border-2 border-[#0a7feb] bg-[#0a7feb] p-[3px]'
-												>
-													<Minus />
-												</div>
-												<div className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
-													{sub}
-												</div>
-											</div>
-										))}
-									</div>
-								)}
-								<div className='flex cursor-pointer gap-2' onClick={addSemester}>
-									<div className='inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-3xl border-2 border-[#0a7feb] bg-[#0a7feb] p-[3px]'>
-										<Plus />
-									</div>
-									<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#0a7feb]">
-										Thêm môn học mới
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</Modal>
+				<EditDepartmentModal
+					isModalOpen={isEditModalOpen}
+					setIsModalOpen={setIsEditModalOpen}
+					department={departmentEdit}
+					onEditSuccess={handleEditSuccess} // Pass the callback
+				/>
 			</div>
+
 			<div className='mt-2 rounded-2xl bg-white p-4 shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
 				<div className='flex items-center justify-between'>
 					<div className="font-['Mulish'] text-[22px] font-extrabold tracking-tight text-[#373839]">
@@ -348,9 +179,9 @@ function DepartmentPage() {
 							},
 						}}
 					>
-						<Table<SemesterData>
+						<Table<dataDeclaration_department>
 							columns={columns}
-							dataSource={data}
+							dataSource={departments}
 							onChange={onChange}
 							rowClassName={(_, index) => (index % 2 !== 0 ? 'bg-[#F0F3F6]' : '')}
 							pagination={{
@@ -363,18 +194,13 @@ function DepartmentPage() {
 					</ConfigProvider>
 				</div>
 			</div>
-			<Modal
-				title='Xóa niên khoá'
-				open={isModalOpenDelete}
-				onOk={handleOkDelete}
-				onCancel={handleCancelDelete}
-				styles={modalStyles}
-			>
-				<div className="font-['Source Sans Pro'] text-center text-base font-normal leading-tight text-[#373839]">
-					Xác nhận muốn xoá niên khoá này và toàn bộ thông tin bên trong? Sau khi xoá sẽ không thể
-					hoàn tác.
-				</div>
-			</Modal>
+
+			<DeleteDepartmentModal
+				isModalOpenDelete={isModalOpenDelete}
+				setIsModalOpenDelete={setIsModalOpenDelete}
+				departmentId={selectedDepartmentId}
+				onDeleteSuccess={handleDeleteSuccess}
+			/>
 		</div>
 	);
 }

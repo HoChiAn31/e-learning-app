@@ -1,20 +1,26 @@
 // App.tsx
 import { useState, useEffect } from 'react';
-import { Table, Button, DatePicker, Select, ConfigProvider, TableColumnsType } from 'antd';
+import { Table, Button, DatePicker, Select, ConfigProvider, TableColumnsType, Input } from 'antd';
 import BreadcrumbLink from '../../../components/BreadcrumbLinkProps';
 import { Tab } from '../../../components/Tab';
-import { Edit, Info } from '../../../components/icon';
+import { Edit, Info, Search } from '../../../components/icon';
 import { useNavigate } from 'react-router-dom';
 
 interface TestSubmission {
 	key: string;
-	className: string;
 	testType: string;
+	lecturer: string;
 	subject: string;
 	testDate: string;
 	duration: string;
 	status: 'notStarted' | 'progress' | 'finished';
-	isAssignment: boolean;
+	assignmentState:
+		| 'notStarted'
+		| 'inProgress'
+		| 'submitted'
+		| 'notSubmitted'
+		| 'pending'
+		| 'missed';
 	startTime?: number;
 }
 
@@ -23,163 +29,143 @@ const { Option } = Select;
 const initialData: TestSubmission[] = [
 	{
 		key: '1',
-		className: 'Lớp 10A1',
 		testType: 'Kiểm tra 1 tiết',
+		lecturer: 'Nguyễn Văn A',
 		subject: 'Tổ đội S6',
 		testDate: '12/03/2023',
 		duration: '45 phút',
-		isAssignment: false,
 		status: 'notStarted',
+		assignmentState: 'notStarted',
 	},
 	{
 		key: '2',
-		className: 'Lớp 10A2',
 		testType: 'Kiểm tra 1 tiết',
+		lecturer: 'Trần Thị B',
 		subject: 'Tổ đội S6',
 		testDate: '12/03/2023',
 		duration: '45 phút',
-		isAssignment: true,
 		status: 'finished',
+		assignmentState: 'submitted',
 	},
 	{
 		key: '3',
-		className: 'Lớp 10A3',
 		testType: 'Kiểm tra 1 tiết',
+		lecturer: 'Lê Văn C',
 		subject: 'Tổ đội S5',
 		testDate: '12/03/2023',
 		duration: '45 phút',
-		isAssignment: false,
 		status: 'progress',
+		assignmentState: 'inProgress',
 	},
+	// ... (similar modifications for other entries)
 	{
 		key: '4',
-		className: 'Lớp 10A4',
 		testType: 'Kiểm tra cuối kỳ',
+		lecturer: 'Phạm Thị D',
 		subject: 'Tổ đội S5',
 		testDate: '15/04/2023',
 		duration: '60 phút',
-		isAssignment: false,
 		status: 'notStarted',
+		assignmentState: 'pending',
 	},
 	{
 		key: '5',
-		className: 'Lớp 10A5',
 		testType: 'Kiểm tra giữa kỳ',
+		lecturer: 'Hoàng Văn E',
 		subject: 'Tổ đội S4',
 		testDate: '20/05/2023',
 		duration: '60 phút',
-		isAssignment: false,
 		status: 'finished',
-	},
-	{
-		key: '6',
-		className: 'Lớp 10A6',
-		testType: 'Kiểm tra 15 phút',
-		subject: 'Tổ đội S3',
-		testDate: '10/06/2023',
-		duration: '15 phút',
-		isAssignment: true,
-		status: 'progress',
-	},
-	{
-		key: '7',
-		className: 'Lớp 10A7',
-		testType: 'Kiểm tra cuối kỳ',
-		subject: 'Tổ đội S3',
-		testDate: '18/07/2023',
-		duration: '60 phút',
-		isAssignment: false,
-		status: 'finished',
-	},
-	{
-		key: '8',
-		className: 'Lớp 10A8',
-		testType: 'Kiểm tra 15 phút',
-		subject: 'Tổ đội S2',
-		testDate: '25/08/2023',
-		duration: '15 phút',
-		isAssignment: true,
-		status: 'progress',
-	},
-	{
-		key: '9',
-		className: 'Lớp 10A9',
-		testType: 'Kiểm tra giữa kỳ',
-		subject: 'Tổ đội S2',
-		testDate: '30/09/2023',
-		duration: '60 phút',
-		isAssignment: false,
-		status: 'finished',
-	},
-	{
-		key: '10',
-		className: 'Lớp 10A10',
-		testType: 'Kiểm tra 1 tiết',
-		subject: 'Tổ đội S1',
-		testDate: '05/10/2023',
-		duration: '45 phút',
-		isAssignment: true,
-		status: 'finished',
-	},
-	{
-		key: '11',
-		className: 'Lớp 10A11',
-		testType: 'Kiểm tra cuối kỳ',
-		subject: 'Tổ đội S1',
-		testDate: '15/11/2023',
-		duration: '60 phút',
-		isAssignment: false,
-		status: 'notStarted',
-	},
-	{
-		key: '12',
-		className: 'Lớp 10A12',
-		testType: 'Kiểm tra giữa kỳ',
-		subject: 'Tổ đội S4',
-		testDate: '22/12/2023',
-		duration: '60 phút',
-		isAssignment: true,
-		status: 'notStarted',
-	},
-	{
-		key: '13',
-		className: 'Lớp 10A13',
-		testType: 'Kiểm tra 15 phút',
-		subject: 'Tổ đội S6',
-		testDate: '05/01/2024',
-		duration: '15 phút',
-		isAssignment: false,
-		status: 'notStarted',
+		assignmentState: 'missed',
 	},
 ];
 
 const StudentListTestPage = () => {
 	const [active, setActive] = useState<string>('all');
 	const [testData, setTestData] = useState<TestSubmission[]>(initialData);
+	const [filteredData, setFilteredData] = useState<TestSubmission[]>(initialData);
+	const [searchText, setSearchText] = useState<string>('');
+	const [filterSubject, setFilterSubject] = useState<string>('');
+	const [filterGrade, setFilterGrade] = useState<string>('');
+	const [filterDate, setFilterDate] = useState<string | null>(null);
 	const nav = useNavigate();
-	// Hàm xử lý khi nhấn "Bắt đầu"
+
+	// Hàm xử lý lọc dữ liệu
+	const handleFilter = () => {
+		let filtered = [...initialData];
+
+		// Lọc theo môn học
+		if (filterSubject) {
+			filtered = filtered.filter((item) => item.subject.includes(filterSubject));
+		}
+
+		// Lọc theo khối (giả sử subject chứa thông tin khối như "Tổ đội S6")
+		if (filterGrade) {
+			filtered = filtered.filter((item) => item.subject.includes(`S${filterGrade}`));
+		}
+
+		// Lọc theo ngày
+		if (filterDate) {
+			filtered = filtered.filter((item) => item.testDate === filterDate);
+		}
+
+		// Lọc theo search text
+		if (searchText) {
+			filtered = filtered.filter(
+				(item) =>
+					item.testType.toLowerCase().includes(searchText.toLowerCase()) ||
+					item.lecturer.toLowerCase().includes(searchText.toLowerCase()) ||
+					item.subject.toLowerCase().includes(searchText.toLowerCase()),
+			);
+		}
+
+		setFilteredData(filtered);
+	};
+
+	// Xử lý khi thay đổi giá trị search
+	const handleSearch = (value: string) => {
+		setSearchText(value);
+	};
+
+	// Xử lý khi thay đổi các bộ lọc
+	const handleSubjectChange = (value: string) => {
+		setFilterSubject(value);
+	};
+
+	const handleGradeChange = (value: string) => {
+		setFilterGrade(value);
+	};
+
+	const handleDateChange = (date: moment.Moment | null) => {
+		setFilterDate(date ? date.format('DD/MM/YYYY') : null);
+	};
+
+	// Cập nhật filteredData khi testData thay đổi
+	useEffect(() => {
+		handleFilter();
+	}, [testData, searchText, filterSubject, filterGrade, filterDate]);
+
 	const handleStartTest = (record: TestSubmission) => {
 		setTestData((prevData) =>
 			prevData.map((item) =>
 				item.key === record.key
 					? {
 							...item,
-							isAssignment: true,
+							assignmentState: 'inProgress',
 							status: 'progress',
 							startTime: Date.now(),
 						}
 					: item,
 			),
 		);
+		// nav(`/student/test/start/${record.key}`);
+		nav(`/student/test/essay`);
 	};
 
-	// Hàm xử lý khi nhấn "Chấm điểm"
-	const handleGradeTest = (record: TestSubmission) => {
-		console.log('Chấm điểm bài kiểm tra:', record);
-		// Thêm logic chấm điểm ở đây (ví dụ: mở modal hoặc chuyển hướng)
+	const handleDelete = (record: TestSubmission) => {
+		console.log('Remove test:', record);
 	};
 
-	// Đồng bộ trạng thái bài kiểm tra
 	useEffect(() => {
 		const interval = setInterval(() => {
 			setTestData((prevData) =>
@@ -190,27 +176,25 @@ const StudentListTestPage = () => {
 						const elapsedTime = Date.now() - item.startTime;
 
 						if (elapsedTime >= durationInMs) {
-							return { ...item, status: 'finished' };
+							return { ...item, status: 'finished', assignmentState: 'submitted' };
 						}
 					}
 					return item;
 				}),
 			);
-		}, 1000); // Cập nhật mỗi giây
-
+		}, 1000);
 		return () => clearInterval(interval);
 	}, []);
-
 	const columns: TableColumnsType<TestSubmission> = [
-		{
-			title: 'Lớp',
-			dataIndex: 'className',
-			key: 'className',
-		},
 		{
 			title: 'Nội dung kiểm tra',
 			dataIndex: 'testType',
 			key: 'testType',
+		},
+		{
+			title: 'Giảng viên',
+			dataIndex: 'lecturer',
+			key: 'lecturer',
 		},
 		{
 			title: 'Môn học',
@@ -262,38 +246,42 @@ const StudentListTestPage = () => {
 		},
 		{
 			title: 'Bài làm',
-			key: 'isAssignment',
+			key: 'assignmentState',
 			render: (_, record) => {
-				if (!record.isAssignment && record.status === 'notStarted') {
+				const stateColors = {
+					notStarted: '#ed2025', // Red
+					inProgress: '#0B80EC', // Blue
+					submitted: '#49C510', // Green
+					pending: '#faad14', // Yellow
+					missed: '#000000', // Black
+					notSubmitted: '#faad14', // Yellow (or choose a different color if you prefer)
+				};
+
+				const stateText = {
+					notStarted: 'Chưa bắt đầu',
+					inProgress: 'Đang thực hiện',
+					submitted: 'Đã nộp bài',
+					pending: 'Chưa nộp bài',
+					missed: 'Không nộp bài',
+					notSubmitted: 'Chưa nộp bài', // Added this missing state
+				};
+
+				if (record.assignmentState === 'notStarted') {
 					return (
-						<Button
-							type='primary'
-							// style={{ backgroundColor: '#faad14', borderColor: '#faad14' }}
-							onClick={() => handleStartTest(record)}
-							className='w-28'
-						>
+						<Button type='primary' onClick={() => handleStartTest(record)} className='w-28'>
 							Bắt đầu
 						</Button>
 					);
-				} else if (record.status === 'progress') {
-					return (
-						<Button type='primary' disabled className='w-28'>
-							Chấm điểm
-						</Button>
-					);
-				} else if (record.status === 'finished') {
-					return (
-						<Button
-							type='primary'
-							style={{ backgroundColor: '#faad14', borderColor: '#faad14' }}
-							onClick={() => handleGradeTest(record)}
-							className='w-28'
-						>
-							Chấm điểm
-						</Button>
-					);
 				}
-				return null;
+
+				return (
+					<p
+						style={{ color: stateColors[record.assignmentState] }}
+						className='w-28 text-center italic'
+					>
+						{stateText[record.assignmentState]}
+					</p>
+				);
 			},
 		},
 		{
@@ -301,9 +289,6 @@ const StudentListTestPage = () => {
 			dataIndex: 'action',
 			render: (_, record) => (
 				<div className=''>
-					<Button type='link' onClick={() => handleEdit(record)}>
-						<Edit />
-					</Button>
 					<Button type='link' onClick={() => handleDelete(record)}>
 						<Info />
 					</Button>
@@ -312,15 +297,6 @@ const StudentListTestPage = () => {
 			width: '30%',
 		},
 	];
-
-	const handleEdit = (record: TestSubmission) => {
-		console.log('Edit academic year:', record);
-	};
-
-	const handleDelete = (record: TestSubmission) => {
-		console.log('Remove academic year:', record);
-		console.log('Remove academic year key:', record.key);
-	};
 
 	return (
 		<div>
@@ -342,59 +318,61 @@ const StudentListTestPage = () => {
 						label='Bài kiểm tra đã chấm'
 						onClick={() => setActive('testGraded')}
 					/>
-					<Tab
-						active={active === 'testNoGraded'}
-						label='Bài kiểm tra chưa chấm'
-						onClick={() => setActive('testNoGraded')}
-					/>
 				</div>
 				<div>
-					<Button
-						type='primary'
-						className='h-[60px]'
-						onClick={() => {
-							nav(`/teacher/listTestAdd`);
-						}}
-					>
+					<Button type='primary' className='h-[60px]' onClick={() => nav(`/teacher/listTestAdd`)}>
 						Thêm bài kiểm tra
 					</Button>
 				</div>
 			</div>
 			<div className='relative -mt-2 bg-white p-4 shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
-				{/* Filter Section */}
-				<div className='mb-4 flex space-x-4'>
-					<div>
-						<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#373839]">
-							Chọn bộ môn
+				<div className='flex items-center justify-between'>
+					<div className='mb-4 flex space-x-4'>
+						<div>
+							<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#373839]">
+								Chọn bộ môn
+							</div>
+							<Select defaultValue='Ngữ văn' className='w-32' onChange={handleSubjectChange}>
+								<Option value='Ngữ văn'>Ngữ văn</Option>
+								<Option value='Toán'>Toán</Option>
+								<Option value='Hoá'>Hoá</Option>
+							</Select>
 						</div>
-						<Select defaultValue='Ngữ văn' className='w-32'>
-							<Option value='Ngữ văn'>Ngữ văn</Option>
-							<Option value='Toán'>Toán</Option>
-							<Option value='Hoá'>Hoá</Option>
-						</Select>
-					</div>
-					<div>
-						<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#373839]">
-							Chọn khối
+						<div>
+							<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#373839]">
+								Chọn khối
+							</div>
+							<Select defaultValue='10' className='w-32' onChange={handleGradeChange}>
+								<Option value='10'>10</Option>
+								<Option value='11'>11</Option>
+								<Option value='12'>12</Option>
+							</Select>
 						</div>
-						<Select defaultValue='10' className='w-32'>
-							<Option value='10'>10</Option>
-							<Option value='11'>11</Option>
-							<Option value='12'>12</Option>
-						</Select>
-					</div>
-					<div>
-						<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#373839]">
-							Chọn ngày
+						<div>
+							<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#373839]">
+								Chọn ngày
+							</div>
+							<DatePicker format='DD/MM/YYYY' className='w-32' onChange={handleDateChange} />
 						</div>
-						<DatePicker format='DD/MM/YYYY' className='w-32' />
+						<div className='pt-7'>
+							<Button type='primary' onClick={handleFilter}>
+								Lọc kết quả
+							</Button>
+						</div>
 					</div>
-					<div className='pt-7'>
-						<Button type='primary'>Lọc kết quả</Button>
+
+					<div>
+						<Input
+							placeholder='Tìm kiếm'
+							className='w-[438px] rounded-full bg-[#F0F3F6]'
+							prefix={<Search />}
+							variant='filled'
+							value={searchText}
+							onChange={(e) => handleSearch(e.target.value)}
+						/>
 					</div>
 				</div>
 
-				{/* Table Section */}
 				<ConfigProvider
 					theme={{
 						components: {
@@ -412,7 +390,7 @@ const StudentListTestPage = () => {
 				>
 					<Table
 						columns={columns}
-						dataSource={testData}
+						dataSource={filteredData}
 						pagination={{ pageSize: 5 }}
 						className='shadow-md'
 					/>

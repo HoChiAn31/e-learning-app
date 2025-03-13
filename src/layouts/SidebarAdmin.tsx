@@ -41,20 +41,26 @@ const SidebarAdmin: FC = () => {
 		}
 	}, [role, name, nav, isLoaded]);
 
-	// Load từ localStorage
 	// useEffect(() => {
 	// 	console.log(1_34);
 
-	// 	if (role !== 'teacher' && !activeMainTab.startsWith('/teacher/class')) {
+	// 	if (role !== 'teacher' && role !== 'student' && !activeMainTab.startsWith('/teacher/class')) {
 	// 		const storedMainTab = localStorage.getItem('activeMainTab');
 	// 		const storedSubTab = localStorage.getItem('activeSubTab');
 
 	// 		if (storedMainTab) {
-	// 			// Nếu là teacher thì ưu tiên /teacher, nếu không thì dùng stored value
+	// 			// Nếu là teacher thì ưu tiên /teacher
 	// 			if (role === 'teacher' && !storedMainTab.startsWith(name)) {
 	// 				setActiveMainTab(name);
 	// 				nav(name);
-	// 			} else {
+	// 			}
+	// 			// Nếu là student thì ưu tiên /student
+	// 			else if (role === 'student' && !storedMainTab.startsWith(name)) {
+	// 				setActiveMainTab(name);
+	// 				nav(name);
+	// 			}
+	// 			// Nếu không phải teacher/student thì dùng stored value
+	// 			else {
 	// 				setActiveMainTab(storedMainTab);
 	// 				if (storedSubTab) {
 	// 					setActiveSubTab(storedSubTab);
@@ -67,40 +73,26 @@ const SidebarAdmin: FC = () => {
 	// 	}
 	// 	setIsLoaded(true);
 	// }, [nav, role]);
+	// fix Conflict between SidebarAdmin and SideBarDataDeclaration
 	useEffect(() => {
-		console.log(1_34);
-
-		if (role !== 'teacher' && role !== 'student' && !activeMainTab.startsWith('/teacher/class')) {
+		if (
+			role !== 'teacher' &&
+			!activeMainTab.startsWith('/teacher/class') &&
+			!location.pathname.startsWith('/dataDeclaration') // Thêm điều kiện này
+		) {
 			const storedMainTab = localStorage.getItem('activeMainTab');
 			const storedSubTab = localStorage.getItem('activeSubTab');
-
 			if (storedMainTab) {
-				// Nếu là teacher thì ưu tiên /teacher
-				if (role === 'teacher' && !storedMainTab.startsWith(name)) {
-					setActiveMainTab(name);
-					nav(name);
-				}
-				// Nếu là student thì ưu tiên /student
-				else if (role === 'student' && !storedMainTab.startsWith(name)) {
-					setActiveMainTab(name);
-					nav(name);
-				}
-				// Nếu không phải teacher/student thì dùng stored value
-				else {
-					setActiveMainTab(storedMainTab);
-					if (storedSubTab) {
-						setActiveSubTab(storedSubTab);
-						nav(`${storedMainTab}/${storedSubTab}`);
-					} else {
-						nav(storedMainTab);
-					}
+				setActiveMainTab(storedMainTab);
+				if (storedSubTab) {
+					nav(`${storedMainTab}/${storedSubTab}`);
+				} else {
+					nav(storedMainTab);
 				}
 			}
 		}
-
 		setIsLoaded(true);
-	}, [nav, role]);
-
+	}, [nav, role, location.pathname]);
 	// Lưu vào localStorage khi active tab thay đổi
 	useEffect(() => {
 		console.log(1);
@@ -224,7 +216,7 @@ const SidebarAdmin: FC = () => {
 								setActiveMainTab={setActiveMainTab}
 								activeSubTab={activeSubTab}
 								setActiveSubTab={setActiveSubTab}
-								tabName='#'
+								tabName='/student/listTest/all'
 								title={'Bài kiểm tra'}
 								icon={<Edits color='white' />}
 								isIcon
@@ -474,9 +466,9 @@ const SidebarAdmin: FC = () => {
 									setActiveMainTab={setActiveMainTab}
 									activeSubTab={activeSubTab}
 									setActiveSubTab={setActiveSubTab}
-									tabName={'/teacher/listTest'}
+									tabName={'/student/listTest'}
 									title={'Bài kiểm tra'}
-									icon={<Edits color={`${name === '/teacher/listTest' ? '#ff7506' : '#373839'}`} />}
+									icon={<Edits color={`${name === '/student/listTest' ? '#ff7506' : '#373839'}`} />}
 									onCheckClick={() => setIsHovered(false)}
 									isSidebarSub
 									subItems={[
@@ -527,6 +519,18 @@ const SidebarAdmin: FC = () => {
 						)}
 						{role === 'leadership' && (
 							<>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
+									tabName={'/home'}
+									title={'Tổng quan'}
+									icon={<Eye color={`${name === '/home' ? '#ff7506' : '#373839'}`} />}
+									isIcon
+									onCheckClick={() => setIsHovered(false)}
+									isSidebarSub
+								/>
 								<TabItem
 									activeMainTab={activeMainTab}
 									setActiveMainTab={setActiveMainTab}

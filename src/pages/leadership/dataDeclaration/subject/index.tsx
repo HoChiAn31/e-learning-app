@@ -1,19 +1,11 @@
-import {
-	Button,
-	ConfigProvider,
-	Input,
-	Modal,
-	Select,
-	Table,
-	TableColumnsType,
-	TableProps,
-} from 'antd';
+import { Button, ConfigProvider, Input, Select, Table, TableColumnsType, TableProps } from 'antd';
 import { Edit, Plus, Search, Trash } from '../../../../components/icon';
 import { useState } from 'react';
+import { AddModal } from './AddModal';
+import { DeleteModal } from './DeleteModal';
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 interface SemesterData {
-	// key: React.Key;
 	key: string;
 	subjectCode: string;
 	subjectName: string;
@@ -96,16 +88,17 @@ const data: SemesterData[] = [
 	},
 ];
 
-function SubjectPage() {
+export default function SubjectPage() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
 	const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+	const [deleteKey, setDeleteKey] = useState<string | null>(null);
 
 	const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
 		console.log('selectedRowKeys changed: ', newSelectedRowKeys);
 		setSelectedRowKeys(newSelectedRowKeys);
 	};
+
 	const handleEdit = (record: SemesterData) => {
 		console.log('Edit academic year:', record);
 		setIsModalOpen(true);
@@ -114,11 +107,34 @@ function SubjectPage() {
 	const handleDelete = (record: SemesterData) => {
 		console.log('Remove academic year:', record);
 		console.log('Remove academic year key:', record.key);
+		setDeleteKey(record.key);
 		setIsModalOpenDelete(true);
 	};
+
+	const handleAddOk = (data: {
+		subjectGroup: string;
+		subjectName: string;
+		subjectCode: string;
+		subjectType: string;
+		numberLessonSemester1: number;
+		numberLessonSemester2: number;
+	}) => {
+		console.log('Dữ liệu khi lưu:', data);
+		setIsModalOpen(false);
+	};
+
+	const handleDeleteOk = () => {
+		if (deleteKey) {
+			console.log('Xóa môn học với key:', deleteKey);
+		}
+		setIsModalOpenDelete(false);
+		setDeleteKey(null);
+	};
+
 	const handleChange = (value: string) => {
 		console.log(`selected ${value}`);
 	};
+
 	const columns: TableColumnsType<SemesterData> = [
 		{
 			title: 'Mã môn học',
@@ -126,7 +142,6 @@ function SubjectPage() {
 			sorter: (a, b) => a.subjectCode.localeCompare(b.subjectCode),
 			width: '15%',
 		},
-
 		{
 			title: 'Tên môn học',
 			dataIndex: 'subjectName',
@@ -139,20 +154,8 @@ function SubjectPage() {
 			sorter: (a, b) => a.subjectType.localeCompare(b.subjectType),
 			width: '15%',
 		},
-		{
-			title: ' Số tiết HK1',
-			dataIndex: 'numberLessonSemester1',
-			// sorter: (a, b) => a.subjectType.localeCompare(b.subjectType),
-			width: '15%',
-			align: 'center',
-		},
-		{
-			title: ' Số tiết HK2',
-			dataIndex: 'numberLessonSemester2',
-			// sorter: (a, b) => a.subjectType.localeCompare(b.subjectType),
-			width: '15%',
-			align: 'center',
-		},
+		{ title: 'Số tiết HK1', dataIndex: 'numberLessonSemester1', width: '15%', align: 'center' },
+		{ title: 'Số tiết HK2', dataIndex: 'numberLessonSemester2', width: '15%', align: 'center' },
 		{
 			title: '',
 			dataIndex: 'action',
@@ -174,31 +177,11 @@ function SubjectPage() {
 		selectedRowKeys,
 		onChange: onSelectChange,
 	};
+
 	const onChange: TableProps<SemesterData>['onChange'] = (pagination, filters, sorter, extra) => {
 		console.log('params', pagination, filters, sorter, extra);
 	};
 
-	// Modal add
-	const handleOk = () => {
-		setIsModalOpen(false);
-	};
-	const handleCancel = () => {
-		setIsModalOpen(false);
-	};
-	const modalStyles = {
-		header: {
-			textAlign: 'center' as 'center',
-		},
-		footer: {
-			textAlign: 'center' as 'center',
-		},
-	};
-	const handleOkDelete = () => {
-		setIsModalOpenDelete(false);
-	};
-	const handleCancelDelete = () => {
-		setIsModalOpenDelete(false);
-	};
 	return (
 		<div>
 			<div className='flex items-center justify-between'>
@@ -244,7 +227,7 @@ function SubjectPage() {
 					<Trash />
 					<div className='h-12 w-[1px] bg-[#c8c4c0]' />
 					<Button
-						className='h-[52px]'
+						className='h-[52px] bg-primary'
 						type='primary'
 						icon={<Plus />}
 						size='middle'
@@ -254,127 +237,11 @@ function SubjectPage() {
 							Thêm mới
 						</div>
 					</Button>
-
-					{/* Modal Add */}
-					<Modal
-						title='Thêm Tổ - Bộ môn mới'
-						open={isModalOpen}
-						onOk={handleOk}
-						onCancel={handleCancel}
-						styles={modalStyles}
-						width={800}
-						footer={[
-							<Button className='w-40' key='back' onClick={handleCancel}>
-								Hủy
-							</Button>,
-							<Button className='w-40' key='submit' type='primary' onClick={handleOk}>
-								Lưu
-							</Button>,
-						]}
-					>
-						<div className='py-5'>
-							<div className=''>
-								<div className='space-y-10'>
-									<div className='flex h-5 items-center'>
-										<div className='flex min-w-36 items-start justify-start'>
-											<div className='flex items-center justify-center gap-0.5'>
-												<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-													Tổ - Bộ môn:
-												</div>
-											</div>
-										</div>
-
-										<Select
-											defaultValue='Khoa học tự nhiên'
-											style={{ width: 120 }}
-											onChange={handleChange}
-											options={[
-												{ value: 'Khoa học tự nhiên', label: 'Khoa học tự nhiên' },
-												{ value: 'Văn hóa xã hội', label: 'Văn hóa xã hội' },
-											]}
-											className='!w-[561px]'
-										/>
-									</div>
-
-									<div className='flex h-5 items-center'>
-										<div className='flex min-w-36 items-start justify-start'>
-											<div className='flex items-center justify-center gap-0.5'>
-												<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-													Tên môn học:
-												</div>
-											</div>
-										</div>
-										<Input
-											placeholder='Tìm kiếm'
-											className='h-10 w-[561px] bg-[#F0F3F6]'
-											// prefix={<Search />}
-											variant='filled'
-										/>
-									</div>
-
-									<div className='flex h-5 items-center'>
-										<div className='flex min-w-36 items-start justify-start'>
-											<div className='flex items-center justify-center gap-0.5'>
-												<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-													Mã môn:
-												</div>
-											</div>
-										</div>
-										<Input
-											placeholder='Tìm kiếm'
-											className='h-10 w-[561px] bg-[#F0F3F6]'
-											// prefix={<Search />}
-											variant='filled'
-										/>
-									</div>
-
-									<div className='flex h-5 items-center'>
-										<div className='flex min-w-36 items-start justify-start'>
-											<div className='flex items-center justify-center gap-0.5'>
-												<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-													Loại môn học:
-												</div>
-											</div>
-										</div>
-
-										<Select
-											defaultValue='Khoa học tự nhiên'
-											style={{ width: 120 }}
-											onChange={handleChange}
-											options={[
-												{ value: 'Môn học bắt buộc', label: 'Môn học bắt buộc' },
-												{ value: 'Môn học tự chọn', label: 'Môn học tự chọn' },
-											]}
-											className='!w-[561px]'
-										/>
-									</div>
-								</div>
-
-								<div className='my-5 h-[0px] w-[756px] border border-[#c8c4c0]'></div>
-
-								<div>
-									<p className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#cc5c00]">
-										Số tiết/Học kì
-									</p>
-
-									<div className='flex items-center justify-between py-5'>
-										<div className='flex items-center gap-1'>
-											<p className="font-['Source Sans Pro'] w-24 text-base font-bold tracking-tight text-[#373839]">
-												Học kì I:
-											</p>
-											<Input placeholder='Nhập số tiết' value={45} />
-										</div>
-										<div className='flex items-center gap-1'>
-											<p className="font-['Source Sans Pro'] w-24 text-base font-bold tracking-tight text-[#373839]">
-												Học kì II:
-											</p>
-											<Input placeholder='Nhập số tiết' value={24} />
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</Modal>
+					<AddModal
+						visible={isModalOpen}
+						onOk={handleAddOk}
+						onCancel={() => setIsModalOpen(false)}
+					/>
 				</div>
 			</div>
 			<div className='mt-2 rounded-2xl bg-white p-4 shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
@@ -420,28 +287,11 @@ function SubjectPage() {
 					</ConfigProvider>
 				</div>
 			</div>
-			<Modal
-				title='Xóa'
-				open={isModalOpenDelete}
-				onOk={handleOkDelete}
-				onCancel={handleCancelDelete}
-				styles={modalStyles}
-				footer={[
-					<Button className='w-40' key='back' onClick={handleCancelDelete}>
-						Hủy
-					</Button>,
-					<Button className='w-40' key='submit' type='primary' onClick={handleOkDelete}>
-						Xác nhận
-					</Button>,
-				]}
-			>
-				<div className="font-['Source Sans Pro'] text-center text-base font-normal leading-tight text-[#373839]">
-					Xác nhận muốn xoá môn học này và toàn bộ thông tin bên trong? Sau khi xoá sẽ không thể
-					hoàn tác.
-				</div>
-			</Modal>
+			<DeleteModal
+				visible={isModalOpenDelete}
+				onOk={handleDeleteOk}
+				onCancel={() => setIsModalOpenDelete(false)}
+			/>
 		</div>
 	);
 }
-
-export default SubjectPage;

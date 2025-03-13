@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useState } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { User, UserContextType } from './type';
 
 interface AuthProviderProps {
@@ -15,19 +15,27 @@ export const AuthContext = createContext<UserContextType>({
 	login: async () => {},
 	logout: () => {},
 	user: null,
+	setUser: () => {},
 });
 
 export const UserProvider = ({ children }: AuthProviderProps): JSX.Element => {
 	const [isLogin, setIsLogin] = useState<boolean>(false);
-	const [role, setRole] = useState<string>('student');
+	const [role, setRole] = useState<string>('leadership');
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [user, setUser] = useState<User | null>({
-		id: '',
+		key: '',
 		role: '',
-		email: '',
 		name: '',
 	});
-
+	useEffect(() => {
+		const storedUser = localStorage.getItem('userToken');
+		if (storedUser) {
+			const parsedUser = JSON.parse(storedUser);
+			setUser(parsedUser);
+			setRole(parsedUser.role);
+			setIsLogin(true);
+		}
+	}, []);
 	const login = async (credentials: { username: string; password: string }) => {
 		try {
 			setIsLoading(true);
@@ -60,6 +68,7 @@ export const UserProvider = ({ children }: AuthProviderProps): JSX.Element => {
 				login,
 				logout,
 				user,
+				setUser,
 			}}
 		>
 			{children}

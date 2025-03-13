@@ -1,11 +1,12 @@
 export interface User {
-	id: string;
+	key: string;
 	firstName?: string;
 	lastName?: string;
-	email: string;
+	email?: string;
 	role: string;
 	avatar?: string;
 	name?: string;
+	username?: string;
 }
 export interface UserContextType {
 	isLogin: boolean;
@@ -17,4 +18,5 @@ export interface UserContextType {
 	login: (credentials: { username: string; password: string }) => Promise<void>;
 	logout: () => void;
 	user: User | null;
+	setUser: (user: User) => void;
 }

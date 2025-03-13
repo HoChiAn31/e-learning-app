@@ -35,6 +35,8 @@ import StudentMyClassPage from './student/myClass';
 import StudentMeetingPage from './student/classMeeting';
 import StudentClassDetailPage from './student/classDetail';
 import StudentListTestPage from './student/listTest';
+import StudentTestEssayPage from './student/test/Essay';
+import StudentTestMultipleChoicePage from './student/test/multipleChoice';
 // *************************** shared: teacher & student ***************************
 import SharedContactFormPage from './shared/contactForm';
 import SharedExamSchedulePage from './shared/examSchedule';
@@ -77,6 +79,8 @@ export {
 	StudentMeetingPage,
 	StudentClassDetailPage,
 	StudentListTestPage,
+	StudentTestEssayPage,
+	StudentTestMultipleChoicePage,
 	// *************************** shared: teacher & student ***************************
 	SharedContactFormPage,
 	SharedExamSchedulePage,
