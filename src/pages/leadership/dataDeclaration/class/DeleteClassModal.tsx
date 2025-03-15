@@ -1,9 +1,8 @@
 import { Button, Modal } from 'antd';
 
-interface DeleteModalProps {
+interface DeleteClassModalProps {
 	visible: boolean;
-	id: string | null;
-	onOk: (id: string) => void;
+	onOk: () => void;
 	onCancel: () => void;
 }
 
@@ -12,21 +11,19 @@ const modalStyles = {
 	footer: { textAlign: 'center' as 'center' },
 };
 
-export const DeleteModal: React.FC<DeleteModalProps> = ({ id, visible, onOk, onCancel }) => {
-	const handleSubmit = () => {
-		if (id) {
-			onOk(id); // Truyền id trực tiếp khi xác nhận xóa
-		}
-	};
+export const DeleteClassModal: React.FC<DeleteClassModalProps> = ({ visible, onOk, onCancel }) => {
+	const handleSubmit = () => onOk();
+	const handleCancelModal = () => onCancel();
+
 	return (
 		<Modal
 			title='Xóa'
 			open={visible}
 			onOk={handleSubmit}
-			onCancel={onCancel}
+			onCancel={handleCancelModal}
 			styles={modalStyles}
 			footer={[
-				<Button className='w-40' key='back' onClick={onCancel}>
+				<Button className='w-40' key='back' onClick={handleCancelModal}>
 					Hủy
 				</Button>,
 				<Button className='w-40' key='submit' type='primary' onClick={handleSubmit}>
@@ -35,7 +32,7 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({ id, visible, onOk, onC
 			]}
 		>
 			<div className="font-['Source Sans Pro'] text-center text-base font-normal leading-tight text-[#373839]">
-				Xác nhận muốn xóa môn học này và toàn bộ thông tin bên trong? Sau khi xóa sẽ không thể hoàn
+				Xác nhận muốn xoá môn học này và toàn bộ thông tin bên trong? Sau khi xoá sẽ không thể hoàn
 				tác.
 			</div>
 		</Modal>

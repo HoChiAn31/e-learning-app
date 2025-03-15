@@ -87,7 +87,7 @@ const DefaultLayout: FC<DefaultLayoutProps> = ({ children }) => {
 			<ConfigProvider
 				theme={{
 					token: {
-						colorPrimary: '#F7506',
+						colorPrimary: '#FF7506',
 					},
 				}}
 			>

@@ -1,141 +1,102 @@
 import { Button, ConfigProvider, Input, Select, Table, TableColumnsType, TableProps } from 'antd';
 import { Edit, Plus, Search, Trash } from '../../../../components/icon';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AddModal } from './AddModal';
 import { DeleteModal } from './DeleteModal';
+import {
+	dataDeclaration_subject,
+	dataDeclaration_subject_add_edit,
+} from '../../../../types/leadership';
+import {
+	addSubject,
+	deleteSubject,
+	getSubjects,
+	updateSubject,
+} from '../../../../firebase/dataDeclaration/fetchSubject';
+import { EditModal } from './EditModal';
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
-interface SemesterData {
-	key: string;
-	subjectCode: string;
-	subjectName: string;
-	subjectType: string;
-	numberLessonSemester1: number;
-	numberLessonSemester2: number;
-}
-const data: SemesterData[] = [
-	{
-		key: '550e8400-e29b-41d4-a716-446655440000',
-		subjectCode: 'KHTN',
-		subjectName: 'Toán học',
-		subjectType: 'Môn bắt buộc',
-		numberLessonSemester1: 4,
-		numberLessonSemester2: 4,
-	},
-	{
-		key: 'c9bf9e57-1685-4c89-bafb-ff5af830be8a',
-		subjectCode: 'KHTN',
-		subjectName: 'Vật lý',
-		subjectType: 'Môn tự chọn',
-		numberLessonSemester1: 4,
-		numberLessonSemester2: 4,
-	},
-	{
-		key: '123e4567-e89b-12d3-a456-426614174000',
-		subjectCode: 'KHTN',
-		subjectName: 'Hóa học',
-		subjectType: 'Môn bắt buộc',
-		numberLessonSemester1: 4,
-		numberLessonSemester2: 4,
-	},
-	{
-		key: '987e6543-e21a-12d3-b456-426655440000',
-		subjectCode: 'VHXH',
-		subjectName: 'Ngữ văn',
-		subjectType: 'Môn bắt buộc',
-		numberLessonSemester1: 4,
-		numberLessonSemester2: 4,
-	},
-	{
-		key: 'a54c7012-e89b-11d3-a456-426614174001',
-		subjectCode: 'VHXH',
-		subjectName: 'Lịch sử',
-		subjectType: 'Môn tự chọn',
-		numberLessonSemester1: 4,
-		numberLessonSemester2: 4,
-	},
-	{
-		key: 'e72b7012-f12b-11d3-b456-426614174002',
-		subjectCode: 'VHXH',
-		subjectName: 'Địa lý',
-		subjectType: 'Môn bắt buộc',
-		numberLessonSemester1: 4,
-		numberLessonSemester2: 4,
-	},
-	{
-		key: 'fc9d7012-e72c-11d3-b456-426614174003',
-		subjectCode: 'AV',
-		subjectName: 'Tiếng Anh',
-		subjectType: 'Môn bắt buộc',
-		numberLessonSemester1: 4,
-		numberLessonSemester2: 4,
-	},
-	{
-		key: '2fc97012-f72c-11d3-a456-426614174004',
-		subjectCode: 'AV',
-		subjectName: 'Tiếng Anh nâng cao',
-		subjectType: 'Môn tự chọn',
-		numberLessonSemester1: 4,
-		numberLessonSemester2: 4,
-	},
-	{
-		key: '3dc67012-e12c-11d3-b456-426614174005',
-		subjectCode: 'KHTN',
-		subjectName: 'Sinh học',
-		subjectType: 'Môn tự chọn',
-		numberLessonSemester1: 4,
-		numberLessonSemester2: 4,
-	},
-];
 
 export default function SubjectPage() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [isModalEditOpen, setIsModalEditOpen] = useState<boolean>(false);
+
 	const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
+	const [editRecord, setEditRecord] = useState<dataDeclaration_subject | null>(null);
+
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [deleteKey, setDeleteKey] = useState<string | null>(null);
+	const [dataSubject, setDataSubject] = useState<dataDeclaration_subject[]>([]);
+
+	const fetchSubject = async () => {
+		const data = await getSubjects();
+		console.log('Data department:', data);
+		setDataSubject(data);
+	};
+	useEffect(() => {
+		fetchSubject();
+	}, []);
 
 	const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
 		console.log('selectedRowKeys changed: ', newSelectedRowKeys);
 		setSelectedRowKeys(newSelectedRowKeys);
 	};
 
-	const handleEdit = (record: SemesterData) => {
-		console.log('Edit academic year:', record);
+	const handleEdit = (record: dataDeclaration_subject) => {
+		setEditRecord(record);
 		setIsModalOpen(true);
 	};
 
-	const handleDelete = (record: SemesterData) => {
+	const handleDelete = (record: dataDeclaration_subject) => {
 		console.log('Remove academic year:', record);
-		console.log('Remove academic year key:', record.key);
-		setDeleteKey(record.key);
+
+		setDeleteKey(record.id);
 		setIsModalOpenDelete(true);
 	};
 
-	const handleAddOk = (data: {
-		subjectGroup: string;
-		subjectName: string;
-		subjectCode: string;
-		subjectType: string;
-		numberLessonSemester1: number;
-		numberLessonSemester2: number;
-	}) => {
-		console.log('Dữ liệu khi lưu:', data);
+	const handleAddOk = async (data: dataDeclaration_subject_add_edit) => {
+		try {
+			await addSubject(data);
+			setIsModalOpen(false);
+			await fetchSubject();
+		} catch (error) {
+			console.error('Error:', error);
+		}
 		setIsModalOpen(false);
 	};
-
-	const handleDeleteOk = () => {
-		if (deleteKey) {
-			console.log('Xóa môn học với key:', deleteKey);
+	const handleEditOk = async (data: dataDeclaration_subject) => {
+		try {
+			await updateSubject(data.id, {
+				subjectGroup: data.subjectGroup,
+				subjectName: data.subjectName,
+				subjectCode: data.subjectCode,
+				subjectType: data.subjectType,
+				numberLessonSemester1: data.numberLessonSemester1,
+				numberLessonSemester2: data.numberLessonSemester2,
+			});
+			setIsModalEditOpen(false);
+			setEditRecord(null);
+			await fetchSubject();
+		} catch (error) {
+			console.error('Lỗi khi cập nhật tổ - bộ môn:', error);
 		}
-		setIsModalOpenDelete(false);
-		setDeleteKey(null);
+	};
+	const handleDeleteOk = async (id: string) => {
+		try {
+			await deleteSubject(id);
+			setIsModalOpenDelete(false);
+			setDeleteKey(null);
+			await fetchSubject();
+		} catch (error) {
+			console.error('Lỗi:', error);
+		}
 	};
 
 	const handleChange = (value: string) => {
 		console.log(`selected ${value}`);
 	};
 
-	const columns: TableColumnsType<SemesterData> = [
+	const columns: TableColumnsType<dataDeclaration_subject> = [
 		{
 			title: 'Mã môn học',
 			dataIndex: 'subjectCode',
@@ -173,12 +134,17 @@ export default function SubjectPage() {
 		},
 	];
 
-	const rowSelection: TableRowSelection<SemesterData> = {
+	const rowSelection: TableRowSelection<dataDeclaration_subject> = {
 		selectedRowKeys,
 		onChange: onSelectChange,
 	};
 
-	const onChange: TableProps<SemesterData>['onChange'] = (pagination, filters, sorter, extra) => {
+	const onChange: TableProps<dataDeclaration_subject>['onChange'] = (
+		pagination,
+		filters,
+		sorter,
+		extra,
+	) => {
 		console.log('params', pagination, filters, sorter, extra);
 	};
 
@@ -242,6 +208,18 @@ export default function SubjectPage() {
 						onOk={handleAddOk}
 						onCancel={() => setIsModalOpen(false)}
 					/>
+					<EditModal
+						visible={isModalEditOpen}
+						subject={editRecord}
+						onOk={handleEditOk}
+						onCancel={() => setIsModalEditOpen(false)}
+					/>
+					<DeleteModal
+						visible={isModalOpenDelete}
+						onOk={handleDeleteOk}
+						id={deleteKey}
+						onCancel={() => setIsModalOpenDelete(false)}
+					/>
 				</div>
 			</div>
 			<div className='mt-2 rounded-2xl bg-white p-4 shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
@@ -271,10 +249,10 @@ export default function SubjectPage() {
 							},
 						}}
 					>
-						<Table<SemesterData>
+						<Table<dataDeclaration_subject>
 							rowSelection={rowSelection}
 							columns={columns}
-							dataSource={data}
+							dataSource={dataSubject}
 							onChange={onChange}
 							rowClassName={(_, index) => (index % 2 !== 0 ? 'bg-[#F0F3F6]' : '')}
 							pagination={{
@@ -287,11 +265,6 @@ export default function SubjectPage() {
 					</ConfigProvider>
 				</div>
 			</div>
-			<DeleteModal
-				visible={isModalOpenDelete}
-				onOk={handleDeleteOk}
-				onCancel={() => setIsModalOpenDelete(false)}
-			/>
 		</div>
 	);
 }

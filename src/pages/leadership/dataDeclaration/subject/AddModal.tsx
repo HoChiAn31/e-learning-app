@@ -1,16 +1,10 @@
 import { Button, Input, Modal, Select } from 'antd';
 import { useState } from 'react';
+import { dataDeclaration_subject_add_edit } from '../../../../types/leadership';
 
 interface AddModalProps {
 	visible: boolean;
-	onOk: (data: {
-		subjectGroup: string;
-		subjectName: string;
-		subjectCode: string;
-		subjectType: string;
-		numberLessonSemester1: number;
-		numberLessonSemester2: number;
-	}) => void;
+	onOk: (data: dataDeclaration_subject_add_edit) => void;
 	onCancel: () => void;
 }
 
@@ -71,13 +65,6 @@ export const AddModal: React.FC<AddModalProps> = ({ visible, onOk, onCancel }) =
 		};
 		console.log('Dữ liệu khi lưu:', data);
 		onOk(data);
-		// Reset form
-		setSubjectGroup('Khoa học tự nhiên');
-		setSubjectName('');
-		setSubjectCode('');
-		setSubjectType('Môn học bắt buộc');
-		setNumberLessonSemester1(45);
-		setNumberLessonSemester2(24);
 	};
 
 	const handleCancelModal = () => {

@@ -1,27 +1,88 @@
-import { FC } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { Camera, UserAvatar } from '../../../components/icon';
-import { Button, Input } from 'antd';
+import { Button, Input, Select, DatePicker, Upload } from 'antd';
+import { Leadership_Student_Add_Edit } from '../../../types/leadership/student';
+import { UploadOutlined } from '@ant-design/icons';
+
+const { Option } = Select;
 
 interface AddStudentProps {
-	onAddStudent: () => void;
+	onAddStudent: (data: Leadership_Student_Add_Edit) => void;
 	onCancel: () => void;
 }
+
 const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
+	const [student, setStudent] = useState<Leadership_Student_Add_Edit>({
+		fullName: '',
+		gender: undefined,
+		birthDate: null,
+		birthPlace: '',
+		ethnicity: '',
+		religion: '',
+		schoolYear: '',
+		gradeLevel: 'K10',
+		className: undefined,
+		studentId: '',
+		enrollmentDate: null,
+		admissionType: undefined,
+		status: 'Đang theo học',
+		province: '',
+		district: '',
+		ward: '',
+		address: '',
+		email: '',
+		phone: '',
+		fatherName: '',
+		motherName: '',
+		guardianName: '',
+		fatherBirthYear: '',
+		motherBirthYear: '',
+		guardianBirthYear: '',
+		fatherOccupation: '',
+		motherOccupation: '',
+		guardianOccupation: '',
+		fatherPhone: '',
+		motherPhone: '',
+		guardianPhone: '',
+		avatar: undefined, // Thêm trường avatar
+	});
+
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+	const generateStudentId = () => {
+		const year = student.schoolYear || new Date().getFullYear().toString();
+		const grade = student.gradeLevel || 'K10';
+		const randomNum = Math.floor(1000 + Math.random() * 9000);
+		return `${year}-${grade}-${randomNum}`;
+	};
+
+	useEffect(() => {
+		setStudent((prev) => ({ ...prev, studentId: generateStudentId() }));
+	}, [student.schoolYear, student.gradeLevel]);
+
+	const handleChange = (field: keyof Leadership_Student_Add_Edit, value: any) => {
+		setStudent((prev) => ({ ...prev, [field]: value }));
+	};
+
+	// Xử lý upload avatar
+	const handleAvatarChange = (info: any) => {
+		const file = info.file.originFileObj;
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = () => {
+				setAvatarPreview(reader.result as string);
+				handleChange('avatar', file); // Lưu file vào state
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	const handleSubmit = () => {
+		onAddStudent(student);
+	};
+
 	return (
 		<div className=''>
-			{/* <div className='inline-flex h-[60px] w-[548px] items-center justify-center'>
-				<div className='inline-flex items-center justify-start gap-6 px-2.5'>
-					<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#c8c4c0]">
-						Hồ sơ học viên
-					</div>
-					<div data-svg-wrapper className='relative'>
-						<ArrowRight />
-					</div>
-					<div className="font-['Mulish'] text-5xl font-extrabold tracking-wide text-[#373839]">
-						Thêm học viên
-					</div>
-				</div>
-			</div> */}
 			<div className='w-[1640px] bg-white shadow-md'>
 				<div className='inline-flex h-14 w-[1640px] items-center justify-start overflow-hidden rounded-tl-2xl rounded-tr-2xl bg-[#cc5c00] pb-4 pl-[63px] pr-[1430px] pt-[17px]'>
 					<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
@@ -32,97 +93,185 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 					<div>
 						<div className='relative'>
 							<div className='flex h-[220px] w-[220px] items-end justify-center overflow-hidden rounded-full bg-[#EFEFEF]'>
-								<UserAvatar />
-								<div className='absolute -bottom-8'>
-									<button>
-										<Camera />
-									</button>
+								{avatarPreview ? (
+									<img src={avatarPreview} alt='Avatar' className='h-full w-full object-cover' />
+								) : (
+									<UserAvatar />
+								)}
+								<div className='absolute bottom-2'>
+									<Upload
+										showUploadList={false}
+										beforeUpload={() => false} // Ngăn upload tự động
+										onChange={handleAvatarChange}
+									>
+										<Button className='bg-transparent'>
+											<Camera />
+										</Button>
+									</Upload>
 								</div>
 							</div>
 						</div>
 					</div>
-					{/* Infor */}
 					<div>
 						<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#cc5c00]">
 							Thông tin học viên
 						</div>
 						<div className='flex items-center gap-28'>
-							{/* Left */}
 							<div className='space-y-4'>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Họ và tên:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.fullName}
+										onChange={(e) => handleChange('fullName', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Giới tính:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Select
+										value={student.gender}
+										onChange={(value) => handleChange('gender', value)}
+										className='h-10 w-[360px]'
+										placeholder='Chọn giới tính'
+									>
+										<Option value='Nam'>Nam</Option>
+										<Option value='Nữ'>Nữ</Option>
+									</Select>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Ngày sinh:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<DatePicker
+										value={student.birthDate}
+										onChange={(date) => handleChange('birthDate', date)}
+										className='h-10 w-[360px]'
+										format='DD/MM/YYYY'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Nơi sinh:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.birthPlace}
+										onChange={(e) => handleChange('birthPlace', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Dân tộc:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.ethnicity}
+										onChange={(e) => handleChange('ethnicity', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Tôn giáo:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.religion}
+										onChange={(e) => handleChange('religion', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 							</div>
-							{/* Right */}
 							<div className='space-y-4'>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Niên khoá:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.schoolYear}
+										onChange={(e) => handleChange('schoolYear', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Khối:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<div className='flex gap-2'>
+										<Select
+											value={student.gradeLevel}
+											onChange={(value) => handleChange('gradeLevel', value)}
+											className='h-10 w-[170px]'
+											placeholder='Chọn khối'
+										>
+											<Option value='K10'>Khối 10</Option>
+											<Option value='K11'>Khối 11</Option>
+											<Option value='K12'>Khối 12</Option>
+										</Select>
+										<Select
+											value={student.className}
+											onChange={(value) => handleChange('className', value)}
+											className='h-10 w-[170px]'
+											placeholder='Chọn lớp'
+										>
+											<Option value='A1'>Lớp A1</Option>
+											<Option value='A2'>Lớp A2</Option>
+											<Option value='B1'>Lớp B1</Option>
+										</Select>
+									</div>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Mã học viên:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.studentId}
+										disabled
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Ngày nhập học:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<DatePicker
+										value={student.enrollmentDate}
+										onChange={(date) => handleChange('enrollmentDate', date)}
+										className='h-10 w-[360px]'
+										format='DD/MM/YYYY'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Hình thức:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Select
+										value={student.admissionType}
+										onChange={(value) => handleChange('admissionType', value)}
+										className='h-10 w-[360px]'
+										placeholder='Chọn hình thức'
+									>
+										<Option value='Trúng tuyển'>Trúng tuyển</Option>
+										<Option value='Chưa trúng tuyển'>Chưa trúng tuyển</Option>
+									</Select>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Trạng thái:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Select
+										value={student.status}
+										onChange={(value) => handleChange('status', value)}
+										className='h-10 w-[360px]'
+										placeholder='Chọn trạng thái'
+									>
+										<Option value='Đang theo học'>Đang theo học</Option>
+										<Option value='Đã chuyển lớp'>Đã chuyển lớp</Option>
+										<Option value='Đã chuyển trường'>Đã chuyển trường</Option>
+										<Option value='Đã thôi học'>Đã thôi học</Option>
+									</Select>
 								</div>
 							</div>
 						</div>
@@ -133,52 +282,73 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 			<div className='w-[1640px] bg-white pt-2'>
 				<div className='flex gap-28 px-16 py-10'>
 					<div className='w-[220px]'></div>
-					{/* Infor */}
 					<div>
 						<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#cc5c00]">
 							Địa chỉ liên hệ
 						</div>
 						<div className='flex items-center gap-28'>
-							{/* Left */}
 							<div className='space-y-4'>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Tỉnh/Thành phố:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.province}
+										onChange={(e) => handleChange('province', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Quận/Huyện:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.district}
+										onChange={(e) => handleChange('district', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Xã/Phường:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.ward}
+										onChange={(e) => handleChange('ward', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 							</div>
-							{/* Right */}
 							<div className='space-y-4'>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 										Địa chỉ:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.address}
+										onChange={(e) => handleChange('address', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Email :
+										Email:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.email}
+										onChange={(e) => handleChange('email', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Điện thoại
+										Điện thoại:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.phone}
+										onChange={(e) => handleChange('phone', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 							</div>
 						</div>
@@ -194,67 +364,100 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 				<div className='flex gap-28 px-16 pt-10'>
 					<div>
 						<div className='flex items-center gap-28'>
-							{/* Row1 */}
 							<div className='space-y-4'>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Họ và tên:
+										Họ và tên bố:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.fatherName}
+										onChange={(e) => handleChange('fatherName', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Giới tính:
+										Họ tên mẹ:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.motherName}
+										onChange={(e) => handleChange('motherName', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Ngày sinh:
+										Họ tên giám hộ:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.guardianName}
+										onChange={(e) => handleChange('guardianName', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 							</div>
-							{/* Row2 */}
 							<div className='space-y-4'>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Niên khoá:
+										Năm sinh bố:
 									</p>
-									<Input className='inline-flex h-10 w-[104px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.fatherBirthYear}
+										onChange={(e) => handleChange('fatherBirthYear', e.target.value)}
+										className='inline-flex h-10 w-[104px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Khối:
+										Năm sinh mẹ:
 									</p>
-									<Input className='inline-flex h-10 w-[104px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.motherBirthYear}
+										onChange={(e) => handleChange('motherBirthYear', e.target.value)}
+										className='inline-flex h-10 w-[104px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Mã học viên:
+										Năm sinh GH:
 									</p>
-									<Input className='inline-flex h-10 w-[104px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.guardianBirthYear}
+										onChange={(e) => handleChange('guardianBirthYear', e.target.value)}
+										className='inline-flex h-10 w-[104px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 							</div>
-							{/* Row3 */}
 							<div className='space-y-4'>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Niên khoá:
+										Nghề nghiệp bố:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.fatherOccupation}
+										onChange={(e) => handleChange('fatherOccupation', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Khối:
+										Nghề nghiệp mẹ:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.motherOccupation}
+										onChange={(e) => handleChange('motherOccupation', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 								<div className='flex items-center gap-x-[55px]'>
 									<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-										Mã học viên:
+										Nghề nghiệp GH:
 									</p>
-									<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+									<Input
+										value={student.guardianOccupation}
+										onChange={(e) => handleChange('guardianOccupation', e.target.value)}
+										className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									/>
 								</div>
 							</div>
 						</div>
@@ -264,21 +467,33 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 						<div className='flex gap-4 space-y-10 pb-5'>
 							<div className='flex items-center gap-x-[55px]'>
 								<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-									Điện thoại
+									Điện thoại bố:
 								</p>
-								<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+								<Input
+									value={student.fatherPhone}
+									onChange={(e) => handleChange('fatherPhone', e.target.value)}
+									className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+								/>
 							</div>
 							<div className='flex items-center gap-x-[55px]'>
 								<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-									Điện thoại
+									Điện thoại mẹ:
 								</p>
-								<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+								<Input
+									value={student.motherPhone}
+									onChange={(e) => handleChange('motherPhone', e.target.value)}
+									className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+								/>
 							</div>
 							<div className='flex items-center gap-x-[55px]'>
 								<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
-									Điện thoại
+									Điện thoại GH:
 								</p>
-								<Input className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2' />
+								<Input
+									value={student.guardianPhone}
+									onChange={(e) => handleChange('guardianPhone', e.target.value)}
+									className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+								/>
 							</div>
 						</div>
 					</div>
@@ -286,10 +501,10 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 			</div>
 			<div className='flex items-center justify-center pt-12'>
 				<div className='flex items-center gap-4'>
-					<Button onClick={onAddStudent} className='w-[146px]'>
+					<Button onClick={onCancel} className='w-[146px]'>
 						Hủy
 					</Button>
-					<Button onClick={onCancel} className='w-[146px]'>
+					<Button type='primary' onClick={handleSubmit} className='w-[146px]'>
 						Lưu
 					</Button>
 				</div>
@@ -297,4 +512,5 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 		</div>
 	);
 };
+
 export default AddStudent;

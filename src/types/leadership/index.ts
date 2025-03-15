@@ -35,3 +35,58 @@ export interface dataDeclaration_facultie_Add_Edit {
 	facultyName: string;
 	facultyHead: string;
 }
+
+export interface dataDeclaration_subject {
+	id: string;
+	subjectGroup: string;
+	subjectName: string;
+	subjectCode: string;
+	subjectType: string;
+	numberLessonSemester1: number;
+	numberLessonSemester2: number;
+}
+export interface dataDeclaration_subject_add_edit {
+	subjectGroup: string;
+	subjectName: string;
+	subjectCode: string;
+	subjectType: string;
+	numberLessonSemester1: number;
+	numberLessonSemester2: number;
+}
+
+export interface dataDeclaration_class {
+	id: string;
+	classCode: string;
+	className: string;
+	teacher: string;
+	classType: string;
+	classQuantity: number;
+	description: string;
+	schoolYear: string;
+	faculty: string;
+	subjects: string[];
+}
+export interface dataDeclaration_class_add_edit {
+	classCode: string;
+	className: string;
+	teacher: string;
+	classType: string;
+	classQuantity: number;
+	description: string;
+	schoolYear: string;
+	faculty: string;
+	subjects: string[];
+}
+export interface dataDeclaration_scoreType {
+	id: string;
+	scoreType: string;
+	coefficient: number;
+	semester1: number;
+	semester2: number;
+}
+export interface dataDeclaration_scoreType_add_edit {
+	scoreType: string;
+	coefficient: number;
+	semester1: number;
+	semester2: number;
+}

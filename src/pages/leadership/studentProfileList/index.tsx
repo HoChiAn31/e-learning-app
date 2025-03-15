@@ -18,95 +18,97 @@ import {
 	Trash,
 	Update,
 } from '../../../components/icon';
-import { Key, useState } from 'react';
+import { Key, useEffect, useState } from 'react';
 import AddStudent from './AddStudent';
 import EditStudent from './EditStudent';
 import InforStudent from './InforStudent';
+import { Leadership_Student, Leadership_Student_Add_Edit } from '../../../types/leadership/student';
+import { addStudent, getStudents } from '../../../firebase/studentProfileList/fetchStudent';
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
-interface SemesterData {
-	// key: React.Key;
-	key: string;
-	studentCode: string;
-	studentName: string;
-	birthDay: string;
-	gender: string;
-	nation: string;
-	class: string;
-	status: string;
-}
-const data: SemesterData[] = [
-	{
-		key: '1',
-		studentCode: 'SV001',
-		studentName: 'Nguyễn Văn A',
-		birthDay: '2000-05-15',
-		gender: 'Nam',
-		nation: 'Kinh',
-		class: 'CNTT01',
-		status: 'Đang học',
-	},
-	{
-		key: '2',
-		studentCode: 'SV002',
-		studentName: 'Trần Thị B',
-		birthDay: '2001-08-20',
-		gender: 'Nữ',
-		nation: 'Kinh',
-		class: 'CNTT02',
-		status: 'Bảo lưu',
-	},
-	{
-		key: '3',
-		studentCode: 'SV003',
-		studentName: 'Lê Văn C',
-		birthDay: '1999-12-05',
-		gender: 'Nam',
-		nation: 'Kinh',
-		class: 'CNTT03',
-		status: 'Đã tốt nghiệp',
-	},
-	{
-		key: '4',
-		studentCode: 'SV004',
-		studentName: 'Phạm Thị D',
-		birthDay: '2002-01-10',
-		gender: 'Nữ',
-		nation: 'Kinh',
-		class: 'CNTT04',
-		status: 'Đang học',
-	},
-	{
-		key: '5',
-		studentCode: 'SV005',
-		studentName: 'Hoàng Văn E',
-		birthDay: '2000-11-25',
-		gender: 'Nam',
-		nation: 'Kinh',
-		class: 'CNTT05',
-		status: 'Đã nghỉ học',
-	},
-	{
-		key: '6',
-		studentCode: 'SV005',
-		studentName: 'Hoàng Văn E',
-		birthDay: '2000-11-25',
-		gender: 'Nam',
-		nation: 'Kinh',
-		class: 'CNTT05',
-		status: 'Đã nghỉ học',
-	},
-	{
-		key: '7',
-		studentCode: 'SV005',
-		studentName: 'Hoàng Văn E',
-		birthDay: '2000-11-25',
-		gender: 'Nam',
-		nation: 'Kinh',
-		class: 'CNTT05',
-		status: 'Đã nghỉ học',
-	},
-];
+// interface Leadership_Student {
+// 	// key: React.Key;
+// 	key: string;
+// 	studentCode: string;
+// 	studentName: string;
+// 	birthDay: string;
+// 	gender: string;
+// 	nation: string;
+// 	class: string;
+// 	status: string;
+// }
+// const data: SemesterData[] = [
+// 	{
+// 		key: '1',
+// 		studentCode: 'SV001',
+// 		studentName: 'Nguyễn Văn A',
+// 		birthDay: '2000-05-15',
+// 		gender: 'Nam',
+// 		nation: 'Kinh',
+// 		class: 'CNTT01',
+// 		status: 'Đang học',
+// 	},
+// 	{
+// 		key: '2',
+// 		studentCode: 'SV002',
+// 		studentName: 'Trần Thị B',
+// 		birthDay: '2001-08-20',
+// 		gender: 'Nữ',
+// 		nation: 'Kinh',
+// 		class: 'CNTT02',
+// 		status: 'Bảo lưu',
+// 	},
+// 	{
+// 		key: '3',
+// 		studentCode: 'SV003',
+// 		studentName: 'Lê Văn C',
+// 		birthDay: '1999-12-05',
+// 		gender: 'Nam',
+// 		nation: 'Kinh',
+// 		class: 'CNTT03',
+// 		status: 'Đã tốt nghiệp',
+// 	},
+// 	{
+// 		key: '4',
+// 		studentCode: 'SV004',
+// 		studentName: 'Phạm Thị D',
+// 		birthDay: '2002-01-10',
+// 		gender: 'Nữ',
+// 		nation: 'Kinh',
+// 		class: 'CNTT04',
+// 		status: 'Đang học',
+// 	},
+// 	{
+// 		key: '5',
+// 		studentCode: 'SV005',
+// 		studentName: 'Hoàng Văn E',
+// 		birthDay: '2000-11-25',
+// 		gender: 'Nam',
+// 		nation: 'Kinh',
+// 		class: 'CNTT05',
+// 		status: 'Đã nghỉ học',
+// 	},
+// 	{
+// 		key: '6',
+// 		studentCode: 'SV005',
+// 		studentName: 'Hoàng Văn E',
+// 		birthDay: '2000-11-25',
+// 		gender: 'Nam',
+// 		nation: 'Kinh',
+// 		class: 'CNTT05',
+// 		status: 'Đã nghỉ học',
+// 	},
+// 	{
+// 		key: '7',
+// 		studentCode: 'SV005',
+// 		studentName: 'Hoàng Văn E',
+// 		birthDay: '2000-11-25',
+// 		gender: 'Nam',
+// 		nation: 'Kinh',
+// 		class: 'CNTT05',
+// 		status: 'Đã nghỉ học',
+// 	},
+// ];
 const StudentProfileListPage = () => {
 	const [isModalFile, setIsModalFile] = useState<boolean>(false);
 	const [isAddStudent, setIsAddStudent] = useState<boolean>(false);
@@ -114,10 +116,29 @@ const StudentProfileListPage = () => {
 	const [isInforStudent, setIsInforStudent] = useState<boolean>(false);
 	// const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-	console.log('isAddStudent: ', isAddStudent);
-	console.log('isEditStudent: ', isEditStudent);
-	const handleIsAddStudent = () => {
-		setIsAddStudent(!isAddStudent);
+	const [dataStudentProfileList, setDataStudentProfileList] = useState<Leadership_Student[]>([]);
+
+	const fetchStudentProfileList = async () => {
+		const data = await getStudents();
+		console.log('Data department:', data);
+		setDataStudentProfileList(data);
+	};
+	useEffect(() => {
+		fetchStudentProfileList();
+	}, []);
+
+	const handleOpenIsAddStudent = () => {
+		setIsAddStudent(true);
+	};
+	const handleIsAddStudent = async (data: Leadership_Student_Add_Edit) => {
+		console.log('Add academic year:', data);
+		try {
+			await addStudent(data);
+			setIsAddStudent(false);
+			// await fetchSubject();
+		} catch (error) {
+			console.error('Error:', error);
+		}
 	};
 
 	const handleIsEditStudent = () => {
@@ -131,7 +152,7 @@ const StudentProfileListPage = () => {
 		console.log('selectedRowKeys changed: ', newSelectedRowKeys);
 		setSelectedRowKeys(newSelectedRowKeys);
 	};
-	const rowSelection: TableRowSelection<SemesterData> = {
+	const rowSelection: TableRowSelection<Leadership_Student> = {
 		selectedRowKeys,
 		onChange: onSelectChange,
 	};
@@ -139,41 +160,46 @@ const StudentProfileListPage = () => {
 		console.log(`selected ${value}`);
 	};
 
-	const onChange: TableProps<SemesterData>['onChange'] = (pagination, filters, sorter, extra) => {
+	const onChange: TableProps<Leadership_Student>['onChange'] = (
+		pagination,
+		filters,
+		sorter,
+		extra,
+	) => {
 		console.log('params', pagination, filters, sorter, extra);
 	};
-	const handleInforStudent = (record: SemesterData) => {
+	const handleInforStudent = (record: Leadership_Student) => {
 		console.log('Edit academic year:', record);
 		setIsInforStudent(!isInforStudent);
 	};
-	const handleEditStudent = (record: SemesterData) => {
+	const handleEditStudent = (record: Leadership_Student) => {
 		console.log('Edit academic year:', record);
 		setIsEditStudent(!isEditStudent);
 	};
 
-	const handleDelete = (record: SemesterData) => {
+	const handleDelete = (record: Leadership_Student) => {
 		console.log('Remove academic year:', record);
-		console.log('Remove academic year key:', record.key);
+		console.log('Remove academic year key:', record.id);
 		// setIsModalOpenDelete(true);
 	};
-	const columns: TableColumnsType<SemesterData> = [
+	const columns: TableColumnsType<Leadership_Student> = [
 		{
 			title: 'Mã học viên',
-			dataIndex: 'studentCode',
-			sorter: (a, b) => a.studentCode.localeCompare(b.studentCode),
+			dataIndex: 'studentId',
+			sorter: (a, b) => a.studentId.localeCompare(b.studentId),
 			width: '15%',
 		},
 
 		{
 			title: 'Tên học viên',
-			dataIndex: 'studentName',
-			sorter: (a, b) => a.studentName.localeCompare(b.studentName),
+			dataIndex: 'fullName',
+			sorter: (a, b) => a.fullName.localeCompare(b.fullName),
 			width: '20%',
 		},
 		{
 			title: 'Ngày sinh',
-			dataIndex: 'birthDay',
-			sorter: (a, b) => a.birthDay.localeCompare(b.birthDay),
+			dataIndex: 'birthDate',
+			sorter: (a, b) => a.birthDate.localeCompare(b.birthDate),
 			width: '10%',
 		},
 		{
@@ -184,19 +210,19 @@ const StudentProfileListPage = () => {
 		},
 		{
 			title: 'Dân tộc',
-			dataIndex: 'nation',
-			sorter: (a, b) => a.nation.localeCompare(b.nation),
+			dataIndex: 'ethnicity',
+			sorter: (a, b) => a.ethnicity.localeCompare(b.ethnicity),
 			width: '10%',
 		},
 		{
 			title: 'Lớp',
-			dataIndex: 'class',
-			sorter: (a, b) => a.class.localeCompare(b.class),
+			dataIndex: 'gradeLevel',
+			sorter: (a, b) => a.gradeLevel.localeCompare(b.gradeLevel),
 			width: '15%',
 		},
 		{
 			title: 'Tình trạng',
-			dataIndex: 'class',
+			dataIndex: 'status',
 			sorter: (a, b) => a.status.localeCompare(b.status),
 			width: '15%',
 		},
@@ -406,7 +432,7 @@ const StudentProfileListPage = () => {
 								type='primary'
 								icon={<Plus />}
 								size='middle'
-								onClick={handleIsAddStudent}
+								onClick={handleOpenIsAddStudent}
 							>
 								<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
 									Thêm mới
@@ -442,10 +468,10 @@ const StudentProfileListPage = () => {
 									},
 								}}
 							>
-								<Table<SemesterData>
+								<Table<Leadership_Student>
 									rowSelection={rowSelection}
 									columns={columns}
-									dataSource={data}
+									dataSource={dataStudentProfileList}
 									onChange={onChange}
 									rowClassName={(_, index) => (index % 2 !== 0 ? 'bg-[#F0F3F6]' : '')}
 									pagination={{

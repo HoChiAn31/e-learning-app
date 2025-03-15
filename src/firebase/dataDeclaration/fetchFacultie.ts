@@ -1,6 +1,5 @@
 import { get, push, ref, remove, update } from 'firebase/database';
 import { db } from '../config';
-import { v4 as uuidv4 } from 'uuid';
 import {
 	dataDeclaration_facultie,
 	dataDeclaration_facultie_Add_Edit,
@@ -17,10 +16,8 @@ export const addFaculty = async (faculty: dataDeclaration_facultie_Add_Edit): Pr
 			facultyHead: faculty.facultyHead,
 		});
 		message.success('Thêm thành công!');
-		// console.log('Faculty added successfully with ID:', facultyId);
 	} catch (error) {
 		message.error('Thất bại. Vui long thử lại!');
-		// console.error('Error adding faculty:', error);
 		throw error;
 	}
 };
@@ -59,6 +56,7 @@ export const updateFaculty = async (
 		await update(facultyRef, updatedData);
 
 		console.log('Faculty updated successfully:', id);
+		message.success('Cập nhật thành công!');
 	} catch (error) {
 		console.error('Error updating faculty:', error);
 		throw error;
@@ -71,7 +69,7 @@ export const deleteFaculty = async (id: string): Promise<void> => {
 
 		await remove(facultyRef);
 
-		console.log('Faculty deleted successfully:', id);
+		message.success('Xóa thành công!');
 	} catch (error) {
 		console.error('Error deleting faculty:', error);
 		throw error;

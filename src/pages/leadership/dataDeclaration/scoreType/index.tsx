@@ -1,88 +1,57 @@
-import {
-	Button,
-	ConfigProvider,
-	Input,
-	Modal,
-	Select,
-	Table,
-	TableColumnsType,
-	TableProps,
-} from 'antd';
+import { Button, ConfigProvider, Input, Select, Table, TableColumnsType, TableProps } from 'antd';
 import { Edit, Plus, Search, Trash } from '../../../../components/icon';
-import { useState } from 'react';
-
-interface SemesterData {
-	// key: React.Key;
-	key: string;
-	scoreType: string;
-	coefficient: number;
-	semester1: number;
-	semester2: number;
-}
-const data: SemesterData[] = [
-	{
-		key: '1',
-		scoreType: 'Kiểm tra miệng',
-		coefficient: 0.15,
-		semester1: 9.0,
-		semester2: 8.0,
-	},
-	{
-		key: '2',
-		scoreType: 'Kiểm tra 15 phút',
-		coefficient: 0.1,
-		semester1: 8.5,
-		semester2: 7.5,
-	},
-	{
-		key: '3',
-		scoreType: 'Kiểm tra 45 phút',
-		coefficient: 0.2,
-		semester1: 7.0,
-		semester2: 6.5,
-	},
-	{
-		key: '4',
-		scoreType: 'Kiểm tra giữa kỳ',
-		coefficient: 0.25,
-		semester1: 8.8,
-		semester2: 7.9,
-	},
-	{
-		key: '5',
-		scoreType: 'Kiểm tra cuối kỳ',
-		coefficient: 0.3,
-		semester1: 8.3,
-		semester2: 8.7,
-	},
-];
+import { useEffect, useState } from 'react';
+import AddModal from './AddModal';
+import EditModal from './EditModal';
+import DeleteModal from './DeleteModal';
+import {
+	dataDeclaration_scoreType,
+	dataDeclaration_scoreType_add_edit,
+} from '../../../../types/leadership';
+import {
+	addScoreType,
+	deleteScoreType,
+	getScoreTypes,
+	updateScoreType,
+} from '../../../../firebase/dataDeclaration/fetchScoreType';
 
 function ScoreTypePage() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
+	const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false); // State cho EditModal
 	const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
-
-	const handleEdit = (record: SemesterData) => {
-		console.log('Edit academic year:', record);
-		setIsModalOpen(true);
+	const [dataScoreType, setDataScoreType] = useState<dataDeclaration_scoreType[]>([]);
+	const [selectedRecord, setSelectedRecord] = useState<dataDeclaration_scoreType | null>(null); // Bản ghi được chọn để chỉnh sửa
+	const [deleteId, setDeleteId] = useState<string | null>(null);
+	const fetchScoreType = async () => {
+		const data = await getScoreTypes();
+		setDataScoreType(data);
 	};
 
-	const handleDelete = (record: SemesterData) => {
-		console.log('Remove academic year:', record);
-		console.log('Remove academic year key:', record.key);
+	useEffect(() => {
+		fetchScoreType();
+	}, []);
+
+	const handleEdit = (record: dataDeclaration_scoreType) => {
+		setSelectedRecord(record);
+		setIsEditModalOpen(true);
+	};
+
+	const handleDelete = (record: dataDeclaration_scoreType) => {
+		setDeleteId(record.id);
 		setIsModalOpenDelete(true);
 	};
+
 	const handleChange = (value: string) => {
 		console.log(`selected ${value}`);
 	};
-	const columns: TableColumnsType<SemesterData> = [
+
+	const columns: TableColumnsType<dataDeclaration_scoreType> = [
 		{
 			title: 'Loại điểm',
 			dataIndex: 'scoreType',
 			sorter: (a, b) => a.scoreType.localeCompare(b.scoreType),
 			width: '15%',
 		},
-
 		{
 			title: 'Hệ số',
 			dataIndex: 'coefficient',
@@ -104,7 +73,6 @@ function ScoreTypePage() {
 				},
 			],
 		},
-
 		{
 			title: '',
 			dataIndex: 'action',
@@ -122,31 +90,57 @@ function ScoreTypePage() {
 		},
 	];
 
-	const onChange: TableProps<SemesterData>['onChange'] = (pagination, filters, sorter, extra) => {
+	const onChange: TableProps<dataDeclaration_scoreType>['onChange'] = (
+		pagination,
+		filters,
+		sorter,
+		extra,
+	) => {
 		console.log('params', pagination, filters, sorter, extra);
 	};
 
-	// Modal add
-	const handleOk = () => {
-		setIsModalOpen(false);
+	const handleOkAdd = async (data: dataDeclaration_scoreType_add_edit) => {
+		try {
+			await addScoreType(data);
+			setIsModalOpen(false);
+			await fetchScoreType(); // Cập nhật danh sách sau khi thêm
+		} catch (error) {
+			console.error('Lỗi khi thêm loại điểm:', error);
+		}
 	};
+
+	const handleOkEdit = async (data: dataDeclaration_scoreType_add_edit) => {
+		if (selectedRecord) {
+			try {
+				await updateScoreType(selectedRecord.id, data); // Gọi hàm cập nhật
+				setIsEditModalOpen(false);
+				await fetchScoreType(); // Cập nhật danh sách sau khi chỉnh sửa
+			} catch (error) {
+				console.error('Lỗi khi cập nhật loại điểm:', error);
+			}
+		}
+	};
+
 	const handleCancel = () => {
 		setIsModalOpen(false);
+		setIsEditModalOpen(false); // Đóng cả hai modal nếu cần
 	};
-	const modalStyles = {
-		header: {
-			textAlign: 'center' as 'center',
-		},
-		footer: {
-			textAlign: 'center' as 'center',
-		},
+
+	const handleOkDelete = async (id: string) => {
+		try {
+			await deleteScoreType(id);
+			setIsModalOpenDelete(false);
+			setDeleteId(null);
+			await fetchScoreType();
+		} catch (error) {
+			console.error('Lỗi khi cập nhật tổ - bộ môn:', error);
+		}
 	};
-	const handleOkDelete = () => {
-		setIsModalOpenDelete(false);
-	};
+
 	const handleCancelDelete = () => {
 		setIsModalOpenDelete(false);
 	};
+
 	return (
 		<div>
 			<div className='flex w-full items-end justify-end'>
@@ -156,100 +150,26 @@ function ScoreTypePage() {
 					icon={<Plus />}
 					size='middle'
 					onClick={() => setIsModalOpen(true)}
-					// onClick={showModal}
 				>
 					<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
 						Thêm mới
 					</div>
 				</Button>
 
-				{/* Modal Add */}
-				<Modal
-					title='Thêm loại điểm mới'
-					open={isModalOpen}
-					onOk={handleOk}
-					onCancel={handleCancel}
-					styles={modalStyles}
-					width={800}
-					footer={[
-						<Button className='w-40' key='back' onClick={handleCancel}>
-							Hủy
-						</Button>,
-						<Button className='w-40' key='submit' type='primary' onClick={handleOk}>
-							Lưu
-						</Button>,
-					]}
-				>
-					<div className='py-5'>
-						<div className=''>
-							<div className='flex items-center justify-between'>
-								<div className='flex h-5 items-center'>
-									<div className='flex items-start justify-start'>
-										<div className='flex w-28 items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Tên loại điểm:
-											</div>
-										</div>
-									</div>
-									<Input />
-									{/* <Select
-										defaultValue='Khoa học tự nhiên'
-										onChange={handleChange}
-										options={[
-											{ value: 'Khoa học tự nhiên', label: 'Khoa học tự nhiên' },
-											{ value: 'Văn hóa xã hội', label: 'Văn hóa xã hội' },
-										]}
-										className='w-[400px]'
-									/> */}
-								</div>
-								<div className='flex h-5 items-center'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Hệ số:
-											</div>
-										</div>
-									</div>
+				<AddModal
+					isModalOpen={isModalOpen}
+					handleOk={handleOkAdd}
+					handleCancel={handleCancel}
+					handleChange={handleChange}
+				/>
 
-									<Select
-										// defaultValue='1'
-										style={{ width: 120 }}
-										onChange={handleChange}
-										placeholder='Chọn hệ số'
-										options={[
-											{ value: '1', label: '1' },
-											{ value: '2', label: '2' },
-										]}
-										className=''
-									/>
-								</div>
-							</div>
-
-							<div className='my-5 h-[0px] w-[756px] border border-[#c8c4c0]'></div>
-
-							<div>
-								<p className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#cc5c00]">
-									Số cột điểm tối thiểu
-								</p>
-
-								<div className='flex items-center justify-between py-5'>
-									<div className='flex items-center gap-1'>
-										<p className="font-['Source Sans Pro'] w-24 text-base font-bold tracking-tight text-[#373839]">
-											Học kì I:
-										</p>
-										<Input placeholder='Nhập số tiết' value={45} />
-									</div>
-									<div className='flex items-center gap-1'>
-										<p className="font-['Source Sans Pro'] w-24 text-base font-bold tracking-tight text-[#373839]">
-											Học kì II:
-										</p>
-										<Input placeholder='Nhập số tiết' value={24} />
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</Modal>
+				<EditModal
+					isModalOpen={isEditModalOpen}
+					handleOk={handleOkEdit}
+					handleCancel={handleCancel}
+					handleChange={handleChange}
+					record={selectedRecord}
+				/>
 			</div>
 
 			<div className='mt-2 rounded-2xl bg-white p-4 shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
@@ -279,10 +199,9 @@ function ScoreTypePage() {
 							},
 						}}
 					>
-						<Table<SemesterData>
-							// rowSelection={rowSelection}
+						<Table<dataDeclaration_scoreType>
 							columns={columns}
-							dataSource={data}
+							dataSource={dataScoreType}
 							onChange={onChange}
 							rowClassName={(_, index) => (index % 2 !== 0 ? 'bg-[#F0F3F6]' : '')}
 							pagination={{
@@ -295,26 +214,13 @@ function ScoreTypePage() {
 					</ConfigProvider>
 				</div>
 			</div>
-			<Modal
-				title='Xóa'
-				open={isModalOpenDelete}
+
+			<DeleteModal
+				isModalOpenDelete={isModalOpenDelete}
 				onOk={handleOkDelete}
+				id={deleteId}
 				onCancel={handleCancelDelete}
-				styles={modalStyles}
-				footer={[
-					<Button className='w-40' key='back' onClick={handleCancelDelete}>
-						Hủy
-					</Button>,
-					<Button className='w-40' key='submit' type='primary' onClick={handleOkDelete}>
-						Xác nhận
-					</Button>,
-				]}
-			>
-				<div className="font-['Source Sans Pro'] text-center text-base font-normal leading-tight text-[#373839]">
-					Xác nhận muốn xoá môn học này và toàn bộ thông tin bên trong? Sau khi xoá sẽ không thể
-					hoàn tác.
-				</div>
-			</Modal>
+			/>
 		</div>
 	);
 }

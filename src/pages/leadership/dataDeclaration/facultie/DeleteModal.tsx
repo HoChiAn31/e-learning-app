@@ -2,7 +2,7 @@ import { Button, Modal } from 'antd';
 
 interface DeleteModalProps {
 	visible: boolean;
-	id: string | null; // Thêm prop id để truyền ID của bản ghi
+	id: string | null;
 	onOk: (id: string) => void;
 	onCancel: () => void;
 }

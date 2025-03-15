@@ -1,6 +1,5 @@
 import { get, push, ref, remove, set, update } from 'firebase/database';
 import { db } from '../config';
-import { v4 as uuidv4 } from 'uuid';
 import {
 	dataDeclaration_department,
 	dataDeclaration_department_Add_Edit,
@@ -10,8 +9,6 @@ export const addDepartment = async (
 	department: dataDeclaration_department_Add_Edit,
 ): Promise<void> => {
 	try {
-		const departmentId = uuidv4();
-
 		const departmentRef = ref(db, `Leadership_departments`);
 
 		await push(departmentRef, {
@@ -19,8 +16,6 @@ export const addDepartment = async (
 			headOfDepartment: department.headOfDepartment,
 			subjectList: department.subjectList,
 		});
-
-		console.log('Department added successfully with ID:', departmentId);
 	} catch (error) {
 		console.error('Error adding department:', error);
 		throw error;

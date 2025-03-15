@@ -1,7 +1,7 @@
 import { Button, Modal } from 'antd';
 
-interface DeleteModalProps {
-	visible: boolean;
+interface DeleteScoreTypeModalProps {
+	isModalOpenDelete: boolean;
 	id: string | null;
 	onOk: (id: string) => void;
 	onCancel: () => void;
@@ -12,16 +12,18 @@ const modalStyles = {
 	footer: { textAlign: 'center' as 'center' },
 };
 
-export const DeleteModal: React.FC<DeleteModalProps> = ({ id, visible, onOk, onCancel }) => {
+const DeleteModal = ({ isModalOpenDelete, id, onOk, onCancel }: DeleteScoreTypeModalProps) => {
 	const handleSubmit = () => {
 		if (id) {
-			onOk(id); // Truyền id trực tiếp khi xác nhận xóa
+			console.log(id);
+
+			onOk(id);
 		}
 	};
 	return (
 		<Modal
 			title='Xóa'
-			open={visible}
+			open={isModalOpenDelete}
 			onOk={handleSubmit}
 			onCancel={onCancel}
 			styles={modalStyles}
@@ -35,9 +37,11 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({ id, visible, onOk, onC
 			]}
 		>
 			<div className="font-['Source Sans Pro'] text-center text-base font-normal leading-tight text-[#373839]">
-				Xác nhận muốn xóa môn học này và toàn bộ thông tin bên trong? Sau khi xóa sẽ không thể hoàn
+				Xác nhận muốn xoá môn học này và toàn bộ thông tin bên trong? Sau khi xoá sẽ không thể hoàn
 				tác.
 			</div>
 		</Modal>
 	);
 };
+
+export default DeleteModal;
