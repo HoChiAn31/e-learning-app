@@ -4,6 +4,7 @@ import {
 	dataDeclaration_department,
 	dataDeclaration_department_Add_Edit,
 } from '../../types/leadership';
+import { message } from 'antd';
 
 export const addDepartment = async (
 	department: dataDeclaration_department_Add_Edit,
@@ -16,7 +17,10 @@ export const addDepartment = async (
 			headOfDepartment: department.headOfDepartment,
 			subjectList: department.subjectList,
 		});
+		message.success('Thêm tổ - bộ môn thành công!');
 	} catch (error) {
+		message.error('Thất bại. Vui long thử lại!');
+
 		console.error('Error adding department:', error);
 		throw error;
 	}
@@ -40,6 +44,7 @@ export const getDepartments = async (): Promise<dataDeclaration_department[]> =>
 			return [];
 		}
 	} catch (error) {
+		message.error('Thất bại. Vui long thử lại!');
 		console.error('Error fetching departments:', error);
 		throw error;
 	}
@@ -55,7 +60,9 @@ export const updateDepartment = async (
 		await update(departmentRef, updatedData);
 
 		console.log('Department updated successfully:', id);
+		message.success('Cập nhật tổ - bộ môn thành công!');
 	} catch (error) {
+		message.error('Thất bại. Vui long thử lại!');
 		console.error('Error updating department:', error);
 		throw error;
 	}
@@ -66,9 +73,9 @@ export const deleteDepartment = async (id: string): Promise<void> => {
 		const departmentRef = ref(db, `Leadership_departments/${id}`);
 
 		await remove(departmentRef);
-
-		console.log('Department deleted successfully:', id);
+		message.success('Xóa tổ - bộ môn thành công!');
 	} catch (error) {
+		message.error('Thất bại. Vui long thử lại!');
 		console.error('Error deleting department:', error);
 		throw error;
 	}

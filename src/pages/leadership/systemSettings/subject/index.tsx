@@ -1,44 +1,67 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { ArrowRight, Plus } from '../../../../components/icon';
 import SubjectTable from './components/SubjectTable';
 
 import AddSubjectModal from './components/AddSubjectModal';
-// import SemesterSelect from './components/SemesterSelect';
 
-import { subjectAddProps } from './type';
+import { SystemSettings_subject, SystemSettings_subject_Add_Edit } from './type';
 import AcademicYearsSelect from './components/AcademicYearsSelect';
 import { useNavigate } from 'react-router-dom';
+import { addSubjectSetting, getSubjectSettings } from '../../../../firebase/systems/subject';
 
 const SubjectSettingPage: React.FC = () => {
 	const [isModalOpenSubjectUser, setIsModalOpenSubjectUser] = useState(false);
 
-	const [userAdd, setUserAdd] = useState<subjectAddProps>({
-		type: '',
-		status: false,
+	const [subjectAdd, setSubjectAdd] = useState<SystemSettings_subject_Add_Edit>({
+		subjectType: '',
+		subjectStatus: false,
 		description: '',
 	});
+	const [dataSubject, setDataClassSubject] = useState<SystemSettings_subject[]>([]);
+
+	const fetchDataSubject = async () => {
+		try {
+			const data = await getSubjectSettings();
+			console.log('Data class:', data);
+			setDataClassSubject(data);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	};
+	useEffect(() => {
+		fetchDataSubject();
+	}, []);
 	const handleOpenModal = () => {
 		setIsModalOpenSubjectUser(true);
+	};
+	const handleOk = async () => {
+		try {
+			await addSubjectSetting(subjectAdd);
+			fetchDataSubject();
+			setIsModalOpenSubjectUser(false);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	};
+	const handleDeleteOK = () => {
+		fetchDataSubject();
 	};
 	return (
 		<div>
 			<Header />
 			<ControlPanel onAddClick={handleOpenModal} />
 
-			<SubjectTable />
+			<SubjectTable dataSubject={dataSubject} onDeleteOK={handleDeleteOK} />
 			<AddSubjectModal
 				visible={isModalOpenSubjectUser}
-				userAdd={userAdd}
-				setUserAdd={setUserAdd}
-				onOk={() => {
-					console.log(userAdd);
-					setIsModalOpenSubjectUser(false);
-				}}
+				userAdd={subjectAdd}
+				setUserAdd={setSubjectAdd}
+				onOk={handleOk}
 				onCancel={() => {
-					setUserAdd({
-						type: '',
-						status: false,
+					setSubjectAdd({
+						subjectType: '',
+						subjectStatus: false,
 						description: '',
 					});
 					setIsModalOpenSubjectUser(false);

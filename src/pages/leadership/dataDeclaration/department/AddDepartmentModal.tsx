@@ -2,6 +2,7 @@ import { Button, Input, Modal, Select } from 'antd';
 import { Minus, Plus } from '../../../../components/icon';
 import { Department } from '../../../../firebase/dataDeclaration/types';
 import { addDepartment } from '../../../../firebase/dataDeclaration/fetchDepartment';
+import { useState } from 'react';
 
 interface DepartmentState {
 	departmentName: string;
@@ -11,11 +12,8 @@ interface DepartmentState {
 
 interface AddDepartmentModalProps {
 	isModalOpen: boolean;
-	setIsModalOpen: (value: boolean) => void;
-	department: DepartmentState;
-	setDepartment: (value: DepartmentState) => void;
-	showSelect: boolean;
-	setShowSelect: (value: boolean) => void;
+	onOk: (data: DepartmentState) => void;
+	onCancel: () => void;
 }
 
 const dataTeachers = [
@@ -48,35 +46,24 @@ const modalStyles = {
 
 export default function AddDepartmentModal({
 	isModalOpen,
-	setIsModalOpen,
-	department,
-	setDepartment,
-	showSelect,
-	setShowSelect,
+	onOk,
+	onCancel,
 }: AddDepartmentModalProps) {
-	const handleOk = async () => {
-		try {
-			const newDepartment: Department = {
-				departmentName: department.departmentName,
-				headOfDepartment: department.headOfDepartment,
-				subjectList: department.subjectList,
-			};
+	const [department, setDepartment] = useState<DepartmentState>({
+		departmentName: '',
+		headOfDepartment: '',
+		subjectList: [],
+	});
+	const [showSelect, setShowSelect] = useState(false);
 
-			await addDepartment(newDepartment);
-
-			console.log('Dữ liệu nhập:', department);
-
-			// Đóng modal và reset form
-			setIsModalOpen(false);
-			setDepartment({ departmentName: '', headOfDepartment: '', subjectList: [] });
-			setShowSelect(false);
-		} catch (error) {
-			console.error('Lỗi khi thêm tổ - bộ môn:', error);
-		}
+	const handleOk = () => {
+		onOk(department);
+		setDepartment({ departmentName: '', headOfDepartment: '', subjectList: [] });
+		setShowSelect(false);
 	};
 
 	const handleCancel = () => {
-		setIsModalOpen(false);
+		onCancel();
 		setDepartment({ departmentName: '', headOfDepartment: '', subjectList: [] });
 		setShowSelect(false);
 	};

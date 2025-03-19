@@ -1,53 +1,35 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Button, ConfigProvider, Input, Table } from 'antd';
-import { tranningProps } from '../type';
-import { Edit, Search, Trash } from '../../../../../components/icon';
-import DeleteGroupUserModal from './DeleteTranningModal';
+import { Leadership_system_tranning } from '../../../../../types/leadership/system'; // Adjust path
+import { Edit, Search, Trash } from '../../../../../components/icon'; // Adjust path
+import DeleteGroupUserModal from './DeleteTranningModal'; // Adjust path
+import { deleteTrainingSetting } from '../../../../../firebase/systems/tranning';
 
-export const subjectData: tranningProps[] = [
-	{
-		key: 1,
-		type: 'THCS',
-		status: true,
-		description: 'Môn học dành cho học sinh có năng lực cao, giúp nâng cao kiến thức chuyên sâu.',
-	},
-	{
-		key: 2,
-		type: 'Đại học',
-		status: true,
-		description: 'Môn học giúp củng cố và mở rộng kiến thức nền tảng cho học sinh.',
-	},
-	{
-		key: 3,
-		type: 'Tiểu học',
-		status: false,
-		description: 'Môn học cung cấp kiến thức cơ bản, phù hợp với tất cả học sinh.',
-	},
-	{
-		key: 4,
-		type: 'Cao đẳng',
-		status: false,
-		description: 'Môn học hỗ trợ học sinh gặp khó khăn trong việc tiếp thu kiến thức.',
-	},
-];
+interface TranningTableProps {
+	dataSource: Leadership_system_tranning[];
+	fetchData: () => Promise<void>;
+	onEdit?: (record: Leadership_system_tranning) => void; // Add onEdit callback
+}
 
-const ClassTable: React.FC = () => {
+const TranningTable: React.FC<TranningTableProps> = ({ dataSource, fetchData, onEdit }) => {
 	const [isModalOpenDeleteGroupUser, setIsModalOpenDeleteGroupUser] = useState(false);
 	const [valueSearch, setValueSearch] = useState<string>('');
-	const [data, setData] = useState<tranningProps[]>(subjectData);
-	const [selectedClassKey, setSelectedClassKey] = useState<number | string | null>(null);
+	const [data, setData] = useState<Leadership_system_tranning[]>(dataSource);
+	const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
 	const columns = [
 		{
 			title: 'Trình độ',
-			dataIndex: 'type',
-			sorter: (a: tranningProps, b: tranningProps) => a.type.localeCompare(b.type),
+			dataIndex: 'educationlevel',
+			sorter: (a: Leadership_system_tranning, b: Leadership_system_tranning) =>
+				a.educationlevel.localeCompare(b.educationlevel),
 			width: '15%',
 		},
 		{
 			title: 'Trạng thái',
 			dataIndex: 'status',
-			sorter: (a: tranningProps, b: tranningProps) => Number(a.status) - Number(b.status),
+			sorter: (a: Leadership_system_tranning, b: Leadership_system_tranning) =>
+				Number(a.status) - Number(b.status),
 			render: (status: boolean) => (status ? 'Đang hoạt động' : 'Vô hiệu hóa'),
 			width: '10%',
 		},
@@ -55,15 +37,15 @@ const ClassTable: React.FC = () => {
 		{
 			title: 'Hành động',
 			dataIndex: 'action',
-			render: (_: any, record: tranningProps) => (
+			render: (_: any, record: Leadership_system_tranning) => (
 				<div>
-					<Button type='link' onClick={() => console.log('Edit:', record)}>
+					<Button type='link' onClick={() => onEdit && onEdit(record)}>
 						<Edit />
 					</Button>
 					<Button
 						type='link'
 						onClick={() => {
-							setSelectedClassKey(record.key as string | number);
+							setSelectedClassId(record.id);
 							setIsModalOpenDeleteGroupUser(true);
 						}}
 					>
@@ -81,22 +63,27 @@ const ClassTable: React.FC = () => {
 
 	useEffect(() => {
 		if (valueSearch.trim() === '') {
-			setData(subjectData);
+			setData(dataSource);
 		} else {
-			const filteredData = subjectData.filter((d) =>
-				d.type.toLowerCase().includes(valueSearch.toLowerCase()),
+			const filteredData = dataSource.filter((d) =>
+				d.educationlevel.toLowerCase().includes(valueSearch.toLowerCase()),
 			);
 			setData(filteredData);
 		}
-	}, [valueSearch]);
+	}, [valueSearch, dataSource]);
 
-	// Hàm xóa lớp học
-	const handleDeleteClass = () => {
-		if (selectedClassKey !== null) {
-			setData((prevData) => prevData.filter((item) => item.key !== selectedClassKey));
+	const handleDeleteClass = async () => {
+		if (selectedClassId !== null) {
+			try {
+				// Assuming you have a deleteTrainingSetting function
+				await deleteTrainingSetting(selectedClassId);
+				await fetchData(); // Refresh data after deletion
+			} catch (error) {
+				console.error('Error deleting class:', error);
+			}
 		}
 		setIsModalOpenDeleteGroupUser(false);
-		setSelectedClassKey(null);
+		setSelectedClassId(null);
 	};
 
 	return (
@@ -128,7 +115,7 @@ const ClassTable: React.FC = () => {
 						},
 					}}
 				>
-					<Table<tranningProps>
+					<Table<Leadership_system_tranning>
 						columns={columns}
 						dataSource={data}
 						pagination={{
@@ -137,20 +124,20 @@ const ClassTable: React.FC = () => {
 							pageSizeOptions: ['5', '10', '20', '50'],
 							defaultPageSize: 5,
 						}}
+						rowKey='id' // Use id as the unique key
 					/>
 				</ConfigProvider>
 			</div>
-			{/* Modal xác nhận xóa */}
 			<DeleteGroupUserModal
 				visible={isModalOpenDeleteGroupUser}
-				onOk={handleDeleteClass} // Gọi hàm xóa khi xác nhận
+				onOk={handleDeleteClass}
 				onCancel={() => {
 					setIsModalOpenDeleteGroupUser(false);
-					setSelectedClassKey(null);
+					setSelectedClassId(null);
 				}}
 			/>
 		</div>
 	);
 };
 
-export default ClassTable;
+export default TranningTable;

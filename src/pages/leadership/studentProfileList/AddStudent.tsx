@@ -464,7 +464,7 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 						<div className="font-['Source Sans Pro'] pt-5 text-base font-bold tracking-tight text-[#cc5c00]">
 							Thông tin học viên
 						</div>
-						<div className='flex gap-4 space-y-10 pb-5'>
+						<div className='flex gap-4 pb-5'>
 							<div className='flex items-center gap-x-[55px]'>
 								<p className="font-['Source Sans Pro'] w-[112px] text-base font-bold tracking-tight text-[#373839] opacity-80">
 									Điện thoại bố:
@@ -472,7 +472,7 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 								<Input
 									value={student.fatherPhone}
 									onChange={(e) => handleChange('fatherPhone', e.target.value)}
-									className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									className='inline-flex h-10 w-[340px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
 								/>
 							</div>
 							<div className='flex items-center gap-x-[55px]'>
@@ -482,7 +482,7 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 								<Input
 									value={student.motherPhone}
 									onChange={(e) => handleChange('motherPhone', e.target.value)}
-									className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									className='inline-flex h-10 w-[340px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
 								/>
 							</div>
 							<div className='flex items-center gap-x-[55px]'>
@@ -492,7 +492,7 @@ const AddStudent: FC<AddStudentProps> = ({ onAddStudent, onCancel }) => {
 								<Input
 									value={student.guardianPhone}
 									onChange={(e) => handleChange('guardianPhone', e.target.value)}
-									className='inline-flex h-10 w-[360px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
+									className='inline-flex h-10 w-[340px] items-center justify-start gap-6 overflow-hidden rounded-lg border bg-[#F2F2F2] px-4 py-2'
 								/>
 							</div>
 						</div>

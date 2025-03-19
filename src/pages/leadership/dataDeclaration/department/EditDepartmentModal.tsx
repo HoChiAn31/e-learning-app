@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Modal, Select } from 'antd';
 import { Minus, Plus } from '../../../../components/icon';
 import { Department } from '../../../../firebase/dataDeclaration/types';
@@ -52,8 +52,9 @@ export default function EditDepartmentModal({
 	const [editedDepartment, setEditedDepartment] = useState<dataDeclaration_department>(department);
 	const [showSelect, setShowSelect] = useState<boolean>(false);
 
-	console.log('Initial department:', department);
-
+	useEffect(() => {
+		setEditedDepartment(department);
+	}, [department]);
 	const handleOk = async () => {
 		try {
 			if (!editedDepartment.id) {

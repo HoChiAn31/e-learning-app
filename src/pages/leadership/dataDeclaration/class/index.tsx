@@ -1,26 +1,33 @@
 import { Button, ConfigProvider, Input, Select, Table, TableColumnsType, TableProps } from 'antd';
 import { Edit, Eyes, Plus, Search, Trash } from '../../../../components/icon';
 import { useEffect, useState } from 'react';
-import { AddClassModal } from './AddClassModal';
-import { DeleteClassModal } from './DeleteClassModal';
+import { AddClassModal } from './AddModal';
+import { DeleteClassModal } from './DeleteModal';
 import {
 	dataDeclaration_class,
 	dataDeclaration_class_add_edit,
 } from '../../../../types/leadership';
-import { addClass, getClasses } from '../../../../firebase/dataDeclaration/fetchClass';
+import {
+	addClass,
+	deleteClass,
+	getClasses,
+	updateClass,
+} from '../../../../firebase/dataDeclaration/fetchClass';
+import { EditClassModal } from './EditModal';
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 
 function ClassPage() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
+	const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+	const [deleteKey, setDeleteKey] = useState<string | null>(null);
 
 	const [dataClass, setDataClass] = useState<dataDeclaration_class[]>([]);
-
+	const [editRecord, setEditRecord] = useState<dataDeclaration_class | null>(null);
 	const fetchClass = async () => {
 		const data = await getClasses();
-		console.log('Data department:', data);
 		setDataClass(data);
 	};
 	useEffect(() => {
@@ -33,12 +40,14 @@ function ClassPage() {
 
 	const handleEdit = (record: dataDeclaration_class) => {
 		console.log('Edit academic year:', record);
-		setIsModalOpen(true);
+		setEditRecord(record);
+		setIsModalOpenEdit(true);
 	};
 
 	const handleDelete = (record: dataDeclaration_class) => {
 		console.log('Remove academic year:', record);
 		console.log('Remove academic year key:', record.id);
+		setDeleteKey(record.id);
 		setIsModalOpenDelete(true);
 	};
 
@@ -105,18 +114,42 @@ function ClassPage() {
 		try {
 			await addClass(data);
 			setIsModalOpen(false);
-			// await fetchSubject();
+			await fetchClass();
 		} catch (error) {
 			console.error('Error:', error);
 		}
 	};
 
-	const handleDeleteClass = () => {
-		console.log('Class deleted');
-		setIsModalOpenDelete(false);
-		// Thêm logic xóa nếu cần
+	const handleDeleteClass = async (id: string) => {
+		console.log('Remove class key:', id);
+		try {
+			await deleteClass(id);
+			setIsModalOpenDelete(false);
+			setDeleteKey(null);
+			await fetchClass();
+		} catch (error) {
+			console.error('Lỗi:', error);
+		}
 	};
-
+	const handleEditOK = async (data: dataDeclaration_class) => {
+		try {
+			await updateClass(data.id, {
+				classCode: data.classCode,
+				className: data.className,
+				teacher: data.teacher,
+				classType: data.classType,
+				classQuantity: data.classQuantity,
+				description: data.description,
+				schoolYear: data.schoolYear,
+				faculty: data.faculty,
+				subjects: data.subjects,
+			});
+			setIsModalOpenEdit(false);
+			await fetchClass();
+		} catch (error) {
+			throw error;
+		}
+	};
 	return (
 		<div>
 			<div className='flex items-center justify-between'>
@@ -202,9 +235,16 @@ function ClassPage() {
 				onCancel={() => setIsModalOpen(false)}
 			/>
 			<DeleteClassModal
+				id={deleteKey}
 				visible={isModalOpenDelete}
 				onOk={handleDeleteClass}
 				onCancel={() => setIsModalOpenDelete(false)}
+			/>
+			<EditClassModal
+				visible={isModalOpenEdit}
+				onOk={handleEditOK}
+				onCancel={() => setIsModalOpenEdit(false)}
+				initialData={editRecord}
 			/>
 		</div>
 	);

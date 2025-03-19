@@ -1,20 +1,21 @@
 import React from 'react';
-import { Button, Checkbox, ConfigProvider, Input, Modal, Switch } from 'antd';
-import { Leadership_system_tranning_add_edit } from '../../../../../types/leadership/system';
+import { Button, Checkbox, ConfigProvider, Input, Modal } from 'antd';
+import { Leadership_system_tranning } from '../../../../../types/leadership/system'; // Adjust path as needed
 
 const { TextArea } = Input;
-interface AddTranningModalProps {
+
+interface EditTranningModalProps {
 	visible: boolean;
-	formAdd: Leadership_system_tranning_add_edit;
-	setFormAdd: React.Dispatch<React.SetStateAction<Leadership_system_tranning_add_edit>>;
+	formEdit: Leadership_system_tranning; // Use the full type with `id`
+	setFormEdit: React.Dispatch<React.SetStateAction<Leadership_system_tranning>>;
 	onOk: () => void;
 	onCancel: () => void;
 }
 
-const AddTranningModal: React.FC<AddTranningModalProps> = ({
+const EditTranningModal: React.FC<EditTranningModalProps> = ({
 	visible,
-	formAdd,
-	setFormAdd,
+	formEdit,
+	setFormEdit,
 	onOk,
 	onCancel,
 }) => {
@@ -23,11 +24,11 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 		footer: { textAlign: 'center' as const },
 	};
 
-	const handleOnchangeAddUser = (
+	const handleOnchangeEditUser = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	): void => {
 		const { name, value } = e.target;
-		setFormAdd((prev: Leadership_system_tranning_add_edit) => ({
+		setFormEdit((prev: Leadership_system_tranning) => ({
 			...prev,
 			[name]: value,
 		}));
@@ -36,7 +37,7 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 	const handleCheckboxChange =
 		(name: string) =>
 		(checked: boolean): void => {
-			setFormAdd((prev: Leadership_system_tranning_add_edit) => ({
+			setFormEdit((prev: Leadership_system_tranning) => ({
 				...prev,
 				[name]: checked,
 			}));
@@ -44,7 +45,7 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 
 	return (
 		<Modal
-			title='Thiết lập Bậc đào tạo'
+			title='Chỉnh sửa Bậc đào tạo'
 			open={visible}
 			onOk={onOk}
 			onCancel={onCancel}
@@ -66,12 +67,12 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 							Trình độ đào tạo:
 						</span>
 						<Input
-							name='educationlevel' // Fixed name to match value
+							name='educationlevel'
 							placeholder='Nhập'
 							className='h-10 w-[561px] bg-[#F0F3F6]'
 							variant='filled'
-							onChange={handleOnchangeAddUser}
-							value={formAdd.educationlevel}
+							onChange={handleOnchangeEditUser}
+							value={formEdit.educationlevel}
 						/>
 					</div>
 					<div className='flex h-5 items-center justify-between gap-10'>
@@ -79,12 +80,12 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 							Hình thức đào tạo:
 						</span>
 						<Input
-							name='type' // Fixed name to match value
+							name='type'
 							placeholder='Nhập'
 							className='h-10 w-[561px] bg-[#F0F3F6]'
 							variant='filled'
-							onChange={handleOnchangeAddUser}
-							value={formAdd.type}
+							onChange={handleOnchangeEditUser}
+							value={formEdit.type}
 						/>
 					</div>
 					<div className='space-y-4'>
@@ -92,7 +93,7 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 							<div className='flex items-center gap-2'>
 								<ConfigProvider theme={{ token: { colorPrimary: '#1677FF' } }}>
 									<Checkbox
-										checked={formAdd.isEnure}
+										checked={formEdit.isEnure}
 										onChange={(e) => handleCheckboxChange('isEnure')(e.target.checked)}
 									/>
 								</ConfigProvider>
@@ -103,7 +104,7 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 						</div>
 						<div className='pl-48'>
 							<div className="font-['Source Sans Pro'] w-[529px] text-base font-normal italic text-[#373839]">
-								Đào tạo theo niên chế là đào tạo them đơn vị năm học.
+								Đào tạo theo niên chế là đào tạo theo đơn vị năm học.
 								<br />
 								Mỗi chương trình đào tạo của một ngành, nghề được thực hiện trong một số tháng hoặc
 								năm nhất định.
@@ -111,12 +112,11 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 								Mỗi năm học thường được tổ chức thành hai học kỳ.
 							</div>
 						</div>
-
 						<div className='pl-48'>
 							<div className='flex items-center gap-2'>
 								<ConfigProvider theme={{ token: { colorPrimary: '#1677FF' } }}>
 									<Checkbox
-										checked={formAdd.isCredit}
+										checked={formEdit.isCredit}
 										onChange={(e) => handleCheckboxChange('isCredit')(e.target.checked)}
 									/>
 								</ConfigProvider>
@@ -136,8 +136,8 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 									name='trainingTimeYears'
 									className='h-10 w-[60px] bg-[#F0F3F6]'
 									variant='filled'
-									onChange={handleOnchangeAddUser}
-									value={formAdd.trainingTimeYears}
+									onChange={handleOnchangeEditUser}
+									value={formEdit.trainingTimeYears}
 								/>
 								<p className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
 									Năm
@@ -148,8 +148,8 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 									name='requiredCourses'
 									className='h-10 w-[60px] bg-[#F0F3F6]'
 									variant='filled'
-									onChange={handleOnchangeAddUser}
-									value={formAdd.requiredCourses}
+									onChange={handleOnchangeEditUser}
+									value={formEdit.requiredCourses}
 								/>
 								<p className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
 									Học phần bắt buộc
@@ -160,8 +160,8 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 									name='electiveCourses'
 									className='h-10 w-[60px] bg-[#F0F3F6]'
 									variant='filled'
-									onChange={handleOnchangeAddUser}
-									value={formAdd.electiveCourses}
+									onChange={handleOnchangeEditUser}
+									value={formEdit.electiveCourses}
 								/>
 								<p className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
 									Học phần tự chọn
@@ -177,8 +177,8 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 							name='description'
 							placeholder='Nhập ghi chú'
 							className='w-[561px] bg-[#F0F3F6]'
-							onChange={handleOnchangeAddUser}
-							value={formAdd.description}
+							onChange={handleOnchangeEditUser}
+							value={formEdit.description}
 							rows={4}
 						/>
 					</div>
@@ -186,7 +186,7 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 						<div className='flex items-center gap-2'>
 							<ConfigProvider theme={{ token: { colorPrimary: '#1677FF' } }}>
 								<Checkbox
-									checked={formAdd.status}
+									checked={formEdit.status}
 									onChange={(e) => handleCheckboxChange('status')(e.target.checked)}
 								/>
 							</ConfigProvider>
@@ -201,4 +201,4 @@ const AddTranningModal: React.FC<AddTranningModalProps> = ({
 	);
 };
 
-export default AddTranningModal;
+export default EditTranningModal;

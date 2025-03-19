@@ -44,7 +44,7 @@ export default function SubjectPage() {
 
 	const handleEdit = (record: dataDeclaration_subject) => {
 		setEditRecord(record);
-		setIsModalOpen(true);
+		setIsModalEditOpen(true);
 	};
 
 	const handleDelete = (record: dataDeclaration_subject) => {

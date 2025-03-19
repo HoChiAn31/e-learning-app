@@ -11,7 +11,7 @@ const config = {
 	studentProfileList: '/studentProfileList/all',
 	studentTransfer: '/studentProfileList/transfer',
 	studentReserve: '/studentProfileList/reserve',
-	instructorProfileList: '/instructorProfileList/all',
+	instructorProfileList: '/instructorProfileList/alls',
 	instructorAssignment: '/instructorProfileList/assignment',
 
 	systemSettings: '/systemSettings',

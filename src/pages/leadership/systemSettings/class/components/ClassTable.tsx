@@ -1,8 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Button, ConfigProvider, Input, Table } from 'antd';
-import { classProps } from '../type';
+import { SystemSettings_class, classProps } from '../type';
 import { Edit, Search, Trash } from '../../../../../components/icon';
 import DeleteGroupUserModal from './DeleteClassModal';
+import { deleteClassSetting } from '../../../../../firebase/systems/class';
 
 const dataClass: classProps[] = [
 	{
@@ -31,23 +32,51 @@ const dataClass: classProps[] = [
 	},
 ];
 
-const ClassTable: React.FC = () => {
+interface ClassTable {
+	isModalOpenDeleteGroupUsers?: boolean;
+	setValueSearchs?: (value: string) => void;
+	dataClass: SystemSettings_class[];
+	selectedClassKeys?: number | string | null;
+	setSelectedClassKeys?: (key: number | string | null) => void;
+	onDeleteOK?: () => void;
+}
+
+const ClassTable: React.FC<ClassTable> = ({
+	isModalOpenDeleteGroupUsers,
+	setValueSearchs,
+	dataClass,
+	selectedClassKeys,
+	setSelectedClassKeys,
+	onDeleteOK,
+}) => {
 	const [isModalOpenDeleteGroupUser, setIsModalOpenDeleteGroupUser] = useState(false);
 	const [valueSearch, setValueSearch] = useState<string>('');
-	const [data, setData] = useState<classProps[]>(dataClass);
-	const [selectedClassKey, setSelectedClassKey] = useState<number | string | null>(null);
+	const [data, setData] = useState<SystemSettings_class[]>([]);
+	const [selectedClassKey, setSelectedClassKey] = useState<string>('');
+
+	useEffect(() => {
+		setData(dataClass);
+	}, [dataClass]);
+
+	useEffect(() => {
+		setData(
+			dataClass.filter((item) => item.classType.toLowerCase().includes(valueSearch.toLowerCase())),
+		);
+	}, [valueSearch, dataClass]);
 
 	const columns = [
 		{
 			title: 'Loại lớp',
 			dataIndex: 'classType',
-			sorter: (a: classProps, b: classProps) => a.classType.localeCompare(b.classType),
+			sorter: (a: SystemSettings_class, b: SystemSettings_class) =>
+				a.classType.localeCompare(b.classType),
 			width: '15%',
 		},
 		{
 			title: 'Trạng thái',
 			dataIndex: 'classStatus',
-			sorter: (a: classProps, b: classProps) => Number(a.classStatus) - Number(b.classStatus),
+			sorter: (a: SystemSettings_class, b: SystemSettings_class) =>
+				Number(a.classStatus) - Number(b.classStatus),
 			render: (status: boolean) => (status ? 'Đang hoạt động' : 'Vô hiệu hóa'),
 			width: '10%',
 		},
@@ -55,7 +84,7 @@ const ClassTable: React.FC = () => {
 		{
 			title: 'Hành động',
 			dataIndex: 'action',
-			render: (_: any, record: classProps) => (
+			render: (_: any, record: SystemSettings_class) => (
 				<div>
 					<Button type='link' onClick={() => console.log('Edit:', record)}>
 						<Edit />
@@ -63,7 +92,7 @@ const ClassTable: React.FC = () => {
 					<Button
 						type='link'
 						onClick={() => {
-							setSelectedClassKey(record.key as string | number);
+							setSelectedClassKey(record.id as string);
 							setIsModalOpenDeleteGroupUser(true);
 						}}
 					>
@@ -91,12 +120,16 @@ const ClassTable: React.FC = () => {
 	}, [valueSearch]);
 
 	// Hàm xóa lớp học
-	const handleDeleteClass = () => {
+	const handleDeleteClass = async () => {
 		if (selectedClassKey !== null) {
-			setData((prevData) => prevData.filter((item) => item.key !== selectedClassKey));
+			setData((prevData) => prevData.filter((item) => item.id !== selectedClassKey));
 		}
+
+		await deleteClassSetting(selectedClassKey);
+
 		setIsModalOpenDeleteGroupUser(false);
-		setSelectedClassKey(null);
+		onDeleteOK?.();
+		setSelectedClassKey('');
 	};
 
 	return (
@@ -128,7 +161,7 @@ const ClassTable: React.FC = () => {
 						},
 					}}
 				>
-					<Table<classProps>
+					<Table<SystemSettings_class>
 						columns={columns}
 						dataSource={data}
 						pagination={{
@@ -143,10 +176,10 @@ const ClassTable: React.FC = () => {
 			{/* Modal xác nhận xóa */}
 			<DeleteGroupUserModal
 				visible={isModalOpenDeleteGroupUser}
-				onOk={handleDeleteClass} // Gọi hàm xóa khi xác nhận
+				onOk={handleDeleteClass}
 				onCancel={() => {
 					setIsModalOpenDeleteGroupUser(false);
-					setSelectedClassKey(null);
+					setSelectedClassKey('');
 				}}
 			/>
 		</div>

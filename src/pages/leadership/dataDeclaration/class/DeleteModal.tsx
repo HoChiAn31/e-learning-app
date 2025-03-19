@@ -2,7 +2,8 @@ import { Button, Modal } from 'antd';
 
 interface DeleteClassModalProps {
 	visible: boolean;
-	onOk: () => void;
+	id: string | null;
+	onOk: (id: string) => void;
 	onCancel: () => void;
 }
 
@@ -11,19 +12,27 @@ const modalStyles = {
 	footer: { textAlign: 'center' as 'center' },
 };
 
-export const DeleteClassModal: React.FC<DeleteClassModalProps> = ({ visible, onOk, onCancel }) => {
-	const handleSubmit = () => onOk();
-	const handleCancelModal = () => onCancel();
+export const DeleteClassModal: React.FC<DeleteClassModalProps> = ({
+	visible,
+	id,
+	onOk,
+	onCancel,
+}) => {
+	const handleSubmit = () => {
+		if (id) {
+			onOk(id); // Truyền id trực tiếp khi xác nhận xóa
+		}
+	};
 
 	return (
 		<Modal
-			title='Xóa'
+			title='Xóa lớp học'
 			open={visible}
 			onOk={handleSubmit}
-			onCancel={handleCancelModal}
+			onCancel={onCancel}
 			styles={modalStyles}
 			footer={[
-				<Button className='w-40' key='back' onClick={handleCancelModal}>
+				<Button className='w-40' key='back' onClick={onCancel}>
 					Hủy
 				</Button>,
 				<Button className='w-40' key='submit' type='primary' onClick={handleSubmit}>

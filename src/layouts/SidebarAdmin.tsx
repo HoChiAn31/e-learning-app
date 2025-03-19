@@ -26,20 +26,60 @@ const SidebarAdmin: FC = () => {
 	const location = useLocation();
 	const name = location.pathname;
 	const [isHovered, setIsHovered] = useState(false);
+	// Hàm phân tích pathname để lấy mainTab và subTab
+	const parsePathname = (pathname: string) => {
+		const parts = pathname.split('/').filter(Boolean);
+		const mainTab = `/${parts[0]}${parts[1] ? `/${parts[1]}` : ''}`;
+		const subTab = parts[2] || '';
+		return { mainTab, subTab };
+	};
 
-	// Thiết lập activeMainTab mặc định dựa trên role
+	// Khởi tạo và khôi phục trạng thái khi mount hoặc reload
 	useEffect(() => {
 		if (!isLoaded) {
-			// Khi component mount lần đầu
-			if (role === 'teacher') {
-				setActiveMainTab(name);
-				nav(name);
-			} else if (name) {
-				setActiveMainTab(name);
+			const { mainTab, subTab } = parsePathname(location.pathname);
+
+			if (role === 'teacher' || role === 'student') {
+				setActiveMainTab(mainTab);
+				setActiveSubTab(subTab);
+				nav(location.pathname);
+			} else {
+				const storedMainTab = localStorage.getItem('activeMainTab');
+				const storedSubTab = localStorage.getItem('activeSubTab');
+
+				if (storedMainTab && !location.pathname.startsWith('/dataDeclaration')) {
+					setActiveMainTab(storedMainTab);
+					setActiveSubTab(storedSubTab || '');
+					nav(storedSubTab ? `${storedMainTab}/${storedSubTab}` : storedMainTab);
+				} else {
+					setActiveMainTab(mainTab);
+					setActiveSubTab(subTab);
+				}
 			}
 			setIsLoaded(true);
 		}
-	}, [role, name, nav, isLoaded]);
+	}, [role, location.pathname, nav, isLoaded]);
+
+	// Lưu trạng thái vào localStorage khi activeMainTab hoặc activeSubTab thay đổi
+	useEffect(() => {
+		if (isLoaded && role !== 'teacher' && !activeMainTab.startsWith('/teacher/class')) {
+			localStorage.setItem('activeMainTab', activeMainTab);
+			localStorage.setItem('activeSubTab', activeSubTab);
+		}
+	}, [activeMainTab, activeSubTab, isLoaded, role]);
+	// Thiết lập activeMainTab mặc định dựa trên role
+	// useEffect(() => {
+	// 	if (!isLoaded) {
+	// 		// Khi component mount lần đầu
+	// 		if (role === 'teacher') {
+	// 			setActiveMainTab(name);
+	// 			nav(name);
+	// 		} else if (name) {
+	// 			setActiveMainTab(name);
+	// 		}
+	// 		setIsLoaded(true);
+	// 	}
+	// }, [role, name, nav, isLoaded]);
 
 	// useEffect(() => {
 	// 	console.log(1_34);
@@ -74,25 +114,26 @@ const SidebarAdmin: FC = () => {
 	// 	setIsLoaded(true);
 	// }, [nav, role]);
 	// fix Conflict between SidebarAdmin and SideBarDataDeclaration
-	useEffect(() => {
-		if (
-			role !== 'teacher' &&
-			!activeMainTab.startsWith('/teacher/class') &&
-			!location.pathname.startsWith('/dataDeclaration') // Thêm điều kiện này
-		) {
-			const storedMainTab = localStorage.getItem('activeMainTab');
-			const storedSubTab = localStorage.getItem('activeSubTab');
-			if (storedMainTab) {
-				setActiveMainTab(storedMainTab);
-				if (storedSubTab) {
-					nav(`${storedMainTab}/${storedSubTab}`);
-				} else {
-					nav(storedMainTab);
-				}
-			}
-		}
-		setIsLoaded(true);
-	}, [nav, role, location.pathname]);
+	// useEffect(() => {
+	// 	if (
+	// 		role !== 'teacher' &&
+	// 		!activeMainTab.startsWith('/teacher/class') &&
+	// 		!location.pathname.startsWith('/dataDeclaration') // Thêm điều kiện này
+	// 	) {
+	// 		const storedMainTab = localStorage.getItem('activeMainTab');
+	// 		const storedSubTab = localStorage.getItem('activeSubTab');
+
+	// 		if (storedMainTab) {
+	// 			setActiveMainTab(storedMainTab);
+	// 			if (storedSubTab) {
+	// 				nav(`${storedMainTab}/${storedSubTab}`);
+	// 			} else {
+	// 				nav(storedMainTab);
+	// 			}
+	// 		}
+	// 	}
+	// 	setIsLoaded(true);
+	// }, [nav, role, location.pathname]);
 	// Lưu vào localStorage khi active tab thay đổi
 	useEffect(() => {
 		console.log(1);
@@ -287,7 +328,7 @@ const SidebarAdmin: FC = () => {
 								setActiveMainTab={setActiveMainTab}
 								activeSubTab={activeSubTab}
 								setActiveSubTab={setActiveSubTab}
-								tabName='/studentProfileList/all'
+								tabName='/studentProfileList'
 								title='Hồ sơ học viên'
 								isIcon
 								icon={<User color='#ffffff' />}
@@ -298,7 +339,7 @@ const SidebarAdmin: FC = () => {
 								setActiveMainTab={setActiveMainTab}
 								activeSubTab={activeSubTab}
 								setActiveSubTab={setActiveSubTab}
-								tabName='/instructorProfileList/all'
+								tabName='/instructorProfileList'
 								title='Hồ sơ giảng viên'
 								isIcon
 								icon={<Bag color='white' />}
@@ -590,7 +631,7 @@ const SidebarAdmin: FC = () => {
 									onCheckClick={() => setIsHovered(false)}
 									isSidebarSub
 									subItems={[
-										{ name: 'all', label: 'Tất cả hồ sơ' },
+										{ name: 'alls', label: 'Tất cả hồ sơ' },
 										{ name: 'assignment', label: 'Phân công giảng dạy' },
 									]}
 								/>

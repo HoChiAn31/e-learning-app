@@ -7,13 +7,14 @@ import AddGroupUserModal from './components/AddGroupUserModal';
 import AddListUserModal from './components/AddListUserModal';
 import SemesterSelect from './components/SemesterSelect';
 import SubjectSelect from './components/SubjectSelect';
-import { userAdd } from './type';
+import { GroupUsers, userAdd } from './type';
 import { ArrowRight, Plus } from '../../../../components/icon';
 
 const UserSettingPage: React.FC = () => {
 	const [isActive, setIsActive] = useState<'groupUsers' | 'listUsers'>('groupUsers');
 	const [isModalOpenGroupUser, setIsModalOpenGroupUser] = useState(false);
 	const [isModalOpenListUser, setIsModalOpenListUser] = useState(false);
+	const [groupData, setGroupData] = useState<GroupUsers | null>(null);
 	const [userAdd, setUserAdd] = useState<userAdd>({
 		name: '',
 		groupUser: '',
@@ -28,7 +29,10 @@ const UserSettingPage: React.FC = () => {
 			setIsModalOpenListUser(true);
 		}
 	};
-
+	const handleChange = (data: GroupUsers) => {
+		setGroupData(data);
+		console.log('Updated group data:', data);
+	};
 	return (
 		<div>
 			<Header />
@@ -38,6 +42,7 @@ const UserSettingPage: React.FC = () => {
 				visible={isModalOpenGroupUser}
 				onOk={() => setIsModalOpenGroupUser(false)}
 				onCancel={() => setIsModalOpenGroupUser(false)}
+				onChange={handleChange}
 			/>
 			<AddListUserModal
 				visible={isModalOpenListUser}
@@ -95,7 +100,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ isActive, setIsActive, onAd
 					className={`${isActive === 'groupUsers' ? 'bg-black text-white' : 'bg-[#F2F2F2] text-[#373839]'} border-none`}
 				>
 					<span className="font-['Mulish'] text-lg font-extrabold tracking-tight">
-						Thông tin chung
+						Nhóm người dùng
 					</span>
 				</Button>
 				<Button
@@ -105,7 +110,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ isActive, setIsActive, onAd
 					className={`${isActive === 'listUsers' ? 'bg-black text-white' : 'bg-[#F2F2F2] text-[#373839]'} border-none`}
 				>
 					<span className="font-['Mulish'] text-lg font-extrabold tracking-tight">
-						Quá trình học tập
+						Danh sách người dùng
 					</span>
 				</Button>
 			</div>

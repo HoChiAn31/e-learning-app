@@ -4,13 +4,25 @@ import { Edit, List, Plus, Search, Trash } from '../../../../components/icon';
 import AddDepartmentModal from './AddDepartmentModal';
 import DeleteDepartmentModal from './DeleteDepartmentModal';
 import EditDepartmentModal from './EditDepartmentModal';
-import { getDepartments } from '../../../../firebase/dataDeclaration/fetchDepartment';
+import ViewSubjectsModal from './ViewSubjectsModal'; // Import the new modal
+import {
+	addDepartment,
+	getDepartments,
+} from '../../../../firebase/dataDeclaration/fetchDepartment';
 import {
 	dataDeclaration_department,
 	dataDeclaration_department_Add_Edit,
 } from '../../../../types/leadership';
+import { Department } from '../../../../firebase/dataDeclaration/types';
 
-// Interface cho department state
+// Interface for Subject (used in ViewSubjectsModal)
+interface Subject {
+	key: string;
+	subjectCode: string;
+	subjectName: string;
+}
+
+// Interface for department state
 interface DepartmentState {
 	departmentName: string;
 	headOfDepartment: string;
@@ -21,6 +33,8 @@ function DepartmentPage() {
 	const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
 	const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
+	const [isViewSubjectsModalOpen, setIsViewSubjectsModalOpen] = useState<boolean>(false); // State for the new modal
+	const [selectedSubjects, setSelectedSubjects] = useState<Subject[]>([]); // State for subjects to display in the modal
 	const [department, setDepartment] = useState<dataDeclaration_department_Add_Edit>({
 		departmentName: '',
 		headOfDepartment: '',
@@ -35,6 +49,7 @@ function DepartmentPage() {
 	const [showSelect, setShowSelect] = useState<boolean>(false);
 	const [departments, setDepartments] = useState<dataDeclaration_department[]>([]);
 	const [selectedDepartmentId, setSelectedDepartmentId] = useState<string | null>(null);
+
 	useEffect(() => {
 		const fetchDepartments = async () => {
 			const data = await getDepartments();
@@ -45,13 +60,24 @@ function DepartmentPage() {
 		fetchDepartments();
 	}, []);
 
+	const handleViewSubjects = (record: dataDeclaration_department) => {
+		// Map the subjectList to the Subject format required by ViewSubjectsModal
+		const subjects: Subject[] = record.subjectList.map((subject, index) => ({
+			key: `${index}`, // Use index as a unique key
+			subjectCode: subject.substring(0, 3).toLowerCase() + (index + 9).toString().padStart(2, '0'), // Generate a simple subject code (e.g., "toá09" for "Toán học")
+			subjectName: subject,
+		}));
+		setSelectedSubjects(subjects);
+		setIsViewSubjectsModalOpen(true);
+	};
+
 	const handleEdit = (record: dataDeclaration_department) => {
 		console.log('Edit academic year:', record);
 		setDepartmentEdit({
 			id: record.id,
 			departmentName: record.departmentName,
 			headOfDepartment: record.headOfDepartment,
-			subjectList: record.subjectList || [], // Có thể load subjectList từ record nếu có
+			subjectList: record.subjectList || [],
 		});
 		setIsEditModalOpen(true);
 	};
@@ -62,16 +88,17 @@ function DepartmentPage() {
 		setSelectedDepartmentId(record.id);
 		setIsModalOpenDelete(true);
 	};
+
 	const handleDeleteSuccess = () => {
-		// Update the departments state by filtering out the deleted department
 		setDepartments(departments.filter((dept) => dept.id !== selectedDepartmentId));
-		setSelectedDepartmentId(null); // Reset the selected ID
+		setSelectedDepartmentId(null);
 	};
+
 	const handleEditSuccess = async () => {
-		// Refetch the updated department list from Firebase
 		const updatedData = await getDepartments();
 		setDepartments(updatedData);
 	};
+
 	const columns: TableColumnsType<dataDeclaration_department> = [
 		{
 			title: 'Tên tổ - bộ môn',
@@ -96,7 +123,7 @@ function DepartmentPage() {
 			dataIndex: 'action',
 			render: (_, record) => (
 				<div className=''>
-					<Button type='link' onClick={() => handleEdit(record)}>
+					<Button type='link' onClick={() => handleViewSubjects(record)}>
 						<List />
 					</Button>
 					<Button type='link' onClick={() => handleEdit(record)}>
@@ -120,6 +147,26 @@ function DepartmentPage() {
 		console.log('params', pagination, filters, sorter, extra);
 	};
 
+	const handleOk = async () => {
+		try {
+			const newDepartment: Department = {
+				departmentName: department.departmentName,
+				headOfDepartment: department.headOfDepartment,
+				subjectList: department.subjectList,
+			};
+
+			await addDepartment(newDepartment);
+
+			console.log('Dữ liệu nhập:', department);
+
+			setIsAddModalOpen(false);
+			setDepartment({ departmentName: '', headOfDepartment: '', subjectList: [] });
+			setShowSelect(false);
+		} catch (error) {
+			console.error('Lỗi khi thêm tổ - bộ môn:', error);
+		}
+	};
+
 	return (
 		<div>
 			<div className='flex w-full items-end justify-end'>
@@ -137,18 +184,21 @@ function DepartmentPage() {
 
 				<AddDepartmentModal
 					isModalOpen={isAddModalOpen}
-					setIsModalOpen={setIsAddModalOpen}
-					department={department}
-					setDepartment={setDepartment}
-					showSelect={showSelect}
-					setShowSelect={setShowSelect}
+					onOk={handleOk}
+					onCancel={() => setIsAddModalOpen(false)}
 				/>
 
 				<EditDepartmentModal
 					isModalOpen={isEditModalOpen}
 					setIsModalOpen={setIsEditModalOpen}
 					department={departmentEdit}
-					onEditSuccess={handleEditSuccess} // Pass the callback
+					onEditSuccess={handleEditSuccess}
+				/>
+
+				<ViewSubjectsModal
+					isModalOpen={isViewSubjectsModalOpen}
+					onCancel={() => setIsViewSubjectsModalOpen(false)}
+					subjects={selectedSubjects}
 				/>
 			</div>
 

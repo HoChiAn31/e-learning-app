@@ -16,6 +16,7 @@ export const addClass = async (classData: dataDeclaration_class_add_edit): Promi
 			description: classData.description,
 			schoolYear: classData.schoolYear,
 			faculty: classData.faculty,
+			subjects: classData.subjects,
 		});
 		message.success('Thêm lớp học thành công!');
 	} catch (error) {

@@ -4915,7 +4915,6 @@ duplexer@^0.1.2:
     redux "^5.0.1"
     slick-carousel "^1.8.1"
     typescript "^4.9.5"
-    uuid "^11.1.0"
     web-vitals "^2.1.4"
 
 eastasianwidth@^0.2.0:
@@ -6086,7 +6085,6 @@ graphemer@^1.4.0:
     redux "^5.0.1"
     slick-carousel "^1.8.1"
     typescript "^4.9.5"
-    uuid "^11.1.0"
     web-vitals "^2.1.4"
 
 gzip-size@^6.0.0:
@@ -11142,11 +11140,6 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.1.tgz"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
-
-uuid@^11.1.0:
-  version "11.1.0"
-  resolved "https://registry.npmjs.org/uuid/-/uuid-11.1.0.tgz"
-  integrity sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==
 
 uuid@^8.3.2:
   version "8.3.2"

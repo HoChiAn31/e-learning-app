@@ -10,3 +10,16 @@ export interface classAddProps {
 	classStatus: boolean;
 	description: string;
 }
+
+export interface SystemSettings_class {
+	id: string;
+	classType: string;
+	classStatus: boolean;
+	description: string;
+}
+
+export interface SystemSettings_Class_Add_Edit {
+	classType: string;
+	classStatus: boolean;
+	description: string;
+}

@@ -2,11 +2,80 @@ import { Button, Input } from 'antd';
 import { InputHTMLAttributes } from 'react';
 import { Edit, Plus } from '../../../../components/icon';
 import { useNavigate } from 'react-router-dom';
+
+// Interface cho thông tin chung của trường
+interface SchoolGeneralInfo {
+	schoolName: string;
+	standardCode: string;
+	provinceCity: string;
+	ward: string;
+	district: string;
+	isMainCampus: string;
+	schoolType: string;
+	phoneNumber: string;
+	fax: string;
+	email: string;
+	establishedDate: string;
+	trainingModel: string;
+	website: string;
+	principalName: string;
+	principalPhone: string;
+}
+
+// Interface cho thông tin cơ sở
+interface CampusInfo {
+	campusName: string;
+	email: string;
+	phoneNumber: string;
+	address: string;
+	responsiblePerson: string;
+	responsiblePersonPhone: string;
+}
+
+// Interface tổng hợp cho toàn bộ thông tin trường
+interface SchoolInfo {
+	generalInfo: SchoolGeneralInfo;
+	campuses: CampusInfo[];
+}
+
+// Object chứa dữ liệu mẫu
+const schoolData: SchoolInfo = {
+	generalInfo: {
+		schoolName: 'THCS Tự Lập',
+		standardCode: '20202021',
+		provinceCity: 'Tp. Hồ Chí Minh',
+		ward: 'Phường 1',
+		district: 'Bình Thạnh',
+		isMainCampus: 'Không',
+		schoolType: 'Trung học cơ sở',
+		phoneNumber: '0123456789',
+		fax: '0123456789',
+		email: 'nguyenxasjke@gmail.com',
+		establishedDate: '05/09/2013',
+		trainingModel: 'Công lập',
+		website: 'https://truongabc.com.vn',
+		principalName: 'Bùi Văn Phát',
+		principalPhone: '0989222112',
+	},
+	campuses: [
+		{
+			campusName: 'Trung học cơ sở Tự Lập Cơ Sở A',
+			email: 'nguyesssss@gmail.com',
+			phoneNumber: '014521447741',
+			address: '12 Nguyễn Văn A, phường 12 Quận 6, thành phố Hồ Chí Minh',
+			responsiblePerson: 'Nguyễn Văn A',
+			responsiblePersonPhone: '014521447741',
+		},
+	],
+};
+
+// Interface cho InfoField props
 interface InfoFieldProps {
 	label: string;
 	children: React.ReactNode;
 }
 
+// Component InfoField
 const InfoField: React.FC<InfoFieldProps> = ({ label, children }) => (
 	<div className='flex items-center'>
 		<p className="font-['Source Sans Pro'] w-[140px] text-base font-bold tracking-tight text-[#373839] opacity-80">
@@ -16,21 +85,28 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, children }) => (
 	</div>
 );
 
-const CustomInput: React.FC<{
+interface CustomInputProps extends InputHTMLAttributes<HTMLInputElement> {
 	className?: string;
 	value?: string | number | undefined;
-	size?: string;
-}> = ({ className, value, size }) => (
+	inputSize?: string; // Đổi từ 'size' thành 'inputSize'
+}
+
+// Component CustomInput
+const CustomInput: React.FC<CustomInputProps> = ({ className, value, inputSize }) => (
 	<Input
 		value={value}
-		className={`${value !== undefined ? 'border-none' : 'border bg-[#F2F2F2]'} ${size === 'xl' ? 'w-[420px]' : 'w-[280px]'} inline-flex h-10 items-center justify-start gap-6 overflow-hidden rounded-lg px-4 py-2 ${className}`}
+		className={`${value !== undefined ? 'border-none' : 'border bg-[#F2F2F2]'} ${inputSize === 'xl' ? 'w-[420px]' : 'w-[280px]'} inline-flex h-10 items-center justify-start gap-6 overflow-hidden rounded-lg px-4 py-2 ${className}`}
 	/>
 );
+
+// Component chính
 function InforSchoolPage() {
 	const nav = useNavigate();
+
 	const handleEdit = () => {
 		nav('/systemSettings/inforSchool/editor');
 	};
+
 	return (
 		<div>
 			<div className="font-['Mulish'] text-5xl font-extrabold tracking-wide text-[#373839]">
@@ -61,16 +137,7 @@ function InforSchoolPage() {
 				</div>
 
 				<div className='flex items-center gap-1'>
-					{/* <Button>Xuất file</Button>
-					<Button>Chỉnh sửa</Button> */}
-					<Button
-						className='h-[52px]'
-						// type='primary'
-						// icon={<Plus />}
-						size='middle'
-						// onClick={() => setIsModalFile(true)}
-						// variant='outlined'
-					>
+					<Button className='h-[52px]' size='middle'>
 						<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-primary">
 							Xuất file
 						</div>
@@ -88,8 +155,10 @@ function InforSchoolPage() {
 					</Button>
 				</div>
 			</div>
-			{/* Infor school */}
+
+			{/* Thông tin trường */}
 			<div className=''>
+				{/* Thông tin chung */}
 				<div className='inline-flex h-14 w-[1644px] items-center justify-start overflow-hidden rounded-t-xl bg-[#cc5c00] pb-4 pl-[63px] pr-[1434px] pt-[17px]'>
 					<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
 						Thông tin chung
@@ -103,60 +172,62 @@ function InforSchoolPage() {
 						{/* Left Section */}
 						<div className='space-y-1'>
 							<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#cc5c00]">
-								Trung học cơ sở Tự Lập Cơ Sở A
+								{schoolData.generalInfo.schoolName} Cơ Sở A
 							</div>
 							<InfoField label='Tên trường'>
-								<CustomInput value='THCS Tự Lập' />
+								<CustomInput value={schoolData.generalInfo.schoolName} />
 							</InfoField>
 							<InfoField label='Mã chuẩn'>
-								<CustomInput value='20202021' />
+								<CustomInput value={schoolData.generalInfo.standardCode} />
 							</InfoField>
 							<InfoField label='Tỉnh/Thành phố'>
-								<CustomInput value='Tp. Hồ Chí Minh' />
+								<CustomInput value={schoolData.generalInfo.provinceCity} />
 							</InfoField>
 							<InfoField label='Xã/Phường'>
-								<CustomInput value='Phường 1' />
+								<CustomInput value={schoolData.generalInfo.ward} />
 							</InfoField>
 							<InfoField label='Quận/Huyện'>
-								<CustomInput value='Bình Thạnh' />
+								<CustomInput value={schoolData.generalInfo.district} />
 							</InfoField>
 							<InfoField label='Trụ sở chính'>
-								<CustomInput value='Không' />
+								<CustomInput value={schoolData.generalInfo.isMainCampus} />
 							</InfoField>
 							<InfoField label='Loại trường'>
-								<CustomInput value='Trung học cơ sở' />
+								<CustomInput value={schoolData.generalInfo.schoolType} />
 							</InfoField>
 							<InfoField label='Số điện thoại'>
-								<CustomInput value='0123456789' />
+								<CustomInput value={schoolData.generalInfo.phoneNumber} />
 							</InfoField>
 						</div>
 
 						{/* Right Section */}
 						<div className='space-y-1 pt-7'>
 							<InfoField label='Fax'>
-								<CustomInput value='0123456789' />
+								<CustomInput value={schoolData.generalInfo.fax} />
 							</InfoField>
 							<InfoField label='Email'>
-								<CustomInput value='nguyenxasjke@gmail.com' />
+								<CustomInput value={schoolData.generalInfo.email} />
 							</InfoField>
 							<InfoField label='Ngày thành lập'>
-								<CustomInput value='05/09/2013' />
+								<CustomInput value={schoolData.generalInfo.establishedDate} />
 							</InfoField>
 							<InfoField label='Mô hình đào tạo'>
-								<CustomInput value='Công lập' />
+								<CustomInput value={schoolData.generalInfo.trainingModel} />
 							</InfoField>
 							<InfoField label='Website'>
-								<CustomInput value='https://truongabc.com.vn' />
+								<CustomInput value={schoolData.generalInfo.website} />
 							</InfoField>
-							<InfoField label='Hiệu trưởng:'>
-								<CustomInput value='Bùi Văn Phát' />
+							<InfoField label='Hiệu trưởng'>
+								<CustomInput value={schoolData.generalInfo.principalName} />
 							</InfoField>
-							<InfoField label='Sđt hiệu trưởng:'>
-								<CustomInput value='0989222112' />
+							<InfoField label='Sđt hiệu trưởng'>
+								<CustomInput value={schoolData.generalInfo.principalPhone} />
 							</InfoField>
 						</div>
 					</div>
 				</div>
+
+				{/* Danh sách cơ sở */}
 				<div className='inline-flex h-14 w-[1644px] items-center justify-start overflow-hidden bg-[#cc5c00] pb-4 pl-[63px] pr-[1416px] pt-[17px]'>
 					<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
 						Danh sách cơ sở
@@ -168,30 +239,27 @@ function InforSchoolPage() {
 					</div>
 					<div>
 						<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#cc5c00]">
-							Trung học cơ sở Tự Lập Cơ Sở A
+							{schoolData.campuses[0].campusName}
 						</div>
 						<div className='space-y-1'>
 							<InfoField label='Email'>
-								<CustomInput value='nguyesssss@gmail.com' />
+								<CustomInput value={schoolData.campuses[0].email} />
 							</InfoField>
 							<InfoField label='SĐT'>
-								<CustomInput value='014521447741' />
+								<CustomInput value={schoolData.campuses[0].phoneNumber} />
 							</InfoField>
 						</div>
 						<InfoField label='Địa chỉ'>
-							<CustomInput
-								value='12 Nguyễn Văn A, phường 12 Quận 6, thành phố Hồ Chí Minh'
-								size='xl'
-							/>
+							<CustomInput value={schoolData.campuses[0].address} inputSize='xl' />
 						</InfoField>
 					</div>
 					<div>
 						<div className='space-y-1 pt-6'>
-							<InfoField label='Người phụ trách:'>
-								<CustomInput value='Nguyễn Văn A' />
+							<InfoField label='Người phụ trách'>
+								<CustomInput value={schoolData.campuses[0].responsiblePerson} />
 							</InfoField>
 							<InfoField label='SĐT'>
-								<CustomInput value='014521447741' />
+								<CustomInput value={schoolData.campuses[0].responsiblePersonPhone} />
 							</InfoField>
 						</div>
 					</div>

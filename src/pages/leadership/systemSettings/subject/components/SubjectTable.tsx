@@ -1,8 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Button, ConfigProvider, Input, Table } from 'antd';
-import { subjectProps } from '../type';
+import { SystemSettings_subject, subjectProps } from '../type';
 import { Edit, Search, Trash } from '../../../../../components/icon';
 import DeleteGroupUserModal from './DeleteSubjectModal';
+import { deleteSubjectSetting } from '../../../../../firebase/systems/subject';
 
 export const subjectData: subjectProps[] = [
 	{
@@ -31,23 +32,37 @@ export const subjectData: subjectProps[] = [
 	},
 ];
 
-const ClassTable: React.FC = () => {
+interface SubjectTable {
+	isModalOpenDeleteGroupUsers?: boolean;
+	setValueSearchs?: (value: string) => void;
+	dataSubject: SystemSettings_subject[];
+	selectedClassKeys?: number | string | null;
+	setSelectedClassKeys?: (key: number | string | null) => void;
+	onDeleteOK?: () => void;
+}
+const SubjectTable: React.FC<SubjectTable> = ({ dataSubject, onDeleteOK }) => {
 	const [isModalOpenDeleteGroupUser, setIsModalOpenDeleteGroupUser] = useState(false);
 	const [valueSearch, setValueSearch] = useState<string>('');
-	const [data, setData] = useState<subjectProps[]>(subjectData);
-	const [selectedClassKey, setSelectedClassKey] = useState<number | string | null>(null);
+	const [data, setData] = useState<SystemSettings_subject[]>([]);
+	const [selectedClassKey, setSelectedClassKey] = useState<string>('');
+
+	useEffect(() => {
+		setData(dataSubject);
+	}, [dataSubject]);
 
 	const columns = [
 		{
 			title: 'Loại lớp',
-			dataIndex: 'type',
-			sorter: (a: subjectProps, b: subjectProps) => a.type.localeCompare(b.type),
+			dataIndex: 'subjectType',
+			sorter: (a: SystemSettings_subject, b: SystemSettings_subject) =>
+				a.subjectType.localeCompare(b.subjectType),
 			width: '15%',
 		},
 		{
 			title: 'Trạng thái',
-			dataIndex: 'status',
-			sorter: (a: subjectProps, b: subjectProps) => Number(a.status) - Number(b.status),
+			dataIndex: 'subjectStatus',
+			sorter: (a: SystemSettings_subject, b: SystemSettings_subject) =>
+				Number(a.subjectStatus) - Number(b.subjectStatus),
 			render: (status: boolean) => (status ? 'Đang hoạt động' : 'Vô hiệu hóa'),
 			width: '10%',
 		},
@@ -55,7 +70,7 @@ const ClassTable: React.FC = () => {
 		{
 			title: 'Hành động',
 			dataIndex: 'action',
-			render: (_: any, record: subjectProps) => (
+			render: (_: any, record: SystemSettings_subject) => (
 				<div>
 					<Button type='link' onClick={() => console.log('Edit:', record)}>
 						<Edit />
@@ -63,7 +78,7 @@ const ClassTable: React.FC = () => {
 					<Button
 						type='link'
 						onClick={() => {
-							setSelectedClassKey(record.key as string | number);
+							setSelectedClassKey(record.id as string);
 							setIsModalOpenDeleteGroupUser(true);
 						}}
 					>
@@ -81,22 +96,25 @@ const ClassTable: React.FC = () => {
 
 	useEffect(() => {
 		if (valueSearch.trim() === '') {
-			setData(subjectData);
+			setData(dataSubject);
 		} else {
 			const filteredData = subjectData.filter((d) =>
 				d.type.toLowerCase().includes(valueSearch.toLowerCase()),
 			);
-			setData(filteredData);
+			setData(dataSubject);
 		}
 	}, [valueSearch]);
 
 	// Hàm xóa lớp học
-	const handleDeleteClass = () => {
+	const handleDeleteClass = async () => {
 		if (selectedClassKey !== null) {
-			setData((prevData) => prevData.filter((item) => item.key !== selectedClassKey));
+			setData((prevData) => prevData.filter((item) => item.id !== selectedClassKey));
 		}
+		await deleteSubjectSetting(selectedClassKey);
+
 		setIsModalOpenDeleteGroupUser(false);
-		setSelectedClassKey(null);
+		onDeleteOK?.();
+		setSelectedClassKey('');
 	};
 
 	return (
@@ -128,7 +146,7 @@ const ClassTable: React.FC = () => {
 						},
 					}}
 				>
-					<Table<subjectProps>
+					<Table<SystemSettings_subject>
 						columns={columns}
 						dataSource={data}
 						pagination={{
@@ -146,11 +164,11 @@ const ClassTable: React.FC = () => {
 				onOk={handleDeleteClass} // Gọi hàm xóa khi xác nhận
 				onCancel={() => {
 					setIsModalOpenDeleteGroupUser(false);
-					setSelectedClassKey(null);
+					setSelectedClassKey('');
 				}}
 			/>
 		</div>
 	);
 };
 
-export default ClassTable;
+export default SubjectTable;

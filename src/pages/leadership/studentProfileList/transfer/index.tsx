@@ -1,7 +1,22 @@
-import { Button, ConfigProvider, Input, Modal, Table, TableColumnsType, TableProps } from 'antd';
+import {
+	Button,
+	ConfigProvider,
+	Input,
+	Modal,
+	Table,
+	TableColumnsType,
+	TableProps,
+	DatePicker,
+	Select,
+	Space,
+} from 'antd';
 import { ArrowRight, Eyes, PaperClip, Plus, Search } from '../../../../components/icon';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TextArea from 'antd/es/input/TextArea';
+import moment from 'moment';
+
+// Define interfaces
 interface SemesterData {
 	key: string;
 	studentCode: string;
@@ -17,8 +32,13 @@ interface SemesterData {
 	date: string;
 }
 
-interface dataTeacher {
-	id: string;
+interface Province {
+	code: number;
+	name: string;
+}
+
+interface District {
+	code: number;
 	name: string;
 }
 const data: SemesterData[] = [
@@ -163,45 +183,138 @@ const data: SemesterData[] = [
 		date: '2025-06-30',
 	},
 ];
-
-const dataTeacher: dataTeacher[] = [
-	{ id: '550e8400-e29b-41d4-a715-446655440000', name: 'Nguyễn Văn A' },
-	{ id: '550e8400-e29b-41d4-a715-446655440001', name: 'Trần Thị B' },
-	{ id: '550e8400-e29b-41d4-a715-446655440002', name: 'Lê Văn C' },
-	{ id: '550e8400-e29b-41d4-a715-446655440003', name: 'Huỳnh Thanh D' },
-	{ id: '550e8400-e29b-41d4-a715-446655440004', name: 'Nguyễn Thanh E' },
-	{ id: '550e8400-e29b-41d4-a715-446655440004', name: 'Đào Thị F' },
-	{ id: '550e8400-e29b-41d4-a715-446655440004', name: 'Phạm Văn G' },
-];
 function StudentTransferPage() {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [IsModalList, setIsModalOpenList] = useState<boolean>(false);
+	const [isModalList, setIsModalOpenList] = useState<boolean>(false);
+	const [provinceOptions, setProvinceOptions] = useState<{ value: number; label: string }[]>([]);
+	const [districtOptions, setDistrictOptions] = useState<{ value: number; label: string }[]>([]);
+
+	const [formData, setFormData] = useState({
+		name: '',
+		studentCode: '',
+		transferDate: null as moment.Moment | null,
+		transferSemester: '',
+		province: '' as string,
+		district: '' as string,
+		transferFrom: '',
+		reason: '',
+		file: null as File | null,
+	});
 
 	const nav = useNavigate();
+
+	// Fetch provinces from API
+	const fetchProvinces = async () => {
+		try {
+			const response = await fetch('https://provinces.open-api.vn/api/p/');
+			const provinces: Province[] = await response.json();
+			setProvinceOptions(provinces.map((p) => ({ value: p.code, label: p.name })));
+		} catch (error) {
+			console.error('Error fetching provinces:', error);
+		}
+	};
+
+	// Fetch districts based on selected province
+	const fetchDistricts = async (provinceCode: string) => {
+		try {
+			const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+			const data: Province & { districts: District[] } = await response.json();
+			setDistrictOptions(data.districts.map((d) => ({ value: d.code, label: d.name })));
+		} catch (error) {
+			console.error('Error fetching districts:', error);
+			setDistrictOptions([]);
+		}
+	};
+
+	// Load provinces on component mount
+	useEffect(() => {
+		fetchProvinces();
+	}, []);
+
+	// Fetch districts when province changes
+	useEffect(() => {
+		if (formData.province) {
+			fetchDistricts(formData.province);
+		} else {
+			setDistrictOptions([]); // Clear districts if no province is selected
+		}
+	}, [formData.province]);
+
 	const handleEditList = (record: SemesterData) => {
 		console.log('Edit academic year:', record);
 		setIsModalOpenList(true);
 	};
+
 	const handleOk = () => {
+		const districtValue = Number(formData.district);
+		const provinceValue = Number(formData.province);
+		console.log(provinceValue);
+
+		if (provinceOptions) {
+			const filter = provinceOptions.find(
+				(provinceOption) => Number(provinceOption.value) === provinceValue,
+			);
+			console.log('hehe', filter?.label);
+			setFormData((prev) => ({
+				...prev,
+				province: String(filter?.label),
+			}));
+		}
+		if (districtOptions) {
+			const filter = districtOptions.find(
+				(districtOption) => Number(districtOption.value) === districtValue,
+			);
+			console.log('hehe', filter?.label);
+			setFormData((prev) => ({
+				...prev,
+				district: String(filter?.label),
+			}));
+		}
+
+		console.log('Form data to save:', formData);
 		setIsModalOpen(false);
+
+		// Add your save logic here (e.g., API call)
 	};
 	const handleCancel = () => {
 		setIsModalOpen(false);
+		resetForm();
 	};
+
 	const handleOkList = () => {
 		setIsModalOpenList(false);
 	};
+
 	const handleCancelList = () => {
 		setIsModalOpenList(false);
 	};
-	const modalStyles = {
-		header: {
-			textAlign: 'center' as 'center',
-		},
-		footer: {
-			textAlign: 'center' as 'center',
-		},
+
+	const resetForm = () => {
+		setFormData({
+			name: '',
+			studentCode: '',
+			transferDate: null,
+			transferSemester: '',
+			province: '',
+			district: '',
+			transferFrom: '',
+			reason: '',
+			file: null,
+		});
 	};
+
+	const handleInputChange = (field: string, value: any) => {
+		setFormData((prev) => ({
+			...prev,
+			[field]: value,
+		}));
+	};
+
+	const modalStyles = {
+		header: { textAlign: 'center' as 'center' },
+		footer: { textAlign: 'center' as 'center' },
+	};
+
 	const columns: TableColumnsType<SemesterData> = [
 		{
 			title: 'Mã học viên',
@@ -265,6 +378,7 @@ function StudentTransferPage() {
 			width: '20%',
 		},
 	];
+
 	const onChange: TableProps<SemesterData>['onChange'] = (pagination, filters, sorter, extra) => {
 		console.log('params', pagination, filters, sorter, extra);
 	};
@@ -274,6 +388,7 @@ function StudentTransferPage() {
 		localStorage.setItem('activeSubTab', 'all');
 		nav('/studentProfileList/all');
 	};
+
 	return (
 		<div>
 			<div className='inline-flex h-[60px] items-center justify-center'>
@@ -299,7 +414,6 @@ function StudentTransferPage() {
 					icon={<Plus />}
 					size='middle'
 					onClick={() => setIsModalOpen(true)}
-					// onClick={showModal}
 				>
 					<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
 						Thêm mới
@@ -322,175 +436,172 @@ function StudentTransferPage() {
 						</Button>,
 					]}
 				>
-					<div className='py-5'>
-						<div className=''>
-							{/* left */}
-							<div className='space-y-10'>
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Tên học viên:
-											</div>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										variant='filled'
-									/>
-								</div>
-								{/*  */}
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Mã học viên:
-											</div>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										variant='filled'
-									/>
-								</div>
-								{/*  */}
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Ngày chuyển đến:
-											</div>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										variant='filled'
-									/>
-								</div>
-								{/*  */}
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Học kỳ chuyển:
-											</div>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										variant='filled'
-									/>
-								</div>
-								{/*  */}
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Tỉnh/Thành:
-											</div>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										variant='filled'
-									/>
-								</div>
-								{/*  */}
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Quận/Huyện:
-											</div>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										variant='filled'
-									/>
-								</div>
-								{/*  */}
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Chuyển từ:
-											</div>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										variant='filled'
-									/>
-								</div>
-								{/*  */}
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center gap-0.5'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Lý do:
-											</div>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-									<Input
-										placeholder='Tìm kiếm'
-										className='h-10 w-[561px] bg-[#F0F3F6]'
-										variant='filled'
-									/>
-								</div>
-								{/*  */}
-								<div className='flex h-5 items-center justify-between'>
-									<div className='flex items-start justify-start'>
-										<div className='flex items-center justify-center'>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-												Tệp đính kèm:
-											</div>
-											<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-												*
-											</div>
-										</div>
-									</div>
-
-									<Input
-										prefix={<PaperClip />}
-										placeholder='Tìm kiếm'
-										className='h-10 w-[336px] bg-[#F0F3F6]'
-										variant='filled'
-									/>
-									<Button>Chọn tệp tải lên...</Button>
-								</div>
-							</div>
+					<div className='space-y-6 py-5'>
+						{/* Tên học viên */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Tên học viên:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={formData.name}
+								onChange={(e) => handleInputChange('name', e.target.value)}
+								placeholder='Nhập tên học viên'
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Mã học viên */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Mã học viên:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={formData.studentCode}
+								onChange={(e) => handleInputChange('studentCode', e.target.value)}
+								placeholder='Nhập mã học viên'
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Ngày chuyển đến */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Ngày chuyển đến:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<DatePicker
+								value={formData.transferDate}
+								onChange={(date) => handleInputChange('transferDate', date)}
+								format='DD/MM/YYYY'
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Học kỳ chuyển */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Học kỳ chuyển:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={formData.transferSemester}
+								onChange={(e) => handleInputChange('transferSemester', e.target.value)}
+								placeholder='Nhập học kỳ chuyển'
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Tỉnh/Thành */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Tỉnh/Thành:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Select
+								value={formData.province || undefined}
+								onChange={(value) => handleInputChange('province', value)}
+								placeholder='Chọn tỉnh/thành'
+								className='h-10 w-[561px]'
+								options={provinceOptions}
+							/>
+						</div>
+						{/* Quận/Huyện */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Quận/Huyện:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Select
+								value={formData.district || undefined}
+								onChange={(value) => handleInputChange('district', value)}
+								placeholder='Chọn quận/huyện'
+								className='h-10 w-[561px]'
+								options={districtOptions}
+								disabled={!formData.province}
+							/>
+						</div>
+						{/* Chuyển từ */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Chuyển từ:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={formData.transferFrom}
+								onChange={(e) => handleInputChange('transferFrom', e.target.value)}
+								placeholder='Nhập nơi chuyển từ'
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Lý do */}
+						<div className='flex items-start justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Lý do:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<TextArea
+								value={formData.reason}
+								onChange={(e) => handleInputChange('reason', e.target.value)}
+								placeholder='Nhập lý do chuyển trường'
+								rows={4}
+								className='w-[561px] bg-[#F0F3F6]'
+							/>
+						</div>
+						{/* Tệp đính kèm */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Tệp đính kèm:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Space>
+								<Input
+									prefix={<PaperClip />}
+									placeholder='Tìm kiếm'
+									className='h-10 w-[336px] bg-[#F0F3F6]'
+									variant='filled'
+									disabled
+								/>
+								<Button>Chọn tệp tải lên...</Button>
+							</Space>
 						</div>
 					</div>
 				</Modal>
@@ -540,16 +651,16 @@ function StudentTransferPage() {
 			{/* Modal List */}
 			<Modal
 				title='Danh sách lớp học'
-				open={IsModalList}
+				open={isModalList}
 				onOk={handleOkList}
 				onCancel={handleCancelList}
 				styles={modalStyles}
 				width={800}
 				footer={[
-					<Button className='w-40' key='back' onClick={handleCancel}>
+					<Button className='w-40' key='back' onClick={handleCancelList}>
 						Hủy
 					</Button>,
-					<Button className='w-40' key='submit' type='primary' onClick={handleOk}>
+					<Button className='w-40' key='submit' type='primary' onClick={handleOkList}>
 						Lưu
 					</Button>,
 				]}

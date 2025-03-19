@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, ConfigProvider, Input, Modal, Switch } from 'antd';
-import { subjectAddProps } from '../type';
+import { SystemSettings_subject_Add_Edit } from '../type';
 
 interface AddListUserModalProps {
 	visible: boolean;
-	userAdd: subjectAddProps;
-	setUserAdd: React.Dispatch<React.SetStateAction<subjectAddProps>>;
+	userAdd: SystemSettings_subject_Add_Edit;
+	setUserAdd: React.Dispatch<React.SetStateAction<SystemSettings_subject_Add_Edit>>;
 	onOk: () => void;
 	onCancel: () => void;
 }
@@ -21,14 +21,17 @@ const AddListUserModal: React.FC<AddListUserModalProps> = ({
 		header: { textAlign: 'center' as const },
 		footer: { textAlign: 'center' as const },
 	};
-	console.log(userAdd);
+
 	const handleOnchangeAddUser = (e: React.ChangeEvent<HTMLInputElement>): void => {
 		const { name, value } = e.target;
-		setUserAdd((prev: subjectAddProps) => ({ ...prev, [name]: value }));
+		setUserAdd((prev: SystemSettings_subject_Add_Edit) => ({ ...prev, [name]: value }));
 	};
 
 	const onChangeStatus = (checked: boolean): void => {
-		setUserAdd((prev: subjectAddProps) => ({ ...prev, classStatus: checked ? true : false }));
+		setUserAdd((prev: SystemSettings_subject_Add_Edit) => ({
+			...prev,
+			classStatus: checked ? true : false,
+		}));
 	};
 
 	return (
@@ -55,12 +58,12 @@ const AddListUserModal: React.FC<AddListUserModalProps> = ({
 							Loại môn học:
 						</span>
 						<Input
-							name='classType'
+							name='subjectType'
 							placeholder='Nhập loại môn học'
 							className='h-10 w-[561px] bg-[#F0F3F6]'
 							variant='filled'
 							onChange={handleOnchangeAddUser}
-							value={userAdd.type}
+							value={userAdd.subjectType}
 						/>
 					</div>
 					<div className='flex h-5 items-center gap-28'>
@@ -69,10 +72,10 @@ const AddListUserModal: React.FC<AddListUserModalProps> = ({
 						</span>
 						<div className='flex items-center gap-2'>
 							<ConfigProvider theme={{ token: { colorPrimary: '#1677FF' } }}>
-								<Switch defaultChecked={userAdd.status === true} onChange={onChangeStatus} />
+								<Switch defaultChecked={userAdd.subjectStatus === true} onChange={onChangeStatus} />
 							</ConfigProvider>
 							<span className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
-								{userAdd.status === false ? 'Đã vô hiệu hóa' : 'Đang hoạt động'}
+								{userAdd.subjectStatus === false ? 'Đã vô hiệu hóa' : 'Đang hoạt động'}
 							</span>
 						</div>
 					</div>

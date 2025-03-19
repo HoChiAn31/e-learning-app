@@ -1,42 +1,65 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { ArrowRight, Plus } from '../../../../components/icon';
 import ClassTable from './components/ClassTable';
 
 import AddListUserModal from './components/AddClassModal';
-// import SemesterSelect from './components/SemesterSelect';
 
-import { classAddProps } from './type';
+import { SystemSettings_class, classAddProps } from './type';
 import AcademicYearsSelect from './components/AcademicYearsSelect';
 import { useNavigate } from 'react-router-dom';
+import { addClassSetting, getClassSettings } from '../../../../firebase/systems/class';
 
 const ClassSettingPage: React.FC = () => {
 	const [isModalOpenClassUser, setIsModalOpenClassUser] = useState(false);
 
-	const [userAdd, setUserAdd] = useState<classAddProps>({
+	const [classAdd, setClassAdd] = useState<classAddProps>({
 		classType: '',
 		classStatus: false,
 		description: '',
 	});
+	const [dataClassAdd, setDataClassAdd] = useState<SystemSettings_class[]>([]);
+
+	const fetchDataClass = async () => {
+		try {
+			const data = await getClassSettings();
+			console.log('Data class:', data);
+			setDataClassAdd(data);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	};
+	useEffect(() => {
+		fetchDataClass();
+	}, []);
 	const handleOpenModal = () => {
 		setIsModalOpenClassUser(true);
+	};
+	const handleOk = async () => {
+		try {
+			await addClassSetting(classAdd);
+			fetchDataClass();
+			setIsModalOpenClassUser(false);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	};
+	const handleDeleteOK = () => {
+		fetchDataClass();
 	};
 	return (
 		<div>
 			<Header />
 			<ControlPanel onAddClick={handleOpenModal} />
 
-			<ClassTable />
+			<ClassTable dataClass={dataClassAdd} onDeleteOK={handleDeleteOK} />
 			<AddListUserModal
 				visible={isModalOpenClassUser}
-				userAdd={userAdd}
-				setUserAdd={setUserAdd}
-				onOk={() => {
-					console.log(userAdd);
-					setIsModalOpenClassUser(false);
-				}}
+				userAdd={classAdd}
+				setUserAdd={setClassAdd}
+				onOk={handleOk}
 				onCancel={() => {
-					setUserAdd({
+					setClassAdd({
 						classType: '',
 						classStatus: false,
 						description: '',
