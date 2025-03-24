@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Button, Checkbox, Input, Modal, Row, Col } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
-import { GroupUsers, Permission } from '../type';
+import { GroupUsers_add_edit, Permission } from '../type';
 
 interface AddGroupUserModalProps {
 	visible: boolean;
-	initialData?: Partial<GroupUsers>; // Optional initial data for editing
-	onOk: () => void;
+	initialData?: Partial<GroupUsers_add_edit>; // Optional initial data for editing
+	onOk: (data: GroupUsers_add_edit) => void;
 	onCancel: () => void;
-	onChange: (data: GroupUsers) => void; // Callback to update parent state
+	onChange?: (data: GroupUsers_add_edit) => void; // Callback to update parent state
 }
 
 const AddGroupUserModal: React.FC<AddGroupUserModalProps> = ({
@@ -21,8 +21,7 @@ const AddGroupUserModal: React.FC<AddGroupUserModalProps> = ({
 	const [isDecentralization, setIsDecentralization] = useState(false);
 
 	// Initial state based on GroupUsers interface
-	const [groupData, setGroupData] = useState<GroupUsers>({
-		key: initialData.key || Date.now(), // Use timestamp as a temporary key if not provided
+	const [groupData, setGroupData] = useState<GroupUsers_add_edit>({
 		groupName: initialData.groupName || '',
 		totalMembers: initialData.totalMembers || 0,
 		note: initialData.note || '',
@@ -80,13 +79,13 @@ const AddGroupUserModal: React.FC<AddGroupUserModalProps> = ({
 		const { name, value } = e.target;
 		const updatedData = { ...groupData, [name]: value };
 		setGroupData(updatedData);
-		onChange(updatedData); // Notify parent of changes
+		// onChange(updatedData); // Notify parent of changes
 	};
 
 	// Handle permission checkbox changes
 	const handlePermissionChange = (
 		category: keyof Pick<
-			GroupUsers,
+			GroupUsers_add_edit,
 			'isDataDeclaration' | 'isStudentProfile' | 'isInstructorProfile' | 'isExam' | 'isSetting'
 		>,
 		permission: keyof Permission,
@@ -109,7 +108,7 @@ const AddGroupUserModal: React.FC<AddGroupUserModalProps> = ({
 			[category]: updatedCategory,
 		};
 		setGroupData(updatedData);
-		onChange(updatedData); // Notify parent of changes
+		// onChange(updatedData); // Notify parent of changes
 	};
 
 	// Handle isEnterScore for isInstructorProfile
@@ -122,7 +121,7 @@ const AddGroupUserModal: React.FC<AddGroupUserModalProps> = ({
 			},
 		};
 		setGroupData(updatedData);
-		onChange(updatedData); // Notify parent of changes
+		// onChange(updatedData); // Notify parent of changes
 	};
 
 	// Handle decentralization toggle
@@ -136,7 +135,7 @@ const AddGroupUserModal: React.FC<AddGroupUserModalProps> = ({
 				isDelete: true,
 				isAdd: true,
 			};
-			const updatedData: GroupUsers = {
+			const updatedData: GroupUsers_add_edit = {
 				...groupData,
 				isDataDeclaration: fullPermissions,
 				isStudentProfile: fullPermissions,
@@ -145,15 +144,17 @@ const AddGroupUserModal: React.FC<AddGroupUserModalProps> = ({
 				isSetting: fullPermissions,
 			};
 			setGroupData(updatedData);
-			onChange(updatedData);
+			// onChange(updatedData);
 		}
 	};
-
+	const handleOk = () => {
+		onOk(groupData);
+	};
 	return (
 		<Modal
 			title='Thiết lập nhóm người dùng'
 			open={visible}
-			onOk={onOk}
+			onOk={handleOk}
 			onCancel={onCancel}
 			styles={modalStyles}
 			width={800}
@@ -161,7 +162,7 @@ const AddGroupUserModal: React.FC<AddGroupUserModalProps> = ({
 				<Button key='back' onClick={onCancel}>
 					Hủy
 				</Button>,
-				<Button key='submit' type='primary' onClick={onOk}>
+				<Button key='submit' type='primary' onClick={handleOk}>
 					Lưu
 				</Button>,
 			]}
@@ -231,12 +232,14 @@ const AddGroupUserModal: React.FC<AddGroupUserModalProps> = ({
 											<Col className='gutter-row' span={6} key={permission}>
 												<Checkbox
 													checked={
-														(groupData[category.name as keyof GroupUsers] as Permission)[permission]
+														(groupData[category.name as keyof GroupUsers_add_edit] as Permission)[
+															permission
+														]
 													}
 													onChange={(e) =>
 														handlePermissionChange(
 															category.name as keyof Pick<
-																GroupUsers,
+																GroupUsers_add_edit,
 																| 'isDataDeclaration'
 																| 'isStudentProfile'
 																| 'isInstructorProfile'

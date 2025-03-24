@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 
 import GroupUsersTable from './components/GroupUsersTable';
@@ -7,21 +7,19 @@ import AddGroupUserModal from './components/AddGroupUserModal';
 import AddListUserModal from './components/AddListUserModal';
 import SemesterSelect from './components/SemesterSelect';
 import SubjectSelect from './components/SubjectSelect';
-import { GroupUsers, userAdd } from './type';
+import { GroupUsers, GroupUsers_add_edit, dataUsers, userAdd_Add_Edit } from './type';
 import { ArrowRight, Plus } from '../../../../components/icon';
+import { addGroupUser, getGroupUsers } from '../../../../firebase/systems/groupUser';
+import { addUser, getUsers } from '../../../../firebase/systems/user';
+import { useNavigate } from 'react-router-dom';
 
 const UserSettingPage: React.FC = () => {
 	const [isActive, setIsActive] = useState<'groupUsers' | 'listUsers'>('groupUsers');
 	const [isModalOpenGroupUser, setIsModalOpenGroupUser] = useState(false);
 	const [isModalOpenListUser, setIsModalOpenListUser] = useState(false);
-	const [groupData, setGroupData] = useState<GroupUsers | null>(null);
-	const [userAdd, setUserAdd] = useState<userAdd>({
-		name: '',
-		groupUser: '',
-		email: '',
-		status: 'false',
-	});
 
+	const [dataUser, setDataUser] = useState<dataUsers[]>([]);
+	const [dataGroupUser, setDataGroupUser] = useState<GroupUsers[]>([]);
 	const handleOpenModal = () => {
 		if (isActive === 'groupUsers') {
 			setIsModalOpenGroupUser(true);
@@ -29,32 +27,101 @@ const UserSettingPage: React.FC = () => {
 			setIsModalOpenListUser(true);
 		}
 	};
-	const handleChange = (data: GroupUsers) => {
-		setGroupData(data);
-		console.log('Updated group data:', data);
+	const fetchDataUser = async () => {
+		try {
+			const data = await getUsers();
+			console.log('user:', data);
+			console.log('dataGroupUser', dataGroupUser);
+			setDataUser(data);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	};
+
+	const fetchData = async () => {
+		try {
+			const [users, groups] = await Promise.all([getUsers(), getGroupUsers()]);
+			console.log('user:', users);
+			console.log('dataGroupUser', groups);
+
+			const updatedData = users.map((user) => {
+				const matchedGroup = groups.find((group) => group.id === user.groupUser);
+				return {
+					...user,
+					groupUser: matchedGroup ? matchedGroup.groupName : user.groupUser,
+				};
+			});
+
+			setDataUser(updatedData);
+			setDataGroupUser(groups);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	};
+	useEffect(() => {
+		fetchData();
+	}, []);
+
+	const handleChange = (data: GroupUsers_add_edit) => {
+		// setGroupData(data);
+		// console.log('Updated group data:', data);
+	};
+	const handleOkAddGroupUser = async (data: GroupUsers_add_edit) => {
+		console.log(data.groupName);
+		setIsModalOpenGroupUser(false);
+
+		// Chuẩn hóa groupName về chữ thường (lowercase) để so sánh
+		const groupNameLower = data.groupName.toLowerCase();
+
+		// Tạo object mới với role được gán dựa trên điều kiện
+		const updatedData: GroupUsers_add_edit = {
+			...data,
+			role:
+				groupNameLower === 'quản trị viên'
+					? 'leadership'
+					: groupNameLower === 'giáo viên'
+						? 'teacher'
+						: groupNameLower === 'học sinh'
+							? 'student'
+							: data.role, // Giữ nguyên role nếu không khớp điều kiện
+		};
+
+		try {
+			await addGroupUser(updatedData);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+	const handleOkAddUser = async (data: userAdd_Add_Edit) => {
+		try {
+			await addUser(data);
+
+			setIsModalOpenListUser(false);
+			fetchDataUser();
+		} catch (err) {
+			console.log(err);
+		}
 	};
 	return (
 		<div>
 			<Header />
 			<ControlPanel isActive={isActive} setIsActive={setIsActive} onAddClick={handleOpenModal} />
-			{isActive === 'groupUsers' ? <GroupUsersTable /> : <ListUsersTable />}
+			{isActive === 'groupUsers' ? (
+				<GroupUsersTable data={dataGroupUser} />
+			) : (
+				<ListUsersTable data={dataUser} />
+			)}
 			<AddGroupUserModal
 				visible={isModalOpenGroupUser}
-				onOk={() => setIsModalOpenGroupUser(false)}
+				onOk={handleOkAddGroupUser}
 				onCancel={() => setIsModalOpenGroupUser(false)}
 				onChange={handleChange}
 			/>
 			<AddListUserModal
 				visible={isModalOpenListUser}
-				userAdd={userAdd}
-				setUserAdd={setUserAdd}
-				onOk={() => {
-					console.log(userAdd);
-					setIsModalOpenListUser(false);
-				}}
+				onOk={handleOkAddUser}
 				onCancel={() => {
 					console.log(1);
-					setUserAdd({ name: '', groupUser: '', email: '', status: 'false' });
 					setIsModalOpenListUser(false);
 				}}
 			/>
@@ -63,21 +130,27 @@ const UserSettingPage: React.FC = () => {
 };
 
 // Component con
-const Header: React.FC = () => (
-	<div className='inline-flex h-[60px] items-center justify-center'>
-		<div className='inline-flex items-center justify-start gap-2 px-2.5'>
-			<span className="cursor-pointer font-['Mulish'] text-lg font-extrabold tracking-tight text-[#c8c4c0]">
-				Cài đặt hệ thống
-			</span>
-			<div data-svg-wrapper className='relative'>
-				<ArrowRight />
+const Header: React.FC = () => {
+	const nav = useNavigate();
+	return (
+		<div className='inline-flex h-[60px] items-center justify-center'>
+			<div className='inline-flex items-center justify-start gap-2 px-2.5'>
+				<div
+					className="cursor-pointer font-['Mulish'] text-lg font-extrabold tracking-tight text-[#c8c4c0]"
+					onClick={() => nav('/systemSettings')}
+				>
+					Cài đặt hệ thống
+				</div>
+				<div data-svg-wrapper className='relative'>
+					<ArrowRight />
+				</div>
+				<span className="font-['Mulish'] text-5xl font-extrabold tracking-wide text-[#373839]">
+					Người dùng hệ thống
+				</span>
 			</div>
-			<span className="font-['Mulish'] text-5xl font-extrabold tracking-wide text-[#373839]">
-				Người dùng hệ thống
-			</span>
 		</div>
-	</div>
-);
+	);
+};
 
 interface ControlPanelProps {
 	isActive: 'groupUsers' | 'listUsers';

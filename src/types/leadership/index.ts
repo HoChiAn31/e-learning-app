@@ -90,3 +90,14 @@ export interface dataDeclaration_scoreType_add_edit {
 	semester1: number;
 	semester2: number;
 }
+export interface dataDeclaration_schoolYear {
+	id: string;
+	academicYearFrom: string;
+	academicYearTo: string;
+	semesters: { semesterName: string; startDate: string; endDate: string }[];
+}
+export interface dataDeclaration_schoolYear_add_edit {
+	academicYearFrom: string;
+	academicYearTo: string;
+	semesters: { semesterName: string; startDate: string; endDate: string }[];
+}

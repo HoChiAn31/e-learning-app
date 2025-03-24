@@ -7,7 +7,7 @@ import DeleteGroupUserModal from './DeleteGroupUserModal';
 
 const groupUsersData: GroupUsers[] = [
 	{
-		key: 1,
+		id: '1',
 		groupName: 'Quản trị viên',
 		totalMembers: 5,
 		note: 'Nhóm có quyền quản lý toàn bộ hệ thống',
@@ -44,7 +44,7 @@ const groupUsersData: GroupUsers[] = [
 		},
 	},
 	{
-		key: 2,
+		id: ' 2',
 		groupName: 'Học sinh tiểu học',
 		totalMembers: 150,
 		note: 'Nhóm chỉ xem thông tin cá nhân của bản thân',
@@ -81,7 +81,7 @@ const groupUsersData: GroupUsers[] = [
 		},
 	},
 	{
-		key: 3,
+		id: '3',
 		groupName: 'Phòng hành chính',
 		totalMembers: 10,
 		note: 'Nhóm quản lý hồ sơ học sinh và giáo viên',
@@ -118,7 +118,7 @@ const groupUsersData: GroupUsers[] = [
 		},
 	},
 	{
-		key: 4,
+		id: '4',
 		groupName: 'Nhân viên',
 		totalMembers: 20,
 		note: 'Nhóm hỗ trợ quản lý kỳ thi và nhập điểm',
@@ -155,8 +155,12 @@ const groupUsersData: GroupUsers[] = [
 		},
 	},
 ];
-
-const GroupUsersTable: React.FC = ({}) => {
+interface GroupUsersTableProps {
+	isModalOpenDeleteGroupUser?: boolean;
+	setIsModalOpenDeleteGroupUser?: (isOpen: boolean) => void;
+	data: GroupUsers[];
+}
+const GroupUsersTable: React.FC<GroupUsersTableProps> = ({ data }) => {
 	const [isModalOpenDeleteGroupUser, setIsModalOpenDeleteGroupUser] = useState(false);
 
 	const columns = [
@@ -220,7 +224,7 @@ const GroupUsersTable: React.FC = ({}) => {
 				>
 					<Table<GroupUsers>
 						columns={columns}
-						dataSource={groupUsersData}
+						dataSource={data}
 						pagination={{
 							position: ['bottomRight'],
 							showSizeChanger: true,

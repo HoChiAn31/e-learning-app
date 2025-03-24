@@ -1,5 +1,5 @@
 export interface GroupUsers {
-	key: number;
+	id: string;
 	groupName: string;
 	totalMembers: number;
 	note: string;
@@ -8,8 +8,19 @@ export interface GroupUsers {
 	isInstructorProfile: Permission & { isEnterScore: boolean };
 	isExam: Permission;
 	isSetting: Permission;
+	role?: string;
 }
-
+export interface GroupUsers_add_edit {
+	groupName: string;
+	totalMembers: number;
+	note: string;
+	isDataDeclaration: Permission;
+	isStudentProfile: Permission;
+	isInstructorProfile: Permission & { isEnterScore: boolean };
+	isExam: Permission;
+	isSetting: Permission;
+	role?: string;
+}
 export interface Permission {
 	isReview: boolean;
 	isEdit: boolean;
@@ -25,9 +36,16 @@ export interface listUsers {
 	status: string;
 }
 
-export interface userAdd {
+export interface dataUsers {
+	id: string;
 	name: string;
 	groupUser: string;
 	email: string;
-	status: 'true' | 'false';
+	status: boolean;
+}
+export interface userAdd_Add_Edit {
+	name: string;
+	groupUser: string;
+	email: string;
+	status: boolean;
 }

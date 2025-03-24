@@ -1,41 +1,65 @@
-import React from 'react';
-import { Button, ConfigProvider, Input, Modal, Switch } from 'antd';
-import { userAdd } from '../type';
+import React, { useEffect, useState } from 'react';
+import { Button, ConfigProvider, Input, Modal, Select, Switch } from 'antd';
+import { GroupUsers, userAdd_Add_Edit } from '../type';
+import { getGroupUsers } from '../../../../../firebase/systems/groupUser';
 
 interface AddListUserModalProps {
 	visible: boolean;
-	userAdd: userAdd;
-	setUserAdd: React.Dispatch<React.SetStateAction<userAdd>>;
-	onOk: () => void;
+	onOk: (data: userAdd_Add_Edit) => void;
 	onCancel: () => void;
 }
 
-const AddListUserModal: React.FC<AddListUserModalProps> = ({
-	visible,
-	userAdd,
-	setUserAdd,
-	onOk,
-	onCancel,
-}) => {
+const AddListUserModal: React.FC<AddListUserModalProps> = ({ visible, onOk, onCancel }) => {
 	const modalStyles = {
 		header: { textAlign: 'center' as const },
 		footer: { textAlign: 'center' as const },
 	};
-	console.log(userAdd);
-	const handleOnchangeAddUser = (e: React.ChangeEvent<HTMLInputElement>): void => {
-		const { name, value } = e.target;
-		setUserAdd((prev: userAdd) => ({ ...prev, [name]: value }));
+
+	// Khởi tạo userAdd với status là boolean
+	const [userAdd, setUserAdd] = useState<userAdd_Add_Edit>({
+		name: '',
+		groupUser: '',
+		email: '',
+		status: false, // Sử dụng boolean thay vì chuỗi
+	});
+
+	const [groupOptions, setGroupOptions] = useState<{ value: string; label: string }[]>([]);
+
+	const fetchDataGroupUser = async () => {
+		const data = await getGroupUsers();
+		console.log(data);
+		const options = data.map((group) => ({
+			value: group.id,
+			label: group.groupName,
+		}));
+		setGroupOptions(options);
 	};
 
+	useEffect(() => {
+		fetchDataGroupUser();
+	}, []);
+
+	const handleOnchangeAddUser = (
+		e: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string } },
+	): void => {
+		const { name, value } = e.target;
+		setUserAdd((prev: userAdd_Add_Edit) => ({ ...prev, [name]: value }));
+	};
+
+	// Sử dụng boolean trực tiếp cho status
 	const onChangeStatus = (checked: boolean): void => {
-		setUserAdd((prev: userAdd) => ({ ...prev, status: checked ? 'true' : 'false' }));
+		setUserAdd((prev: userAdd_Add_Edit) => ({ ...prev, status: checked }));
+	};
+
+	const handleOnOk = () => {
+		onOk(userAdd); // Gọi prop onOk từ parent
 	};
 
 	return (
 		<Modal
-			title='Thiệt lập người dùng'
+			title='Thiết lập người dùng'
 			open={visible}
-			onOk={onOk}
+			onOk={handleOnOk}
 			onCancel={onCancel}
 			styles={modalStyles}
 			width={800}
@@ -43,7 +67,7 @@ const AddListUserModal: React.FC<AddListUserModalProps> = ({
 				<Button key='back' onClick={onCancel}>
 					Hủy
 				</Button>,
-				<Button key='submit' type='primary' onClick={onOk}>
+				<Button key='submit' type='primary' onClick={handleOnOk}>
 					Lưu
 				</Button>,
 			]}
@@ -52,11 +76,11 @@ const AddListUserModal: React.FC<AddListUserModalProps> = ({
 				<div className='space-y-10'>
 					<div className='flex h-5 items-center justify-between gap-10'>
 						<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-							Tên nhóm: <span className='text-[#ed2025]'>*</span>
+							Tên: <span className='text-[#ed2025]'>*</span>
 						</span>
 						<Input
 							name='name'
-							placeholder='Nhập tên nhóm'
+							placeholder='Nhập tên'
 							className='h-10 w-[561px] bg-[#F0F3F6]'
 							variant='filled'
 							onChange={handleOnchangeAddUser}
@@ -80,22 +104,25 @@ const AddListUserModal: React.FC<AddListUserModalProps> = ({
 						<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
 							Nhóm người dùng: <span className='text-[#ed2025]'>*</span>
 						</span>
-						<Input
-							name='groupUser'
-							placeholder='Nhập nhóm người dùng'
-							className='h-10 w-[561px] bg-[#F0F3F6]'
-							variant='filled'
-							onChange={handleOnchangeAddUser}
+						<Select
+							className='h-10 w-[561px]'
+							style={{ backgroundColor: '#F0F3F6' }}
+							onChange={(value) => handleOnchangeAddUser({ target: { name: 'groupUser', value } })}
 							value={userAdd.groupUser}
+							placeholder='Chọn nhóm người dùng'
+							options={groupOptions}
 						/>
 					</div>
 					<div className='flex items-start pl-48'>
 						<div className='flex items-center gap-2'>
 							<ConfigProvider theme={{ token: { colorPrimary: '#1677FF' } }}>
-								<Switch defaultChecked={userAdd.status === 'true'} onChange={onChangeStatus} />
+								<Switch
+									checked={userAdd.status} // Sử dụng trực tiếp boolean
+									onChange={onChangeStatus}
+								/>
 							</ConfigProvider>
 							<span className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
-								{userAdd.status === 'false' ? 'Đã vô hiệu hóa' : 'Đang hoạt động'}
+								{userAdd.status ? 'Đang hoạt động' : 'Đã vô hiệu hóa'} {/* Đảo ngược điều kiện */}
 							</span>
 						</div>
 					</div>

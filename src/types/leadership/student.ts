@@ -107,22 +107,36 @@ export interface Leadership_TransferForm {
 	id: string;
 	name: string;
 	studentCode: string;
-	transferDate: moment.Moment | null;
+	transferDate: string | null;
 	transferSemester: string;
 	province: string;
+	provinceCode: string;
 	district: string;
+	districtCode: string;
 	transferFrom: string;
-	reason: string;
+	description: string;
 	file: File | null;
 }
 export interface Leadership_TransferForm_Add_Edit {
 	name: string;
 	studentCode: string;
-	transferDate: moment.Moment | null;
+	transferDate: string | null;
+	provinceCode: string;
 	transferSemester: string;
 	province: string;
 	district: string;
+	districtCode: string;
 	transferFrom: string;
-	reason: string;
+	description: string;
 	file: File | null;
+}
+
+export interface Leadership_Student_Transfer {
+	studentInfor: Leadership_Student;
+	studentTransfer: Leadership_TransferForm;
+}
+
+export interface Leadership_Student_Reserve {
+	studentInfor: Leadership_Student;
+	studentReserve: Leadership_StudentReward;
 }

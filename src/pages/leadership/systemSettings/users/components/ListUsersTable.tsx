@@ -1,86 +1,45 @@
 import React, { useState } from 'react';
 import { Button, ConfigProvider, Input, Table } from 'antd';
-import { listUsers } from '../type';
+import { dataUsers } from '../type'; // Chỉ import dataUsers, bỏ listUsers nếu không cần
 import { Edit, Search, Trash } from '../../../../../components/icon';
 import DeleteListUserModal from './DeleteListUserModal';
 
-const listUsersData: listUsers[] = [
-	{
-		key: 1,
-		name: 'Nguyễn Văn A',
-		email: 'nguyenvana@example.com',
-		groupUser: 'Quản trị viên',
-		status: 'Hoạt động',
-	},
-	{
-		key: 2,
-		name: 'Trần Thị B',
-		email: 'tranthib@example.com',
-		groupUser: 'Học sinh tiểu học',
-		status: 'Hoạt động',
-	},
-	{
-		key: 3,
-		name: 'Lê Văn C',
-		email: 'levanc@example.com',
-		groupUser: 'Phòng hành chính',
-		status: 'Không hoạt động',
-	},
-	{
-		key: 4,
-		name: 'Phạm Thị D',
-		email: 'phamthid@example.com',
-		groupUser: 'Nhân viên',
-		status: 'Hoạt động',
-	},
-	{
-		key: 5,
-		name: 'Hoàng Văn E',
-		email: 'hoangvane@example.com',
-		groupUser: 'Quản trị viên',
-		status: 'Không hoạt động',
-	},
-	{
-		key: 6,
-		name: 'Đỗ Thị F',
-		email: 'dothif@example.com',
-		groupUser: 'Học sinh tiểu học',
-		status: 'Hoạt động',
-	},
-];
+interface ListUsersTableProps {
+	data: dataUsers[];
+}
 
-const ListUsersTable: React.FC = () => {
+const ListUsersTable: React.FC<ListUsersTableProps> = ({ data }) => {
 	const [isModalOpenDeleteListUser, setIsModalOpenDeleteListUser] = useState(false);
-
+	console.log(data);
 	const columns = [
 		{
 			title: 'Tên',
 			dataIndex: 'name',
-			sorter: (a: listUsers, b: listUsers) => a.name.localeCompare(b.name),
+			sorter: (a: dataUsers, b: dataUsers) => a.name.localeCompare(b.name),
 			width: '20%',
 		},
 		{
 			title: 'Email',
 			dataIndex: 'email',
-			sorter: (a: listUsers, b: listUsers) => a.email.localeCompare(b.email),
+			sorter: (a: dataUsers, b: dataUsers) => a.email.localeCompare(b.email),
 			width: '25%',
 		},
 		{
 			title: 'Nhóm người dùng',
 			dataIndex: 'groupUser',
-			sorter: (a: listUsers, b: listUsers) => a.groupUser.localeCompare(b.groupUser),
+			sorter: (a: dataUsers, b: dataUsers) => a.groupUser.localeCompare(b.groupUser),
 			width: '20%',
 		},
 		{
 			title: 'Trạng thái',
 			dataIndex: 'status',
-			sorter: (a: listUsers, b: listUsers) => a.status.localeCompare(b.status),
+			render: (status: boolean) => (status ? 'Đang hoạt động' : 'Đã vô hiệu hóa'),
 			width: '15%',
 		},
 		{
 			title: '',
 			dataIndex: 'action',
-			render: (_: any, record: listUsers) => (
+			render: (_: any, record: dataUsers) => (
 				<div>
 					<Button type='link' onClick={() => console.log('Edit:', record)}>
 						<Edit />
@@ -93,6 +52,12 @@ const ListUsersTable: React.FC = () => {
 			width: '20%',
 		},
 	];
+
+	// Đảm bảo data có key
+	const dataSourceWithKey = data.map((item) => ({
+		...item,
+		key: item.id, // Giả định dataUsers có id, dùng làm key
+	}));
 
 	return (
 		<div className='mt-2 rounded-2xl bg-white p-4 shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
@@ -122,9 +87,9 @@ const ListUsersTable: React.FC = () => {
 						},
 					}}
 				>
-					<Table<listUsers>
+					<Table<dataUsers>
 						columns={columns}
-						dataSource={listUsersData}
+						dataSource={dataSourceWithKey} // Sử dụng dataSource đã thêm key
 						pagination={{
 							position: ['bottomRight'],
 							showSizeChanger: true,

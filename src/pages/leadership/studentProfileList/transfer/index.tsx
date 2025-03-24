@@ -15,22 +15,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TextArea from 'antd/es/input/TextArea';
 import moment from 'moment';
-
-// Define interfaces
-interface SemesterData {
-	key: string;
-	studentCode: string;
-	studentName: string;
-	birthDay: string;
-	gender: string;
-	nation?: string;
-	class?: string;
-	status?: string;
-	transferFrom: string;
-	transferSemester: string;
-	faculties: string;
-	date: string;
-}
+import { getStudents, updateStudent } from '../../../../firebase/studentProfileList/fetchStudent';
+import {
+	Leadership_Student,
+	Leadership_Student_Transfer,
+	Leadership_TransferForm,
+	Leadership_TransferForm_Add_Edit,
+} from '../../../../types/leadership/student';
+import { addTransfer, getTransfers } from '../../../../firebase/studentProfileList/fetchTransfer';
 
 interface Province {
 	code: number;
@@ -41,169 +33,45 @@ interface District {
 	code: number;
 	name: string;
 }
-const data: SemesterData[] = [
-	{
-		key: '1',
-		studentCode: 'SV001',
-		studentName: 'Nguyễn Văn A',
-		birthDay: '1998-05-15',
-		gender: 'Nam',
-		nation: 'Việt Nam',
-		class: '12A1',
-		status: 'Đang học',
-		transferFrom: 'Trường THPT A',
-		transferSemester: 'Kỳ 1',
-		faculties: 'Khoa Kinh tế',
-		date: '2025-01-15',
-	},
-	{
-		key: '2',
-		studentCode: 'SV002',
-		studentName: 'Trần Thị B',
-		birthDay: '1999-03-20',
-		gender: 'Nữ',
-		nation: 'Việt Nam',
-		class: '12A2',
-		status: 'Đang học',
-		transferFrom: 'Trường THPT B',
-		transferSemester: 'Kỳ 1',
-		faculties: 'Khoa Ngoại ngữ',
-		date: '2025-01-20',
-	},
-	{
-		key: '3',
-		studentCode: 'SV003',
-		studentName: 'Lê Hoàng C',
-		birthDay: '2000-07-10',
-		gender: 'Nam',
-		nation: 'Việt Nam',
-		class: '12A3',
-		status: 'Đã tốt nghiệp',
-		transferFrom: 'Trường THPT C',
-		transferSemester: 'Kỳ 2',
-		faculties: 'Khoa Công nghệ thông tin',
-		date: '2024-07-10',
-	},
-	{
-		key: '4',
-		studentCode: 'SV004',
-		studentName: 'Phạm Minh D',
-		birthDay: '1997-09-25',
-		gender: 'Nam',
-		nation: 'Việt Nam',
-		class: '12A4',
-		status: 'Bảo lưu',
-		transferFrom: 'Trường THPT D',
-		transferSemester: 'Kỳ 1',
-		faculties: 'Khoa Y dược',
-		date: '2023-09-15',
-	},
-	{
-		key: '5',
-		studentCode: 'SV005',
-		studentName: 'Đỗ Thị E',
-		birthDay: '2001-12-05',
-		gender: 'Nữ',
-		nation: 'Việt Nam',
-		class: '12A5',
-		status: 'Đang học',
-		transferFrom: 'Trường THPT E',
-		transferSemester: 'Kỳ 2',
-		faculties: 'Khoa Sư phạm',
-		date: '2025-06-01',
-	},
-	{
-		key: '6',
-		studentCode: 'SV006',
-		studentName: 'Hoàng Văn F',
-		birthDay: '2002-02-18',
-		gender: 'Nam',
-		nation: 'Việt Nam',
-		class: '12A6',
-		status: 'Đang học',
-		transferFrom: 'Trường THPT F',
-		transferSemester: 'Kỳ 1',
-		faculties: 'Khoa Xây dựng',
-		date: '2024-12-01',
-	},
-	{
-		key: '7',
-		studentCode: 'SV007',
-		studentName: 'Ngô Thị G',
-		birthDay: '2003-04-30',
-		gender: 'Nữ',
-		nation: 'Việt Nam',
-		class: '12A7',
-		status: 'Đang học',
-		transferFrom: 'Trường THPT G',
-		transferSemester: 'Kỳ 1',
-		faculties: 'Khoa Luật',
-		date: '2025-03-10',
-	},
-	{
-		key: '8',
-		studentCode: 'SV008',
-		studentName: 'Bùi Anh H',
-		birthDay: '2004-08-12',
-		gender: 'Nam',
-		nation: 'Việt Nam',
-		class: '12A8',
-		status: 'Đang học',
-		transferFrom: 'Trường THPT H',
-		transferSemester: 'Kỳ 2',
-		faculties: 'Khoa Khoa học xã hội',
-		date: '2025-08-12',
-	},
-	{
-		key: '9',
-		studentCode: 'SV009',
-		studentName: 'Tạ Văn I',
-		birthDay: '1996-11-11',
-		gender: 'Nam',
-		nation: 'Việt Nam',
-		class: '12A9',
-		status: 'Đã tốt nghiệp',
-		transferFrom: 'Trường THPT I',
-		transferSemester: 'Kỳ 1',
-		faculties: 'Khoa Quản trị kinh doanh',
-		date: '2024-11-11',
-	},
-	{
-		key: '10',
-		studentCode: 'SV010',
-		studentName: 'Trịnh Thị J',
-		birthDay: '2005-06-30',
-		gender: 'Nữ',
-		nation: 'Việt Nam',
-		class: '12A10',
-		status: 'Đang học',
-		transferFrom: 'Trường THPT J',
-		transferSemester: 'Kỳ 2',
-		faculties: 'Khoa Nghệ thuật',
-		date: '2025-06-30',
-	},
-];
+
 function StudentTransferPage() {
-	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [isModalList, setIsModalOpenList] = useState<boolean>(false);
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Add Modal
+	const [isModalList, setIsModalOpenList] = useState<boolean>(false); // List Modal
+	const [isDetailsModalOpen, setIsDetailsModalOpen] = useState<boolean>(false); // Details Modal
+	const [selectedTransfer, setSelectedTransfer] = useState<Leadership_Student_Transfer | null>(
+		null,
+	); // Selected record
 	const [provinceOptions, setProvinceOptions] = useState<{ value: number; label: string }[]>([]);
 	const [districtOptions, setDistrictOptions] = useState<{ value: number; label: string }[]>([]);
-
-	const [formData, setFormData] = useState({
+	const [dataTranser, setDataTranser] = useState<Leadership_TransferForm[]>([]);
+	const [studentData, setStudentData] = useState<Leadership_Student[]>([]);
+	const [students, setStudents] = useState<Leadership_Student[]>([]);
+	const [dataFilter, setDataFilter] = useState<Leadership_Student_Transfer[]>([]);
+	const [formData, setFormData] = useState<Leadership_TransferForm_Add_Edit>({
 		name: '',
 		studentCode: '',
-		transferDate: null as moment.Moment | null,
+		transferDate: '',
 		transferSemester: '',
+		provinceCode: '' as string,
 		province: '' as string,
+		districtCode: '' as string,
 		district: '' as string,
 		transferFrom: '',
-		reason: '',
+		description: '',
 		file: null as File | null,
 	});
-
 	const nav = useNavigate();
 
-	// Fetch provinces from API
+	const fetchDataTranser = async () => {
+		try {
+			const data = await getTransfers();
+			console.log(data);
+			setDataTranser(data);
+		} catch (error) {
+			console.error('Error fetching data transfer:', error);
+		}
+	};
+
 	const fetchProvinces = async () => {
 		try {
 			const response = await fetch('https://provinces.open-api.vn/api/p/');
@@ -214,7 +82,6 @@ function StudentTransferPage() {
 		}
 	};
 
-	// Fetch districts based on selected province
 	const fetchDistricts = async (provinceCode: string) => {
 		try {
 			const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
@@ -226,56 +93,111 @@ function StudentTransferPage() {
 		}
 	};
 
-	// Load provinces on component mount
+	const fetchStudents = async () => {
+		try {
+			const students: Leadership_Student[] = await getStudents();
+			setStudents(students);
+			setStudentData(students);
+		} catch (error) {
+			console.error('Error fetching students:', error);
+		}
+	};
+
 	useEffect(() => {
+		fetchDataTranser();
 		fetchProvinces();
+		fetchStudents();
 	}, []);
 
-	// Fetch districts when province changes
 	useEffect(() => {
-		if (formData.province) {
-			fetchDistricts(formData.province);
+		if (dataTranser.length > 0) {
+			const filteredTransfers: Leadership_Student_Transfer[] = dataTranser
+				.filter((data) => students.some((student) => student.studentId === data.studentCode))
+				.map((data) => {
+					const matchedStudent = students.find(
+						(student) => student.studentId === data.studentCode,
+					)!;
+					return {
+						studentInfor: matchedStudent,
+						studentTransfer: data,
+					};
+				});
+			setDataFilter(filteredTransfers);
+			console.log('Filtered Transfers:', filteredTransfers);
+		}
+	}, [dataTranser, studentData]);
+
+	useEffect(() => {
+		if (formData.provinceCode) {
+			fetchDistricts(formData.provinceCode);
 		} else {
-			setDistrictOptions([]); // Clear districts if no province is selected
+			setDistrictOptions([]);
 		}
-	}, [formData.province]);
+	}, [formData.provinceCode]);
 
-	const handleEditList = (record: SemesterData) => {
-		console.log('Edit academic year:', record);
-		setIsModalOpenList(true);
+	const handleNameChange = (name: string) => {
+		const matchingStudents = studentData.filter(
+			(s) => s.fullName.toLowerCase() === name.toLowerCase(),
+		);
+		if (matchingStudents.length === 1) {
+			setFormData((prev) => ({
+				...prev,
+				name,
+				studentCode: matchingStudents[0].studentId,
+			}));
+		} else if (matchingStudents.length > 1) {
+			const codes = matchingStudents.map((s) => s.studentId).join(', ');
+			setFormData((prev) => ({
+				...prev,
+				name,
+				studentCode: codes,
+			}));
+		} else {
+			setFormData((prev) => ({
+				...prev,
+				name,
+				studentCode: '',
+			}));
+		}
 	};
 
-	const handleOk = () => {
-		const districtValue = Number(formData.district);
-		const provinceValue = Number(formData.province);
-		console.log(provinceValue);
+	const handleOk = async () => {
+		const districtValue = Number(formData.districtCode);
+		const provinceValue = Number(formData.provinceCode);
+		const updatedProvince =
+			provinceOptions.find((p) => p.value === provinceValue)?.label || formData.province;
+		const updatedDistrict =
+			districtOptions.find((d) => d.value === districtValue)?.label || formData.district;
 
-		if (provinceOptions) {
-			const filter = provinceOptions.find(
-				(provinceOption) => Number(provinceOption.value) === provinceValue,
-			);
-			console.log('hehe', filter?.label);
-			setFormData((prev) => ({
-				...prev,
-				province: String(filter?.label),
-			}));
-		}
-		if (districtOptions) {
-			const filter = districtOptions.find(
-				(districtOption) => Number(districtOption.value) === districtValue,
-			);
-			console.log('hehe', filter?.label);
-			setFormData((prev) => ({
-				...prev,
-				district: String(filter?.label),
-			}));
-		}
+		setFormData((prev) => ({
+			...prev,
+			province: updatedProvince,
+			district: updatedDistrict,
+		}));
 
-		console.log('Form data to save:', formData);
+		if (formData.studentCode) {
+			const student = studentData.find((student) => student.studentId === formData.studentCode);
+			if (!student) {
+				alert('Không tìm thấy sinh viên!');
+				return;
+			}
+			console.log('studentId', student?.id);
+			console.log('Form data to save:', formData);
+			await updateStudent(student.id, {
+				...student,
+				status: 'Đã chuyển trường',
+			});
+			const data = {
+				...formData,
+				transferDate: formData.transferDate
+					? moment(formData.transferDate).format('YYYY-MM-DD')
+					: null,
+			};
+			await addTransfer(data);
+		}
 		setIsModalOpen(false);
-
-		// Add your save logic here (e.g., API call)
 	};
+
 	const handleCancel = () => {
 		setIsModalOpen(false);
 		resetForm();
@@ -285,29 +207,64 @@ function StudentTransferPage() {
 		setIsModalOpenList(false);
 	};
 
+	const handleEditList = (record: Leadership_Student_Transfer) => {
+		console.log('Edit academic year:', record);
+		setIsModalOpenList(true);
+	};
+
 	const handleCancelList = () => {
 		setIsModalOpenList(false);
+	};
+
+	const handleViewDetails = (record: Leadership_Student_Transfer) => {
+		setSelectedTransfer(record);
+		setIsDetailsModalOpen(true);
+	};
+
+	const handleDetailsModalClose = () => {
+		setIsDetailsModalOpen(false);
+		setSelectedTransfer(null);
 	};
 
 	const resetForm = () => {
 		setFormData({
 			name: '',
 			studentCode: '',
-			transferDate: null,
+			transferDate: '',
 			transferSemester: '',
+			provinceCode: '',
 			province: '',
+			districtCode: '',
 			district: '',
 			transferFrom: '',
-			reason: '',
+			description: '',
 			file: null,
 		});
 	};
 
 	const handleInputChange = (field: string, value: any) => {
-		setFormData((prev) => ({
-			...prev,
-			[field]: value,
-		}));
+		if (field === 'name') {
+			handleNameChange(value);
+		} else if (field === 'province') {
+			const selectedProvince = provinceOptions.find((p) => p.value === value);
+			setFormData((prev) => ({
+				...prev,
+				provinceCode: value,
+				province: selectedProvince ? selectedProvince.label : '',
+			}));
+		} else if (field === 'district') {
+			const selectedDistrict = districtOptions.find((d) => d.value === value);
+			setFormData((prev) => ({
+				...prev,
+				districtCode: value || '',
+				district: selectedDistrict ? selectedDistrict.label : '',
+			}));
+		} else {
+			setFormData((prev) => ({
+				...prev,
+				[field]: value,
+			}));
+		}
 	};
 
 	const modalStyles = {
@@ -315,54 +272,55 @@ function StudentTransferPage() {
 		footer: { textAlign: 'center' as 'center' },
 	};
 
-	const columns: TableColumnsType<SemesterData> = [
+	const columns: TableColumnsType<Leadership_Student_Transfer> = [
 		{
 			title: 'Mã học viên',
-			dataIndex: 'studentCode',
-			sorter: (a, b) => a.studentCode.localeCompare(b.studentCode),
+			render: (_: any, record: Leadership_Student_Transfer) => record.studentTransfer.studentCode,
+			sorter: (a, b) => a.studentTransfer.studentCode.localeCompare(b.studentTransfer.studentCode),
 			width: '10%',
 		},
-
 		{
 			title: 'Tên học viên',
-			dataIndex: 'studentName',
-			sorter: (a, b) => a.studentName.localeCompare(b.studentName),
+			render: (_: any, record: Leadership_Student_Transfer) => record.studentTransfer.name,
+			sorter: (a, b) => a.studentTransfer.name.localeCompare(b.studentTransfer.name),
 			width: '10%',
 		},
 		{
 			title: 'Ngày sinh',
-			dataIndex: 'birthDay',
-			sorter: (a, b) => a.birthDay.localeCompare(b.birthDay),
+			render: (_: any, record: Leadership_Student_Transfer) => record.studentInfor.birthDate,
+			sorter: (a, b) => a.studentInfor.birthDate.localeCompare(b.studentInfor.birthDate),
 			width: '15%',
 		},
 		{
 			title: 'Giới tính',
-			dataIndex: 'gender',
-			sorter: (a, b) => a.gender.localeCompare(b.gender),
+			render: (_: any, record: Leadership_Student_Transfer) => record.studentInfor.gender,
+			sorter: (a, b) => a.studentInfor.gender.localeCompare(b.studentInfor.gender),
 			width: '10%',
 		},
 		{
 			title: 'Chuyển từ',
-			dataIndex: 'transferFrom',
-			sorter: (a, b) => a.transferFrom.localeCompare(b.transferFrom),
+			render: (_: any, record: Leadership_Student_Transfer) => record.studentTransfer.transferFrom,
+			sorter: (a, b) =>
+				a.studentTransfer.transferFrom.localeCompare(b.studentTransfer.transferFrom),
 			width: '15%',
 		},
 		{
 			title: 'Học kì chuyển',
-			dataIndex: 'transferSemester',
-			sorter: (a, b) => a.transferSemester.localeCompare(b.transferSemester),
+			render: (_: any, record: Leadership_Student_Transfer) =>
+				record.studentTransfer.transferSemester,
+			sorter: (a, b) =>
+				a.studentTransfer.transferSemester.localeCompare(b.studentTransfer.transferSemester),
 			width: '10%',
 		},
 		{
 			title: 'Khối',
-			dataIndex: 'faculties',
-			sorter: (a, b) => a.faculties.localeCompare(b.faculties),
+			render: (_: any, record: Leadership_Student_Transfer) => record.studentInfor.gradeLevel,
+			sorter: (a, b) => a.studentInfor.gradeLevel.localeCompare(b.studentInfor.gradeLevel),
 			width: '10%',
 		},
 		{
 			title: 'Ngày chuyển',
-			dataIndex: 'date',
-			sorter: (a, b) => a.date.localeCompare(b.date),
+			render: (_: any, record: Leadership_Student_Transfer) => record.studentTransfer.transferDate,
 			width: '10%',
 		},
 		{
@@ -370,7 +328,7 @@ function StudentTransferPage() {
 			dataIndex: 'action',
 			render: (_, record) => (
 				<div className=''>
-					<Button type='link' onClick={() => handleEditList(record)}>
+					<Button type='link' onClick={() => handleViewDetails(record)}>
 						<Eyes color='#FF7506' />
 					</Button>
 				</div>
@@ -379,7 +337,12 @@ function StudentTransferPage() {
 		},
 	];
 
-	const onChange: TableProps<SemesterData>['onChange'] = (pagination, filters, sorter, extra) => {
+	const onChange: TableProps<Leadership_Student_Transfer>['onChange'] = (
+		pagination,
+		filters,
+		sorter,
+		extra,
+	) => {
 		console.log('params', pagination, filters, sorter, extra);
 	};
 
@@ -437,7 +400,6 @@ function StudentTransferPage() {
 					]}
 				>
 					<div className='space-y-6 py-5'>
-						{/* Tên học viên */}
 						<div className='flex items-center justify-between'>
 							<label className='flex items-center gap-0.5'>
 								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
@@ -447,15 +409,21 @@ function StudentTransferPage() {
 									*
 								</span>
 							</label>
-							<Input
-								value={formData.name}
-								onChange={(e) => handleInputChange('name', e.target.value)}
+							<Select
+								showSearch
+								value={formData.name || undefined}
+								onChange={(value) => handleInputChange('name', value)}
 								placeholder='Nhập tên học viên'
-								className='h-10 w-[561px] bg-[#F0F3F6]'
-								variant='filled'
+								className='h-10 w-[561px]'
+								options={studentData.map((student) => ({
+									value: student.fullName,
+									label: student.fullName,
+								}))}
+								filterOption={(input, option) =>
+									(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+								}
 							/>
 						</div>
-						{/* Mã học viên */}
 						<div className='flex items-center justify-between'>
 							<label className='flex items-center gap-0.5'>
 								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
@@ -473,7 +441,6 @@ function StudentTransferPage() {
 								variant='filled'
 							/>
 						</div>
-						{/* Ngày chuyển đến */}
 						<div className='flex items-center justify-between'>
 							<label className='flex items-center gap-0.5'>
 								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
@@ -484,14 +451,15 @@ function StudentTransferPage() {
 								</span>
 							</label>
 							<DatePicker
-								value={formData.transferDate}
-								onChange={(date) => handleInputChange('transferDate', date)}
+								value={formData.transferDate ? moment(formData.transferDate) : null}
+								onChange={(date) =>
+									handleInputChange('transferDate', date ? date.format('YYYY-MM-DD') : '')
+								}
 								format='DD/MM/YYYY'
 								className='h-10 w-[561px] bg-[#F0F3F6]'
 								variant='filled'
 							/>
 						</div>
-						{/* Học kỳ chuyển */}
 						<div className='flex items-center justify-between'>
 							<label className='flex items-center gap-0.5'>
 								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
@@ -501,15 +469,17 @@ function StudentTransferPage() {
 									*
 								</span>
 							</label>
-							<Input
-								value={formData.transferSemester}
-								onChange={(e) => handleInputChange('transferSemester', e.target.value)}
-								placeholder='Nhập học kỳ chuyển'
-								className='h-10 w-[561px] bg-[#F0F3F6]'
-								variant='filled'
+							<Select
+								value={formData.transferSemester || undefined}
+								onChange={(value) => handleInputChange('transferSemester', value)}
+								placeholder='Chọn học kỳ chuyển'
+								className='h-10 w-[561px]'
+								options={[
+									{ value: 'Kỳ 1', label: 'Kỳ 1' },
+									{ value: 'Kỳ 2', label: 'Kỳ 2' },
+								]}
 							/>
 						</div>
-						{/* Tỉnh/Thành */}
 						<div className='flex items-center justify-between'>
 							<label className='flex items-center gap-0.5'>
 								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
@@ -520,14 +490,13 @@ function StudentTransferPage() {
 								</span>
 							</label>
 							<Select
-								value={formData.province || undefined}
+								value={formData.provinceCode || undefined}
 								onChange={(value) => handleInputChange('province', value)}
 								placeholder='Chọn tỉnh/thành'
 								className='h-10 w-[561px]'
 								options={provinceOptions}
 							/>
 						</div>
-						{/* Quận/Huyện */}
 						<div className='flex items-center justify-between'>
 							<label className='flex items-center gap-0.5'>
 								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
@@ -538,15 +507,14 @@ function StudentTransferPage() {
 								</span>
 							</label>
 							<Select
-								value={formData.district || undefined}
+								value={formData.districtCode || undefined}
 								onChange={(value) => handleInputChange('district', value)}
 								placeholder='Chọn quận/huyện'
 								className='h-10 w-[561px]'
 								options={districtOptions}
-								disabled={!formData.province}
+								disabled={!formData.provinceCode}
 							/>
 						</div>
-						{/* Chuyển từ */}
 						<div className='flex items-center justify-between'>
 							<label className='flex items-center gap-0.5'>
 								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
@@ -564,7 +532,6 @@ function StudentTransferPage() {
 								variant='filled'
 							/>
 						</div>
-						{/* Lý do */}
 						<div className='flex items-start justify-between'>
 							<label className='flex items-center gap-0.5'>
 								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
@@ -575,14 +542,13 @@ function StudentTransferPage() {
 								</span>
 							</label>
 							<TextArea
-								value={formData.reason}
-								onChange={(e) => handleInputChange('reason', e.target.value)}
+								value={formData.description}
+								onChange={(e) => handleInputChange('description', e.target.value)}
 								placeholder='Nhập lý do chuyển trường'
 								rows={4}
 								className='w-[561px] bg-[#F0F3F6]'
 							/>
 						</div>
-						{/* Tệp đính kèm */}
 						<div className='flex items-center justify-between'>
 							<label className='flex items-center gap-0.5'>
 								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
@@ -633,9 +599,9 @@ function StudentTransferPage() {
 							},
 						}}
 					>
-						<Table<SemesterData>
+						<Table<Leadership_Student_Transfer>
 							columns={columns}
-							dataSource={data}
+							dataSource={dataFilter}
 							onChange={onChange}
 							rowClassName={(_, index) => (index % 2 !== 0 ? 'bg-[#F0F3F6]' : '')}
 							pagination={{
@@ -665,6 +631,181 @@ function StudentTransferPage() {
 					</Button>,
 				]}
 			></Modal>
+			{/* Details Modal with Add Modal Interface */}
+			<Modal
+				title='Chi tiết thông tin chuyển trường'
+				open={isDetailsModalOpen}
+				onCancel={handleDetailsModalClose}
+				styles={modalStyles}
+				width={800}
+				footer={[
+					<Button className='w-40' key='close' onClick={handleDetailsModalClose}>
+						Đóng
+					</Button>,
+				]}
+			>
+				{selectedTransfer && (
+					<div className='space-y-6 py-5'>
+						{/* Tên học viên */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Tên học viên:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={selectedTransfer.studentTransfer.name}
+								disabled
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Mã học viên */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Mã học viên:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={selectedTransfer.studentTransfer.studentCode}
+								disabled
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Ngày chuyển đến */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Ngày chuyển đến:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={selectedTransfer.studentTransfer.transferDate || 'Chưa có'}
+								disabled
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Học kỳ chuyển */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Học kỳ chuyển:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={selectedTransfer.studentTransfer.transferSemester}
+								disabled
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Tỉnh/Thành */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Tỉnh/Thành:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={selectedTransfer.studentTransfer.province}
+								disabled
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Quận/Huyện */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Quận/Huyện:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={selectedTransfer.studentTransfer.district}
+								disabled
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Chuyển từ */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Chuyển từ:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Input
+								value={selectedTransfer.studentTransfer.transferFrom}
+								disabled
+								className='h-10 w-[561px] bg-[#F0F3F6]'
+								variant='filled'
+							/>
+						</div>
+						{/* Lý do */}
+						<div className='flex items-start justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Lý do:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<TextArea
+								value={selectedTransfer.studentTransfer.description || 'Chưa có'}
+								disabled
+								rows={4}
+								className='w-[561px] bg-[#F0F3F6]'
+							/>
+						</div>
+						{/* Tệp đính kèm */}
+						<div className='flex items-center justify-between'>
+							<label className='flex items-center gap-0.5'>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+									Tệp đính kèm:
+								</span>
+								<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
+									*
+								</span>
+							</label>
+							<Space>
+								<Input
+									prefix={<PaperClip />}
+									value={selectedTransfer.studentTransfer.file ? 'Có tệp' : 'Không có'}
+									disabled
+									className='h-10 w-[336px] bg-[#F0F3F6]'
+									variant='filled'
+								/>
+								<Button disabled>Chọn tệp tải lên...</Button>
+							</Space>
+						</div>
+					</div>
+				)}
+			</Modal>
 		</div>
 	);
 }

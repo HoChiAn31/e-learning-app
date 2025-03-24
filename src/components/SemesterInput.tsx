@@ -1,29 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input, DatePicker } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
-
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 import { Minus } from './icon';
 
 interface SemesterInputProps {
 	semesterName: string;
+	startDate?: string; // Added to receive initial start date
+	endDate?: string; // Added to receive initial end date
 	onRemove: () => void;
 	onChange: (data: { semesterName: string; startDate: string; endDate: string }) => void;
 }
 
-const SemesterInput: React.FC<SemesterInputProps> = ({ semesterName, onRemove, onChange }) => {
-	const [name, setName] = useState(semesterName);
-	const [startDate, setStartDate] = useState<Moment | null>(null);
-	const [endDate, setEndDate] = useState<Moment | null>(null);
+const SemesterInput: React.FC<SemesterInputProps> = ({
+	semesterName: initialSemesterName,
+	startDate: initialStartDate,
+	endDate: initialEndDate,
+	onRemove,
+	onChange,
+}) => {
+	const [name, setName] = useState(initialSemesterName);
+	const [startDate, setStartDate] = useState<Moment | null>(
+		initialStartDate ? moment(initialStartDate) : null,
+	);
+	const [endDate, setEndDate] = useState<Moment | null>(
+		initialEndDate ? moment(initialEndDate) : null,
+	);
 
-	// Gọi onChange khi bất kỳ trường nào thay đổi
-	const handleChange = () => {
+	// Sync with parent props when they change
+	useEffect(() => {
+		setName(initialSemesterName);
+		setStartDate(initialStartDate ? moment(initialStartDate) : null);
+		setEndDate(initialEndDate ? moment(initialEndDate) : null);
+	}, [initialSemesterName, initialStartDate, initialEndDate]);
+
+	// Notify parent of changes whenever name, startDate, or endDate updates
+	useEffect(() => {
 		onChange({
 			semesterName: name,
 			startDate: startDate ? startDate.format('YYYY-MM-DD') : '',
 			endDate: endDate ? endDate.format('YYYY-MM-DD') : '',
 		});
-	};
+	}, [name, startDate, endDate, onChange]);
 
 	return (
 		<div className='flex items-center gap-2'>
@@ -37,13 +55,10 @@ const SemesterInput: React.FC<SemesterInputProps> = ({ semesterName, onRemove, o
 				Tên học kì:
 			</p>
 			<Input
-				placeholder={semesterName}
+				placeholder={initialSemesterName}
 				className='w-[244px]'
 				value={name}
-				onChange={(e) => {
-					setName(e.target.value);
-					handleChange();
-				}}
+				onChange={(e) => setName(e.target.value)}
 			/>
 			<div className='flex items-center gap-1'>
 				<p className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
@@ -55,10 +70,7 @@ const SemesterInput: React.FC<SemesterInputProps> = ({ semesterName, onRemove, o
 					suffixIcon={<CalendarOutlined />}
 					placeholder='Chọn ngày'
 					value={startDate}
-					onChange={(date) => {
-						setStartDate(date);
-						handleChange();
-					}}
+					onChange={(date) => setStartDate(date)}
 				/>
 			</div>
 			<div className='flex items-center gap-1'>
@@ -71,10 +83,7 @@ const SemesterInput: React.FC<SemesterInputProps> = ({ semesterName, onRemove, o
 					suffixIcon={<CalendarOutlined />}
 					placeholder='Chọn ngày'
 					value={endDate}
-					onChange={(date) => {
-						setEndDate(date);
-						handleChange();
-					}}
+					onChange={(date) => setEndDate(date)}
 				/>
 			</div>
 		</div>

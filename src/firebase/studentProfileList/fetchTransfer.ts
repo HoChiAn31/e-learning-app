@@ -17,12 +17,12 @@ export const addTransfer = async (
 		const formattedData = {
 			name: transferData.name,
 			studentCode: transferData.studentCode,
-			transferDate: transferData.transferDate ? transferData.transferDate.toISOString() : null,
+			transferDate: transferData.transferDate,
 			transferSemester: transferData.transferSemester,
 			province: transferData.province,
 			district: transferData.district,
 			transferFrom: transferData.transferFrom,
-			reason: transferData.reason,
+			reason: transferData.description,
 			file: transferData.file ? transferData.file.name : null,
 		};
 
@@ -46,13 +46,17 @@ export const getTransfers = async (): Promise<Leadership_TransferForm[]> => {
 				id: key,
 				name: data[key].name,
 				studentCode: data[key].studentCode,
-				transferDate: data[key].transferDate ? moment(data[key].transferDate) : null,
+				transferDate: data[key].transferDate
+					? moment(data[key].transferDate).format('YYYY-MM-DD')
+					: null,
 				transferSemester: data[key].transferSemester,
 				province: data[key].province,
+				provinceCode: data[key].provinceCode || '', // Ensure provinceCode exists
 				district: data[key].district,
+				districtCode: data[key].districtCode || '', // Ensure districtCode exists
 				transferFrom: data[key].transferFrom,
-				reason: data[key].reason,
-				file: data[key].file ? new File([], data[key].file) : null,
+				description: data[key].description || '', // Ensure description exists
+				file: data[key].file instanceof File ? data[key].file : null, // Proper file handling
 			}));
 
 			return transfers;
@@ -76,13 +80,15 @@ export const updateTransfer = async (
 			...(updatedData.name && { name: updatedData.name }),
 			...(updatedData.studentCode && { studentCode: updatedData.studentCode }),
 			...(updatedData.transferDate !== undefined && {
-				transferDate: updatedData.transferDate ? updatedData.transferDate.toISOString() : null,
+				transferDate: updatedData.transferDate
+					? new Date(updatedData.transferDate).toISOString() // Convert string to Date
+					: null,
 			}),
 			...(updatedData.transferSemester && { transferSemester: updatedData.transferSemester }),
 			...(updatedData.province && { province: updatedData.province }),
 			...(updatedData.district && { district: updatedData.district }),
 			...(updatedData.transferFrom && { transferFrom: updatedData.transferFrom }),
-			...(updatedData.reason && { reason: updatedData.reason }),
+			...(updatedData.description && { reason: updatedData.description }),
 			...(updatedData.file !== undefined && {
 				file: updatedData.file ? updatedData.file.name : null,
 			}),
