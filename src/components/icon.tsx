@@ -236,13 +236,13 @@ export const Info = () => (
 	</svg>
 );
 
-export const Minus = () => (
+export const Minus = ({ color = '#ffffff' }: { color?: string }) => (
 	<svg width='18' height='18' viewBox='0 0 18 18' fill='none' xmlns='http://www.w3.org/2000/svg'>
 		<path
 			fill-rule='evenodd'
 			clip-rule='evenodd'
 			d='M2.625 9C2.625 8.37868 3.12868 7.875 3.75 7.875H14.25C14.8713 7.875 15.375 8.37868 15.375 9C15.375 9.62132 14.8713 10.125 14.25 10.125H3.75C3.12868 10.125 2.625 9.62132 2.625 9Z'
-			fill='white'
+			fill={color}
 		/>
 	</svg>
 );
