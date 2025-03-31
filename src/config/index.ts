@@ -13,7 +13,7 @@ const config = {
 	studentReserve: '/studentProfileList/reserve',
 	instructorProfileList: '/instructorProfileList/alls',
 	instructorAssignment: '/instructorProfileList/assignment',
-
+	exam: '/exam',
 	systemSettings: '/systemSettings',
 	inforSchool: '/systemSettings/inforSchool',
 	inforSchoolEditor: '/systemSettings/inforSchool/editor',

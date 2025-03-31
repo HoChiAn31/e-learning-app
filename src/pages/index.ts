@@ -10,6 +10,7 @@ import studentProfileListPage from './leadership/studentProfileList';
 import StudentTransferPage from './leadership/studentProfileList/transfer';
 import StudentReservePage from './leadership/studentProfileList/reserve';
 import ClassPage from './leadership/dataDeclaration/class';
+import ExamPage from './leadership/Exam';
 import InstructorProfileListPage from './leadership/instructorProfileList';
 import InstructorAssignmentPage from './leadership/instructorProfileList/assignment';
 import SystemSettingsPage from './leadership/systemSettings';
@@ -63,6 +64,7 @@ export {
 	ClassSettingPage,
 	SubjectSettingPage,
 	TranningSettingPage,
+	ExamPage,
 	// *************************** teacher ***************************
 	TeacherClassPage,
 	TeacherDashBoardPage,

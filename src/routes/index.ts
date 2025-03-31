@@ -5,6 +5,7 @@ import {
 	ClassSettingPage,
 	DepartmentPage,
 	EditInforSchoolPage,
+	ExamPage,
 	FacultiePage,
 	HomePage,
 	InforSchoolPage,
@@ -41,6 +42,7 @@ import {
 	dataDeclarationPage,
 	studentProfileListPage,
 } from '../pages';
+
 import ConfigPage from '../pages/leadership/systemSettings/config';
 
 interface RouteConfig {
@@ -72,6 +74,8 @@ const publicRoutes: RouteConfig[] = [
 		layout: DefaultLayout,
 	},
 	{ path: config.instructorAssignment, component: InstructorAssignmentPage, layout: DefaultLayout },
+	{ path: config.exam, component: ExamPage, layout: DefaultLayout },
+
 	// page Settings
 	{ path: config.systemSettings, component: SystemSettingsPage, layout: DefaultLayout },
 	{ path: config.inforSchool, component: InforSchoolPage, layout: DefaultLayout },

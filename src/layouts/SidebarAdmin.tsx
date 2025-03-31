@@ -67,74 +67,7 @@ const SidebarAdmin: FC = () => {
 			localStorage.setItem('activeSubTab', activeSubTab);
 		}
 	}, [activeMainTab, activeSubTab, isLoaded, role]);
-	// Thiết lập activeMainTab mặc định dựa trên role
-	// useEffect(() => {
-	// 	if (!isLoaded) {
-	// 		// Khi component mount lần đầu
-	// 		if (role === 'teacher') {
-	// 			setActiveMainTab(name);
-	// 			nav(name);
-	// 		} else if (name) {
-	// 			setActiveMainTab(name);
-	// 		}
-	// 		setIsLoaded(true);
-	// 	}
-	// }, [role, name, nav, isLoaded]);
 
-	// useEffect(() => {
-	// 	console.log(1_34);
-
-	// 	if (role !== 'teacher' && role !== 'student' && !activeMainTab.startsWith('/teacher/class')) {
-	// 		const storedMainTab = localStorage.getItem('activeMainTab');
-	// 		const storedSubTab = localStorage.getItem('activeSubTab');
-
-	// 		if (storedMainTab) {
-	// 			// Nếu là teacher thì ưu tiên /teacher
-	// 			if (role === 'teacher' && !storedMainTab.startsWith(name)) {
-	// 				setActiveMainTab(name);
-	// 				nav(name);
-	// 			}
-	// 			// Nếu là student thì ưu tiên /student
-	// 			else if (role === 'student' && !storedMainTab.startsWith(name)) {
-	// 				setActiveMainTab(name);
-	// 				nav(name);
-	// 			}
-	// 			// Nếu không phải teacher/student thì dùng stored value
-	// 			else {
-	// 				setActiveMainTab(storedMainTab);
-	// 				if (storedSubTab) {
-	// 					setActiveSubTab(storedSubTab);
-	// 					nav(`${storedMainTab}/${storedSubTab}`);
-	// 				} else {
-	// 					nav(storedMainTab);
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// 	setIsLoaded(true);
-	// }, [nav, role]);
-	// fix Conflict between SidebarAdmin and SideBarDataDeclaration
-	// useEffect(() => {
-	// 	if (
-	// 		role !== 'teacher' &&
-	// 		!activeMainTab.startsWith('/teacher/class') &&
-	// 		!location.pathname.startsWith('/dataDeclaration') // Thêm điều kiện này
-	// 	) {
-	// 		const storedMainTab = localStorage.getItem('activeMainTab');
-	// 		const storedSubTab = localStorage.getItem('activeSubTab');
-
-	// 		if (storedMainTab) {
-	// 			setActiveMainTab(storedMainTab);
-	// 			if (storedSubTab) {
-	// 				nav(`${storedMainTab}/${storedSubTab}`);
-	// 			} else {
-	// 				nav(storedMainTab);
-	// 			}
-	// 		}
-	// 	}
-	// 	setIsLoaded(true);
-	// }, [nav, role, location.pathname]);
-	// Lưu vào localStorage khi active tab thay đổi
 	useEffect(() => {
 		console.log(1);
 		if (role !== 'teacher' && !activeMainTab.startsWith('/teacher/class')) {

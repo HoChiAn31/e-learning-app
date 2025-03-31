@@ -106,3 +106,64 @@ export interface trainingProgramForm {
 	trainingPrograms: string[];
 	attachment?: File | null;
 }
+
+export interface assignmentData {
+	id: string;
+	classCode: string;
+	className: string;
+	startDate: string;
+	endDate: string;
+	academicYear: string;
+	grade: string;
+	studentCount: number;
+	classType: string;
+	description: string;
+	subjects: string[];
+	instructorName: string;
+}
+
+export interface assignmentFormData {
+	classCode: string;
+	className: string;
+	startDate: string;
+	endDate: string;
+	academicYear: string;
+	grade: string;
+	studentCount: number;
+	classType: string;
+	description: string;
+	subjects: string[];
+	instructorName?: string | null;
+}
+
+export interface examScheduleData {
+	id: string;
+	schoolYear: string | undefined;
+	grade: string | undefined;
+	classType: string | undefined;
+	subject: string | undefined;
+	examName: string[];
+	duration: string | undefined;
+	examDate: string;
+	assignmentType: string | undefined;
+	allClassTeachers: string[];
+	specificTeachers: { class: string; teacher: string }[];
+	newAllTeacher: string;
+	newClass: string;
+	newSpecificTeacher: string;
+}
+export interface examScheduleFormData {
+	schoolYear: string | undefined;
+	grade: string | undefined;
+	classType: string | undefined;
+	subject: string | undefined;
+	examName: string[];
+	duration: string | undefined;
+	examDate: string;
+	assignmentType: string | undefined;
+	allClassTeachers: string[];
+	specificTeachers: { class: string; teacher: string }[];
+	newAllTeacher: string;
+	newClass: string;
+	newSpecificTeacher: string;
+}

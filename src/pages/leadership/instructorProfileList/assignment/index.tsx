@@ -17,15 +17,19 @@ import {
 	InstructorData,
 	getInstructors,
 } from '../../../../firebase/instructorProfileList/instructor';
+import { dataDeclaration_class } from '../../../../types/leadership';
+import { getClasses } from '../../../../firebase/dataDeclaration/fetchClass';
+import {
+	addAssignment,
+	getAssignments,
+} from '../../../../firebase/instructorProfileList/fetchAssignment';
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 
-// Interface cho dữ liệu phân công giảng dạy
 interface AssignmentData {
-	key: string;
+	id: string;
 	classCode: string;
 	className: string;
-	teacher: string;
 	startDate: string;
 	endDate: string;
 	academicYear: string;
@@ -34,13 +38,14 @@ interface AssignmentData {
 	classType: string;
 	description: string;
 	subjects: string[];
+	instructorName: string;
+
+	inheritYear?: string;
 }
 
-// Interface cho dữ liệu form
 interface AssignmentFormData {
 	classCode: string;
 	className: string;
-	teacher: string;
 	startDate: string;
 	endDate: string;
 	academicYear: string;
@@ -49,66 +54,85 @@ interface AssignmentFormData {
 	classType: string;
 	description: string;
 	subjects: string[];
+	instructorName?: string;
+
+	inheritYear?: string;
 }
 
-// Dữ liệu mẫu ban đầu
-const initialData: AssignmentData[] = [
-	{
-		key: '1',
-		classCode: 'CS101',
-		className: 'Nhập môn lập trình',
-		teacher: 'Nguyễn Văn A',
-		startDate: '2024-09-01',
-		endDate: '2024-12-15',
-		academicYear: '2024-2025',
-		grade: 'Khối 10',
-		studentCount: 30,
-		classType: 'Khối 10',
-		description: 'Lớp cơ bản về lập trình',
-		subjects: ['Lập trình cơ bản', 'Thuật toán'],
-	},
-	{
-		key: '2',
-		classCode: 'CS102',
-		className: 'Cấu trúc dữ liệu và giải thuật',
-		teacher: 'Trần Thị B',
-		startDate: '2024-09-01',
-		endDate: '2024-12-15',
-		academicYear: '2024-2025',
-		grade: 'Khối 11',
-		studentCount: 25,
-		classType: 'Khối 11',
-		description: 'Lớp nâng cao về cấu trúc dữ liệu',
-		subjects: ['Cấu trúc dữ liệu', 'Giải thuật'],
-	},
-];
-
 function InstructorAssignmentPage() {
-	// State cho danh sách phân công giảng dạy
-	const [assignments, setAssignments] = useState<AssignmentData[]>(initialData);
+	// const [assignments, setAssignments] = useState<AssignmentData[]>(initialData);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [showSelect, setShowSelect] = useState<boolean>(false); // Thêm state cho Select
 	const [subjectList, setSubjectList] = useState<string[]>([]);
 	const [activeTeacher, setActiveTeacher] = useState<string | null>('');
 	const [activeName, setActiveName] = useState<string | null>('');
+	const [activeSubject, setActiveSubject] = useState<string | null>('');
 	const [instructorData, setInstructorData] = useState<InstructorData[]>([]);
 	const [optionInstructor, setOptionInstructor] = useState<{ value: string; label: string }[]>([]);
+	const [dataClass, setDataClass] = useState<dataDeclaration_class[]>([]);
+	const [optionClassName, setOptionClassName] = useState<{ value: string; label: string }[]>([]);
+	const [optionClassType, setOptionClassType] = useState<{ value: string; label: string }[]>([]);
+	const [isInheritData, setIsInheritData] = useState<boolean>(false);
+	const [selectedGrade, setSelectedGrade] = useState<string>('');
+	const [formData, setFormData] = useState<AssignmentFormData>({
+		classCode: '',
+		className: '',
+		startDate: '',
+		endDate: '',
+		academicYear: '',
+		grade: '',
+		studentCount: 0,
+		classType: '',
+		description: '',
+		subjects: [],
+		instructorName: activeName || undefined,
+	});
+	const [dataAssignment, setDataAssignment] = useState<AssignmentData[]>([]);
+	const [dataAssignmentFilter, setDataAssignmenttFilter] = useState<AssignmentData[]>([]);
 
-	const [academicYear, setAcademicYear] = useState<string>('');
-	const [grade, setGrade] = useState<string>('');
-	const [className, setClassName] = useState<string>('');
-	const [studentCount, setStudentCount] = useState<number>(0);
-	const [classType, setClassType] = useState<string>('');
-	const [teacher, setTeacher] = useState<string>('');
-	const [description, setDescription] = useState<string>('');
-	const [inheritData, setInheritData] = useState<boolean>(false);
-	const [inheritYear, setInheritYear] = useState<string>('');
+	const fetchDataAssignment = async () => {
+		try {
+			const data = await getAssignments();
+			console.log('Data assignment:', data);
+			setDataAssignment(data);
+		} catch (error) {
+			console.error('Error fetching data:', error);
+		}
+	};
+	useEffect(() => {
+		fetchDataAssignment();
+	}, []);
 
+	useEffect(() => {
+		if (dataAssignment.length > 0 && activeName && activeSubject) {
+			const filter = dataAssignment.filter(
+				(assignment) =>
+					assignment.instructorName === activeName && assignment.subjects.includes(activeSubject),
+			);
+			setDataAssignmenttFilter(filter);
+		} else {
+			setDataAssignmenttFilter(dataAssignment);
+		}
+	}, [dataAssignment, activeName, activeSubject]);
 	const fetchInstructorData = async () => {
 		try {
 			const data = await getInstructors();
 			setInstructorData(data);
+			setActiveTeacher(data[0].id);
+			setActiveName(data[0].fullName);
+			setFormData((prev) => ({ ...prev, instructorName: data[0].fullName }));
+		} catch (error) {
+			console.error('Error fetching data:', error);
+		}
+	};
+
+	const fetchDataClass = async () => {
+		try {
+			const data = await getClasses();
+			console.log('Data class:', data);
+			setDataClass(data);
 		} catch (error) {
 			console.error('Error fetching data:', error);
 		}
@@ -116,6 +140,7 @@ function InstructorAssignmentPage() {
 
 	useEffect(() => {
 		fetchInstructorData();
+		fetchDataClass();
 	}, []);
 
 	useEffect(() => {
@@ -128,69 +153,99 @@ function InstructorAssignmentPage() {
 		}
 	}, [instructorData]);
 
-	// Reset form
+	useEffect(() => {
+		if (selectedGrade) {
+			const filter = dataClass.filter((data) => data.faculty === selectedGrade);
+			console.log('Filter:', filter);
+
+			setOptionClassName(
+				filter.map((d) => ({
+					value: d.className,
+					label: d.className,
+				})),
+			);
+			setOptionClassType(
+				filter.map((d) => ({
+					value: d.classType,
+					label: d.classType,
+				})),
+			);
+		}
+	}, [selectedGrade]);
+
 	const resetForm = () => {
-		setAcademicYear('');
-		setGrade('');
-		setClassName('');
-		setStudentCount(40);
-		setClassType('');
-		setTeacher('');
-		setDescription('');
-		setInheritData(false);
-		setInheritYear('');
+		setFormData({
+			classCode: '',
+			className: '',
+			startDate: '',
+			endDate: '',
+			academicYear: '',
+			grade: '',
+			studentCount: 40,
+			classType: '',
+			description: '',
+			subjects: [],
+			instructorName: activeName || undefined,
+		});
 		setSubjectList([]);
+		setShowSelect(false); // Reset Select visibility
 	};
 
-	const handleOk = () => {
-		const newAssignment: AssignmentFormData = {
-			classCode: `CS${100 + assignments.length + 1}`,
-			className: className,
-			teacher: optionInstructor?.find((opt) => opt.value === teacher)?.label || '',
-			startDate: '2024-09-01',
-			endDate: '2024-12-15',
-			academicYear: academicYear,
-			grade: grade,
-			studentCount: studentCount || 0,
-			classType: classType,
-			description: description,
-			subjects: [...subjectList],
-		};
+	const handleOk = async () => {
+		try {
+			if (formData.className) {
+				const existingClass = dataClass.find((data) => data.className === formData.className);
 
-		setIsModalOpen(false);
-		resetForm();
+				const newAssignment = {
+					classCode: existingClass?.classCode || `CS${100 + dataAssignment.length + 1}`,
+					className: formData.className,
+					instructorName: activeName,
+					startDate: '2025-09-01',
+					endDate: '2025-12-15',
+					academicYear: formData.academicYear,
+					grade: formData.grade,
+					studentCount: formData.studentCount || 40,
+					classType: formData.classType,
+					description: formData.description,
+					subjects: [...subjectList],
+				};
+
+				await addAssignment(newAssignment);
+				setIsModalOpen(false);
+				setShowSelect(false);
+				console.log(newAssignment);
+			}
+		} catch (error) {
+			console.error('Error creating new assignment:', error);
+		}
+		// resetForm();
 	};
 
 	const handleCancel = () => {
 		setIsModalOpen(false);
-		resetForm();
+		// resetForm();
 	};
 
-	const handleChangeDeclatation = (value: string, type: string) => {
-		switch (type) {
-			case 'academicYear':
-				setAcademicYear(value);
-				break;
-			case 'grade':
-				setGrade(value);
-				break;
-			case 'classType':
-				setClassType(value);
-				break;
-			case 'inheritYear':
-				setInheritYear(value);
-				break;
-			default:
-				break;
-		}
+	const handleChangeDeclatation = (value: string, type: keyof AssignmentFormData) => {
+		setFormData((prev) => ({
+			...prev,
+			[type]: value,
+		}));
 	};
 
 	const handleChange = (value: string) => {
-		setTeacher(value);
+		setFormData((prev) => ({
+			...prev,
+			instructorName: value,
+		}));
 	};
 
 	const onChangeBox = (e: any) => {
-		setInheritData(e.target.checked);
+		// setFormData((prev) => ({
+		// 	...prev,
+		// 	inheritData: e.target.checked,
+		// }));
+		setIsInheritData(!isInheritData);
 	};
 
 	const removeSubject = (subject: string) => {
@@ -200,19 +255,27 @@ function InstructorAssignmentPage() {
 	const addSubject = (subject: string) => {
 		if (subject && !subjectList.includes(subject)) {
 			setSubjectList((prev) => [...prev, subject]);
+			setShowSelect(false);
 		}
 	};
 
 	const handleEdit = (record: AssignmentData) => {
 		console.log('Edit assignment:', record);
 		setIsModalOpen(true);
-		setAcademicYear(record.academicYear);
-		setGrade(record.grade);
-		setClassName(record.className);
-		setStudentCount(record.studentCount);
-		setClassType(record.classType);
-		setTeacher(optionInstructor?.find((opt) => opt.label === record.teacher)?.value || '');
-		setDescription(record.description);
+		setFormData({
+			classCode: record.classCode,
+			className: record.className,
+			startDate: record.startDate,
+			endDate: record.endDate,
+			academicYear: record.academicYear,
+			grade: record.grade,
+			studentCount: record.studentCount,
+			classType: record.classType,
+			description: record.description,
+			subjects: record.subjects,
+			instructorName:
+				activeName || optionInstructor?.find((opt) => opt.label === record.instructorName)?.value,
+		});
 		setSubjectList([...record.subjects]);
 	};
 
@@ -228,32 +291,24 @@ function InstructorAssignmentPage() {
 	const columns: TableColumnsType<AssignmentData> = [
 		{
 			title: 'Mã lớp',
-			dataIndex: 'classCode',
-			sorter: (a, b) => a.classCode.localeCompare(b.classCode),
-			width: '10%',
+			dataIndex: 'id',
+
+			width: '20%',
 		},
 		{
 			title: 'Tên lớp',
 			dataIndex: 'className',
-			sorter: (a, b) => a.className.localeCompare(b.className),
-			width: '15%',
-		},
-		{
-			title: 'Giáo viên chủ nhiệm',
-			dataIndex: 'teacher',
-			sorter: (a, b) => a.teacher.localeCompare(b.teacher),
+
 			width: '15%',
 		},
 		{
 			title: 'Ngày bắt đầu',
 			dataIndex: 'startDate',
-			sorter: (a, b) => a.startDate.localeCompare(b.startDate),
 			width: '15%',
 		},
 		{
 			title: 'Ngày kết thúc',
 			dataIndex: 'endDate',
-			sorter: (a, b) => a.endDate.localeCompare(b.endDate),
 			width: '15%',
 		},
 		{
@@ -300,8 +355,8 @@ function InstructorAssignmentPage() {
 	};
 
 	const handleOkDelete = () => {
-		setAssignments((prev) =>
-			prev.filter((assignment) => !selectedRowKeys.includes(assignment.key)),
+		setDataAssignment((prev) =>
+			prev.filter((assignment) => !selectedRowKeys.includes(assignment.id)),
 		);
 		setSelectedRowKeys([]);
 		setIsModalOpenDelete(false);
@@ -314,12 +369,18 @@ function InstructorAssignmentPage() {
 	const handleSelectTeacher = (value: { id: string; name: string }) => {
 		setActiveTeacher(value.id);
 		setActiveName(value.name);
+		setFormData((prev) => ({ ...prev, instructorName: value.name }));
 	};
-
+	const handleChangeSubject = (subject: string) => {
+		console.log('value', subject);
+		setActiveSubject(subject);
+		setSubjectList((prev) => [...prev, subject]);
+	};
 	return (
 		<div>
 			<>
 				<SideBarAssignment
+					onSelectSubject={handleChangeSubject}
 					data={instructorData}
 					onTeacherSelect={handleSelectTeacher}
 					activeTeacher={activeTeacher}
@@ -342,7 +403,6 @@ function InstructorAssignmentPage() {
 									</div>
 								</Button>
 
-								{/* Modal Add */}
 								<Modal
 									title='Thêm phân công giảng dạy'
 									open={isModalOpen}
@@ -372,7 +432,7 @@ function InstructorAssignmentPage() {
 													<Select
 														placeholder='Niên khóa'
 														style={{ width: 120 }}
-														value={academicYear}
+														value={formData.academicYear}
 														onChange={(value) => handleChangeDeclatation(value, 'academicYear')}
 														options={[
 															{ value: '2020-2021', label: '2020-2021' },
@@ -394,8 +454,11 @@ function InstructorAssignmentPage() {
 													<Select
 														placeholder='Chọn khối'
 														style={{ width: 120 }}
-														value={grade}
-														onChange={(value) => handleChangeDeclatation(value, 'grade')}
+														value={formData.grade}
+														onChange={(value) => {
+															handleChangeDeclatation(value, 'grade');
+															setSelectedGrade(value);
+														}}
 														options={[
 															{ value: 'Khối 6', label: 'Khối 6' },
 															{ value: 'Khối 7', label: 'Khối 7' },
@@ -418,10 +481,14 @@ function InstructorAssignmentPage() {
 															</span>
 														</div>
 													</div>
-													<Input
-														placeholder='Nhập tên lớp'
-														value={className}
-														onChange={(e) => setClassName(e.target.value)}
+													<Select
+														placeholder='Chọn lớp'
+														value={formData.className}
+														onChange={(value) => {
+															handleChangeDeclatation(value, 'className');
+														}}
+														options={optionClassName}
+														className='w-full'
 													/>
 												</div>
 
@@ -436,8 +503,13 @@ function InstructorAssignmentPage() {
 													</div>
 													<Input
 														placeholder='Nhập số lượng'
-														value={studentCount}
-														onChange={(e) => setStudentCount(Number(e.target.value))}
+														value={formData.studentCount}
+														onChange={(e) =>
+															setFormData((prev) => ({
+																...prev,
+																studentCount: Number(e.target.value),
+															}))
+														}
 													/>
 												</div>
 
@@ -452,17 +524,9 @@ function InstructorAssignmentPage() {
 													</div>
 													<Select
 														placeholder='Chọn phân loại'
-														value={classType}
+														value={formData.classType}
 														onChange={(value) => handleChangeDeclatation(value, 'classType')}
-														options={[
-															{ value: 'Khối 6', label: 'Khối 6' },
-															{ value: 'Khối 7', label: 'Khối 7' },
-															{ value: 'Khối 8', label: 'Khối 8' },
-															{ value: 'Khối 9', label: 'Khối 9' },
-															{ value: 'Khối 10', label: 'Khối 10' },
-															{ value: 'Khối 11', label: 'Khối 11' },
-															{ value: 'Khối 12', label: 'Khối 12' },
-														]}
+														options={optionClassType}
 														className='w-full'
 													/>
 												</div>
@@ -475,8 +539,8 @@ function InstructorAssignmentPage() {
 													</div>
 													<Select
 														placeholder='Chọn giáo viên'
-														value={teacher}
-														onChange={handleChange}
+														value={formData.instructorName}
+														onChange={(value) => handleChangeDeclatation(value, 'instructorName')}
 														options={optionInstructor}
 														className='w-full'
 													/>
@@ -490,8 +554,10 @@ function InstructorAssignmentPage() {
 													</div>
 													<Input
 														placeholder='Nhập mô tả'
-														value={description}
-														onChange={(e) => setDescription(e.target.value)}
+														value={formData.description}
+														onChange={(e) =>
+															setFormData((prev) => ({ ...prev, description: e.target.value }))
+														}
 													/>
 												</div>
 											</div>
@@ -499,41 +565,32 @@ function InstructorAssignmentPage() {
 											<div className='my-5 h-[0px] w-[756px] border border-[#c8c4c0]'></div>
 
 											<div>
-												<p className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#cc5c00]">
-													Danh sách môn học
-												</p>
-												<div>
-													<div className='flex items-center gap-2'>
-														<Checkbox checked={inheritData} onChange={onChangeBox} />
-														<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-															Kế thừa dữ liệu:{' '}
-														</div>
-														<Select
-															placeholder='Niên khóa'
-															style={{ width: 120 }}
-															value={inheritYear}
-															onChange={(value) => handleChangeDeclatation(value, 'inheritYear')}
-															options={[
-																{ value: '2020-2021', label: '2020-2021' },
-																{ value: '2021-2022', label: '2021-2022' },
-																{ value: '2022-2023', label: '2022-2023' },
-																{ value: '2023-2024', label: '2023-2024' },
-																{ value: '2024-2025', label: '2024-2025' },
-																{ value: '2025-2026', label: '2025-2026' },
-															]}
-														/>
+												<div className='flex items-center gap-2'>
+													<Checkbox checked={isInheritData} onChange={onChangeBox} />
+													<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
+														Kế thừa dữ liệu:{' '}
 													</div>
+													<Select
+														placeholder='Niên khóa'
+														style={{ width: 120 }}
+														value={formData.inheritYear}
+														onChange={(value) => handleChangeDeclatation(value, 'inheritYear')}
+														options={[
+															{ value: '2020-2021', label: '2020-2021' },
+															{ value: '2021-2022', label: '2021-2022' },
+															{ value: '2022-2023', label: '2022-2023' },
+															{ value: '2023-2024', label: '2023-2024' },
+															{ value: '2024-2025', label: '2024-2025' },
+															{ value: '2025-2026', label: '2025-2026' },
+														]}
+													/>
 												</div>
-												<div className='space-y-3'>
+
+												<div className='mt-5 space-y-3'>
 													<p className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#cc5c00]">
 														Danh sách môn học
 													</p>
 													<div className='space-y-4'>
-														<Input.Search
-															placeholder='Nhập môn học và nhấn Enter để thêm'
-															enterButton='Thêm'
-															onSearch={addSubject}
-														/>
 														{subjectList.length > 0 && (
 															<div className='grid grid-cols-3 gap-4'>
 																{subjectList.map((sub) => (
@@ -551,6 +608,36 @@ function InstructorAssignmentPage() {
 																))}
 															</div>
 														)}
+														{showSelect && (
+															<Select
+																placeholder='Chọn môn học'
+																style={{ width: '100%' }}
+																onChange={addSubject}
+																className='mt-2'
+																options={[
+																	{ value: 'Toán học', label: 'Toán học' },
+																	{ value: 'Vật lý', label: 'Vật lý' },
+																	{ value: 'Hóa học', label: 'Hóa học' },
+																	{ value: 'Sinh học', label: 'Sinh học' },
+																	{ value: 'Lịch sử', label: 'Lịch sử' },
+																	{ value: 'Địa lý', label: 'Địa lý' },
+																	{ value: 'Tin học', label: 'Tin học' },
+																	{ value: 'Ngữ văn', label: 'Ngữ văn' },
+																	{ value: 'Tiếng Anh', label: 'Tiếng Anh' },
+																]}
+															/>
+														)}
+														<div
+															className='flex cursor-pointer gap-2'
+															onClick={() => setShowSelect(true)}
+														>
+															<div className='inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-3xl border-2 border-[#0a7feb] bg-[#0a7feb] p-[3px]'>
+																<Plus />
+															</div>
+															<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#0a7feb]">
+																Thêm môn học mới
+															</div>
+														</div>
 													</div>
 												</div>
 											</div>
@@ -589,7 +676,7 @@ function InstructorAssignmentPage() {
 									<Table<AssignmentData>
 										rowSelection={rowSelection}
 										columns={columns}
-										dataSource={assignments}
+										dataSource={dataAssignmentFilter}
 										onChange={onChange}
 										rowClassName={(_, index) => (index % 2 !== 0 ? 'bg-[#F0F3F6]' : '')}
 										pagination={{
@@ -606,7 +693,6 @@ function InstructorAssignmentPage() {
 				</div>
 			</>
 
-			{/* Modal delete */}
 			<Modal
 				title='Xóa phân công'
 				open={isModalOpenDelete}

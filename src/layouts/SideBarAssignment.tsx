@@ -18,12 +18,28 @@ interface SideBarAssignmentProps {
 	onTeacherSelect: (teacher: { id: string; name: string }) => void;
 	activeTeacher?: string | null;
 	data: InstructorData[];
+	onSelectSubject: (value: string) => void;
 }
-
-const SideBarAssignment = ({ onTeacherSelect, activeTeacher, data }: SideBarAssignmentProps) => {
+const subjects = [
+	{ value: 'Toán học', label: 'Toán học' },
+	{ value: 'Vật lý', label: 'Vật lý' },
+	{ value: 'Hóa học', label: 'Hóa học' },
+	{ value: 'Sinh học', label: 'Sinh học' },
+	{ value: 'Lịch sử', label: 'Lịch sử' },
+	{ value: 'Anh văn', label: 'Anh văn' },
+	{ value: 'Ngữ văn', label: 'Ngữ văn' },
+	{ value: 'Địa lý', label: 'Địa lý' },
+	{ value: 'Tin học', label: 'Tin học' },
+	{ value: 'Giáo dục công dân', label: 'Giáo dục công dân' },
+];
+const SideBarAssignment = ({
+	onTeacherSelect,
+	activeTeacher,
+	data,
+	onSelectSubject,
+}: SideBarAssignmentProps) => {
 	const [cardLinkData, setCardLinkData] = useState<InstructorData[]>([]);
-
-	// Xử lý khi chọn giáo viên từ Select
+	const [selectSubject, setSelectSubject] = useState<string>();
 	const handleTeacherChange = (value: string | null) => {
 		if (value !== null) {
 			const selectedTeacher = data.find((teacher) => teacher.fullName === value);
@@ -32,22 +48,29 @@ const SideBarAssignment = ({ onTeacherSelect, activeTeacher, data }: SideBarAssi
 			}
 		}
 	};
+	useEffect(() => {
+		if (selectSubject) {
+			const filter = data.filter((d) => d.secondarySubject.includes(selectSubject));
+			setCardLinkData(filter);
+			onSelectSubject(selectSubject);
+		}
+	}, [selectSubject]);
 
-	// Xử lý khi chọn giáo viên từ danh sách card
 	const handleTeacher = (id: string) => {
 		const selectedTeacher = data.find((teacher) => teacher.id === id);
+		console.log(selectedTeacher);
 		if (selectedTeacher) {
 			onTeacherSelect({ id: selectedTeacher.id, name: selectedTeacher.fullName });
 		}
 	};
-
+	const handleChangeSubject = (value: string) => {
+		setSelectSubject(value);
+	};
 	useEffect(() => {
 		if (data.length > 0) {
 			setCardLinkData(data);
 		}
 	}, [data]);
-
-	console.log(cardLinkData);
 
 	return (
 		<div className='fixed z-50 h-[80vh] w-[278px] overflow-hidden rounded-2xl bg-white shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
@@ -64,6 +87,17 @@ const SideBarAssignment = ({ onTeacherSelect, activeTeacher, data }: SideBarAssi
 						style={{ width: 150 }}
 						onChange={handleTeacherChange}
 						options={teacherOptions}
+					/>
+				</div>
+				<div className='flex items-center justify-between'>
+					<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-white">
+						Bộ môn:
+					</div>
+					<Select
+						defaultValue={null}
+						style={{ width: 150 }}
+						onChange={handleChangeSubject}
+						options={subjects}
 					/>
 				</div>
 			</div>
