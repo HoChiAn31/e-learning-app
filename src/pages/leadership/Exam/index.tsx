@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Select, Input, Space, ConfigProvider, TableColumnsType } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { Edit, Eye, Lists, Trash } from '../../../components/icon';
+import { Edit, Eye, Lists, Search, Trash } from '../../../components/icon';
 import AddExamScheduleModal from './AddExamScheduleModal';
 import EditExamScheduleModal from './EditExamScheduleModal'; // Import modal mới
 import { examScheduleData, examScheduleFormData } from '../../../types/leadership/instructor';
@@ -229,7 +229,12 @@ const ExamPage: React.FC = () => {
 						allowClear
 					/>
 				</div>
-				<Input placeholder='Tìm kiếm' prefix={<SearchOutlined />} className='w-60' />
+				<Input
+					placeholder='Tìm kiếm'
+					prefix={<Search />}
+					variant='filled'
+					className='w-[438px] rounded-full bg-[#F0F3F6]'
+				/>
 			</div>
 
 			<ConfigProvider

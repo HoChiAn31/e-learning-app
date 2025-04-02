@@ -36,6 +36,7 @@ export const UserProvider = ({ children }: AuthProviderProps): JSX.Element => {
 			setIsLogin(true);
 		}
 	}, []);
+
 	const login = async (credentials: { username: string; password: string }) => {
 		try {
 			setIsLoading(true);

@@ -34,50 +34,72 @@ const SidebarAdmin: FC = () => {
 		return { mainTab, subTab };
 	};
 
-	// Khởi tạo và khôi phục trạng thái khi mount hoặc reload
+	// // Khởi tạo và khôi phục trạng thái khi mount hoặc reload
+	// useEffect(() => {
+	// 	if (!isLoaded) {
+	// 		const { mainTab, subTab } = parsePathname(location.pathname);
+
+	// 		if (role === 'teacher' || role === 'student') {
+	// 			setActiveMainTab(mainTab);
+	// 			setActiveSubTab(subTab);
+	// 			nav(location.pathname);
+	// 		} else {
+	// 			const storedMainTab = localStorage.getItem('activeMainTab');
+	// 			const storedSubTab = localStorage.getItem('activeSubTab');
+
+	// 			if (storedMainTab && !location.pathname.startsWith('/dataDeclaration')) {
+	// 				setActiveMainTab(storedMainTab);
+	// 				setActiveSubTab(storedSubTab || '');
+	// 				nav(storedSubTab ? `${storedMainTab}/${storedSubTab}` : storedMainTab);
+	// 			} else {
+	// 				setActiveMainTab(mainTab);
+	// 				setActiveSubTab(subTab);
+	// 			}
+	// 		}
+	// 		setIsLoaded(true);
+	// 	}
+	// }, [role, location.pathname, nav, isLoaded]);
+
+	// useEffect(() => {
+	// 	if (isLoaded && role !== 'teacher' && !activeMainTab.startsWith('/teacher/class')) {
+	// 		localStorage.setItem('activeMainTab', activeMainTab);
+	// 		localStorage.setItem('activeSubTab', activeSubTab);
+	// 	}
+	// }, [activeMainTab, activeSubTab, isLoaded, role]);
+
+	// useEffect(() => {
+	// 	if (role !== 'teacher' && !activeMainTab.startsWith('/teacher/class')) {
+	// 		if (isLoaded) {
+	// 			localStorage.setItem('activeMainTab', activeMainTab);
+	// 			localStorage.setItem('activeSubTab', activeSubTab);
+	// 		}
+	// 	}
+	// }, [activeMainTab, activeSubTab, isLoaded]);
 	useEffect(() => {
 		if (!isLoaded) {
 			const { mainTab, subTab } = parsePathname(location.pathname);
+			const storedMainTab = localStorage.getItem('activeMainTab');
+			const storedSubTab = localStorage.getItem('activeSubTab');
 
-			if (role === 'teacher' || role === 'student') {
+			if (storedMainTab && !location.pathname.startsWith('/dataDeclaration')) {
+				setActiveMainTab(storedMainTab);
+				setActiveSubTab(storedSubTab || '');
+				nav(storedSubTab ? `${storedMainTab}/${storedSubTab}` : storedMainTab);
+			} else {
 				setActiveMainTab(mainTab);
 				setActiveSubTab(subTab);
 				nav(location.pathname);
-			} else {
-				const storedMainTab = localStorage.getItem('activeMainTab');
-				const storedSubTab = localStorage.getItem('activeSubTab');
-
-				if (storedMainTab && !location.pathname.startsWith('/dataDeclaration')) {
-					setActiveMainTab(storedMainTab);
-					setActiveSubTab(storedSubTab || '');
-					nav(storedSubTab ? `${storedMainTab}/${storedSubTab}` : storedMainTab);
-				} else {
-					setActiveMainTab(mainTab);
-					setActiveSubTab(subTab);
-				}
 			}
 			setIsLoaded(true);
 		}
 	}, [role, location.pathname, nav, isLoaded]);
 
-	// Lưu trạng thái vào localStorage khi activeMainTab hoặc activeSubTab thay đổi
 	useEffect(() => {
-		if (isLoaded && role !== 'teacher' && !activeMainTab.startsWith('/teacher/class')) {
+		if (isLoaded) {
 			localStorage.setItem('activeMainTab', activeMainTab);
 			localStorage.setItem('activeSubTab', activeSubTab);
 		}
-	}, [activeMainTab, activeSubTab, isLoaded, role]);
-
-	useEffect(() => {
-		console.log(1);
-		if (role !== 'teacher' && !activeMainTab.startsWith('/teacher/class')) {
-			if (isLoaded) {
-				localStorage.setItem('activeMainTab', activeMainTab);
-				localStorage.setItem('activeSubTab', activeSubTab);
-			}
-		}
 	}, [activeMainTab, activeSubTab, isLoaded]);
-
 	return (
 		<div
 			ref={divWidth}
@@ -109,7 +131,9 @@ const SidebarAdmin: FC = () => {
 								setActiveMainTab={setActiveMainTab}
 								activeSubTab={activeSubTab}
 								setActiveSubTab={setActiveSubTab}
-								tabName='/teacher/class/list'
+								tabName='/teacher/class'
+								tabSwitch='list'
+								isSwitch
 								title={'Quản lý lớp học'}
 								icon={<BookOpens color='white' />}
 								isIcon
@@ -120,7 +144,9 @@ const SidebarAdmin: FC = () => {
 								setActiveMainTab={setActiveMainTab}
 								activeSubTab={activeSubTab}
 								setActiveSubTab={setActiveSubTab}
-								tabName='/teacher/listTest/all'
+								tabName='/teacher/listTest'
+								tabSwitch='all'
+								isSwitch
 								title={'Bài kiểm tra'}
 								icon={<Edits color='white' />}
 								isIcon
@@ -179,7 +205,9 @@ const SidebarAdmin: FC = () => {
 								setActiveMainTab={setActiveMainTab}
 								activeSubTab={activeSubTab}
 								setActiveSubTab={setActiveSubTab}
-								tabName='/student/myClass/list'
+								tabName='/student/myClass'
+								tabSwitch='list'
+								isSwitch
 								title={'Lớp học của tôi'}
 								icon={<BookOpens color='white' />}
 								isIcon
@@ -262,6 +290,8 @@ const SidebarAdmin: FC = () => {
 								activeSubTab={activeSubTab}
 								setActiveSubTab={setActiveSubTab}
 								tabName='/studentProfileList'
+								tabSwitch='all'
+								isSwitch
 								title='Hồ sơ học viên'
 								isIcon
 								icon={<User color='#ffffff' />}
@@ -273,6 +303,8 @@ const SidebarAdmin: FC = () => {
 								activeSubTab={activeSubTab}
 								setActiveSubTab={setActiveSubTab}
 								tabName='/instructorProfileList'
+								tabSwitch='alls'
+								isSwitch
 								title='Hồ sơ giảng viên'
 								isIcon
 								icon={<Bag color='white' />}
@@ -340,7 +372,7 @@ const SidebarAdmin: FC = () => {
 										<BookOpens
 											// height={24}
 											// width={24}
-											color={`${name === '/teacher/class' ? '#ff7506' : '#373839'}`}
+											color={`${name === '/teacher/class/list' ? '#ff7506' : '#373839'}`}
 										/>
 									}
 									subItems={[
@@ -373,9 +405,27 @@ const SidebarAdmin: FC = () => {
 									setActiveMainTab={setActiveMainTab}
 									activeSubTab={activeSubTab}
 									setActiveSubTab={setActiveSubTab}
+									tabName='/teacher/examSchedule'
+									title={'Lịch thi'}
+									icon={
+										<Calendar
+											color={`${name === '/teacher/examSchedule' ? '#ff7506' : '#373839'}`}
+										/>
+									}
+									isIcon
+									onCheckClick={() => setIsHovered(false)}
+									isSidebarSub
+								/>
+								<TabItem
+									activeMainTab={activeMainTab}
+									setActiveMainTab={setActiveMainTab}
+									activeSubTab={activeSubTab}
+									setActiveSubTab={setActiveSubTab}
 									tabName='/teacher/notification'
 									title={'Thông báo'}
-									icon={<Bell color={`${name === '/teacher/listTest' ? '#ff7506' : '#373839'}`} />}
+									icon={
+										<Bell color={`${name === '/teacher/notification' ? '#ff7506' : '#373839'}`} />
+									}
 									onCheckClick={() => setIsHovered(false)}
 									isSidebarSub
 								/>
@@ -387,7 +437,7 @@ const SidebarAdmin: FC = () => {
 									tabName='/shared/contactForm'
 									title={'Trợ giúp'}
 									icon={
-										<Question color={`${name === '/teacher/listTest' ? '#ff7506' : '#373839'}`} />
+										<Question color={`${name === '/shared/contactForm' ? '#ff7506' : '#373839'}`} />
 									}
 									isSidebarSub
 									onCheckClick={() => setIsHovered(false)}

@@ -1,82 +1,65 @@
+import { useEffect, useState } from 'react';
 import {
 	Button,
 	ConfigProvider,
 	Input,
 	Modal,
 	Select,
-	Checkbox,
 	Table,
 	TableColumnsType,
 	TableProps,
+	message,
 } from 'antd';
-import { Edit, Lists, Plus, Trash, Minus } from '../../../../components/icon';
+import { Edit, Lists, Plus, Search, Trash } from '../../../../components/icon';
 import SideBarAssignment from '../../../../layouts/SideBarAssignment';
-import Search from 'antd/es/transfer/search';
-import { useEffect, useState } from 'react';
+
 import {
 	InstructorData,
 	getInstructors,
 } from '../../../../firebase/instructorProfileList/instructor';
-import { dataDeclaration_class } from '../../../../types/leadership';
 import { getClasses } from '../../../../firebase/dataDeclaration/fetchClass';
 import {
 	addAssignment,
+	deleteAssignment,
 	getAssignments,
+	updateAssignment,
 } from '../../../../firebase/instructorProfileList/fetchAssignment';
+import AddAssignmentModal from './AddAssignmentModal';
+import EditAssignmentModal from './EditAssignmentModal';
+import {
+	assignmentData,
+	assignmentFormData,
+	assignmentFormDataEdit,
+} from '../../../../types/leadership/instructor';
+import { dataDeclaration_class } from '../../../../types/leadership';
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
 
-interface AssignmentData {
-	id: string;
-	classCode: string;
-	className: string;
-	startDate: string;
-	endDate: string;
-	academicYear: string;
-	grade: string;
-	studentCount: number;
-	classType: string;
-	description: string;
-	subjects: string[];
-	instructorName: string;
-
-	inheritYear?: string;
-}
-
-interface AssignmentFormData {
-	classCode: string;
-	className: string;
-	startDate: string;
-	endDate: string;
-	academicYear: string;
-	grade: string;
-	studentCount: number;
-	classType: string;
-	description: string;
-	subjects: string[];
-	instructorName?: string;
-
-	inheritYear?: string;
-}
-
 function InstructorAssignmentPage() {
-	// const [assignments, setAssignments] = useState<AssignmentData[]>(initialData);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 	const [isModalOpenDelete, setIsModalOpenDelete] = useState<boolean>(false);
-	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [showSelect, setShowSelect] = useState<boolean>(false); // Thêm state cho Select
-	const [subjectList, setSubjectList] = useState<string[]>([]);
+	const [isModalOpenAdd, setIsModalOpenAdd] = useState<boolean>(false);
+	const [isModalOpenEdit, setIsModalOpenEdit] = useState<boolean>(false);
+	const [showSelect, setShowSelect] = useState<boolean>(false);
+	// SideBar
 	const [activeTeacher, setActiveTeacher] = useState<string | null>('');
-	const [activeName, setActiveName] = useState<string | null>('');
+	const [activeName, setActiveName] = useState<string>('');
 	const [activeSubject, setActiveSubject] = useState<string | null>('');
+	//
 	const [instructorData, setInstructorData] = useState<InstructorData[]>([]);
 	const [optionInstructor, setOptionInstructor] = useState<{ value: string; label: string }[]>([]);
 	const [dataClass, setDataClass] = useState<dataDeclaration_class[]>([]);
+	const [dataAssignment, setDataAssignment] = useState<assignmentData[]>([]);
+	const [dataSubjectFilter, setDataSubjectFilter] = useState<assignmentData[]>([]);
+
+	const [dataAssignmentFilter, setDataAssignmenttFilter] = useState<assignmentData[]>([]);
 	const [optionClassName, setOptionClassName] = useState<{ value: string; label: string }[]>([]);
 	const [optionClassType, setOptionClassType] = useState<{ value: string; label: string }[]>([]);
 	const [isInheritData, setIsInheritData] = useState<boolean>(false);
 	const [selectedGrade, setSelectedGrade] = useState<string>('');
-	const [formData, setFormData] = useState<AssignmentFormData>({
+	const [selectedId, setSelectedId] = useState<string>('');
+	const [selectedDelete, setSelectedDelete] = useState<string>('');
+	const [formData, setFormData] = useState<assignmentFormData>({
 		classCode: '',
 		className: '',
 		startDate: '',
@@ -89,8 +72,25 @@ function InstructorAssignmentPage() {
 		subjects: [],
 		instructorName: activeName || undefined,
 	});
-	const [dataAssignment, setDataAssignment] = useState<AssignmentData[]>([]);
-	const [dataAssignmentFilter, setDataAssignmenttFilter] = useState<AssignmentData[]>([]);
+	const [formDataEdit, setFormDataEdit] = useState<assignmentFormDataEdit>({
+		id: '',
+		classCode: '',
+		className: '',
+		startDate: '',
+		endDate: '',
+		academicYear: '',
+		grade: '',
+		studentCount: 0,
+		classType: '',
+		description: '',
+		subjects: [],
+		instructorName: activeName || undefined,
+	});
+	// console.log('--------------------------------');
+	// console.log('activeTeacher', activeTeacher);
+	// console.log('activeName', activeName);
+	// console.log('activeSubject', activeSubject);
+	// console.log('--------------------------------');
 
 	const fetchDataAssignment = async () => {
 		try {
@@ -104,24 +104,43 @@ function InstructorAssignmentPage() {
 	useEffect(() => {
 		fetchDataAssignment();
 	}, []);
-
+	// filter subject
 	useEffect(() => {
-		if (dataAssignment.length > 0 && activeName && activeSubject) {
-			const filter = dataAssignment.filter(
-				(assignment) =>
-					assignment.instructorName === activeName && assignment.subjects.includes(activeSubject),
+		if (dataAssignment.length > 0 && activeSubject) {
+			console.log('activeSubject:', activeSubject);
+
+			const filter = dataAssignment.filter((assignment) =>
+				assignment.subjects.includes(activeSubject),
 			);
+			console.log('filter:', filter);
+			setDataSubjectFilter(filter);
+
 			setDataAssignmenttFilter(filter);
 		} else {
 			setDataAssignmenttFilter(dataAssignment);
 		}
-	}, [dataAssignment, activeName, activeSubject]);
+	}, [dataAssignment, activeSubject]);
+
+	// filter name
+	useEffect(() => {
+		if (dataAssignment.length > 0 && activeName) {
+			console.log('activeName:', activeName);
+
+			const filter = dataSubjectFilter.filter(
+				(assignment) => assignment.instructorName === activeName,
+			);
+			console.log('filter:', filter);
+			setDataAssignmenttFilter(filter);
+		} else {
+			setDataAssignmenttFilter(dataAssignment);
+		}
+	}, [dataAssignment, activeName]);
 	const fetchInstructorData = async () => {
 		try {
 			const data = await getInstructors();
 			setInstructorData(data);
 			setActiveTeacher(data[0].id);
-			setActiveName(data[0].fullName);
+			// setActiveName(data[0].fullName);
 			setFormData((prev) => ({ ...prev, instructorName: data[0].fullName }));
 		} catch (error) {
 			console.error('Error fetching data:', error);
@@ -131,7 +150,7 @@ function InstructorAssignmentPage() {
 	const fetchDataClass = async () => {
 		try {
 			const data = await getClasses();
-			console.log('Data class:', data);
+			// console.log('Data class:', data);
 			setDataClass(data);
 		} catch (error) {
 			console.error('Error fetching data:', error);
@@ -146,7 +165,7 @@ function InstructorAssignmentPage() {
 	useEffect(() => {
 		if (instructorData.length > 0) {
 			const filterOption = instructorData.map((d) => ({
-				value: d.id,
+				value: d.fullName,
 				label: d.fullName,
 			}));
 			setOptionInstructor(filterOption);
@@ -173,33 +192,15 @@ function InstructorAssignmentPage() {
 		}
 	}, [selectedGrade]);
 
-	const resetForm = () => {
-		setFormData({
-			classCode: '',
-			className: '',
-			startDate: '',
-			endDate: '',
-			academicYear: '',
-			grade: '',
-			studentCount: 40,
-			classType: '',
-			description: '',
-			subjects: [],
-			instructorName: activeName || undefined,
-		});
-		setSubjectList([]);
-		setShowSelect(false); // Reset Select visibility
-	};
-
-	const handleOk = async () => {
+	const handleOkAdd = async () => {
 		try {
 			if (formData.className) {
 				const existingClass = dataClass.find((data) => data.className === formData.className);
 
-				const newAssignment = {
+				const baseAssignment = {
 					classCode: existingClass?.classCode || `CS${100 + dataAssignment.length + 1}`,
 					className: formData.className,
-					instructorName: activeName,
+					instructorName: activeName || formData.instructorName,
 					startDate: '2025-09-01',
 					endDate: '2025-12-15',
 					academicYear: formData.academicYear,
@@ -207,80 +208,79 @@ function InstructorAssignmentPage() {
 					studentCount: formData.studentCount || 40,
 					classType: formData.classType,
 					description: formData.description,
-					subjects: [...subjectList],
+					subjects: formData.subjects || [],
+					inheritYear: isInheritData ? formData.inheritYear : undefined,
 				};
 
-				await addAssignment(newAssignment);
-				setIsModalOpen(false);
+				if (isInheritData) {
+					for (let i = 0; i < (formData.subjects || []).length; i++) {
+						const subject = formData.subjects[i];
+						const newAssignment = {
+							...baseAssignment,
+							classCode: `CS${100 + dataAssignment.length + i + 1}`,
+							subjects: [subject],
+						};
+						console.log(newAssignment);
+						await addAssignment(newAssignment);
+					}
+				} else if (formData.subjects && formData.subjects.length > 0) {
+					// await addAssignment(baseAssignment);
+				}
+
+				await fetchDataAssignment();
+				setIsModalOpenAdd(false);
 				setShowSelect(false);
-				console.log(newAssignment);
 			}
 		} catch (error) {
 			console.error('Error creating new assignment:', error);
 		}
-		// resetForm();
 	};
 
-	const handleCancel = () => {
-		setIsModalOpen(false);
-		// resetForm();
+	const handleCancelAdd = () => {
+		setIsModalOpenAdd(false);
 	};
 
-	const handleChangeDeclatation = (value: string, type: keyof AssignmentFormData) => {
-		setFormData((prev) => ({
-			...prev,
-			[type]: value,
-		}));
-	};
+	const handleOkEdit = async () => {
+		try {
+			const updatedAssignment: assignmentData = {
+				id: selectedId,
+				classCode: formDataEdit.classCode,
+				className: formDataEdit.className,
+				instructorName: formDataEdit.instructorName || activeName,
+				startDate: formDataEdit.startDate,
+				endDate: formDataEdit.endDate,
+				academicYear: formDataEdit.academicYear,
+				grade: formDataEdit.grade,
+				studentCount: formDataEdit.studentCount || 40,
+				classType: formDataEdit.classType,
+				description: formDataEdit.description,
+				subjects: formDataEdit.subjects,
+			};
 
-	const handleChange = (value: string) => {
-		setFormData((prev) => ({
-			...prev,
-			instructorName: value,
-		}));
-	};
-
-	const onChangeBox = (e: any) => {
-		// setFormData((prev) => ({
-		// 	...prev,
-		// 	inheritData: e.target.checked,
-		// }));
-		setIsInheritData(!isInheritData);
-	};
-
-	const removeSubject = (subject: string) => {
-		setSubjectList((prev) => prev.filter((sub) => sub !== subject));
-	};
-
-	const addSubject = (subject: string) => {
-		if (subject && !subjectList.includes(subject)) {
-			setSubjectList((prev) => [...prev, subject]);
-			setShowSelect(false);
+			await updateAssignment(selectedId, updatedAssignment);
+			await fetchDataAssignment();
+			setIsModalOpenEdit(false);
+		} catch (error) {
+			console.error('Error updating assignment:', error);
 		}
 	};
-
-	const handleEdit = (record: AssignmentData) => {
-		console.log('Edit assignment:', record);
-		setIsModalOpen(true);
-		setFormData({
-			classCode: record.classCode,
-			className: record.className,
-			startDate: record.startDate,
-			endDate: record.endDate,
-			academicYear: record.academicYear,
-			grade: record.grade,
-			studentCount: record.studentCount,
-			classType: record.classType,
-			description: record.description,
-			subjects: record.subjects,
-			instructorName:
-				activeName || optionInstructor?.find((opt) => opt.label === record.instructorName)?.value,
-		});
-		setSubjectList([...record.subjects]);
+	const handleCancelEdit = () => {
+		setIsModalOpenEdit(false);
 	};
 
-	const handleDelete = (record: AssignmentData) => {
+	const handleEdit = (record: assignmentData) => {
+		console.log('Edit assignment:', record);
+		setIsModalOpenEdit(true);
+		setSelectedId(record.id);
+		setFormDataEdit({
+			...record,
+			subjects: record.subjects,
+		});
+	};
+
+	const handleDelete = (record: assignmentData) => {
 		console.log('Remove assignment:', record);
+		setSelectedDelete(record.id);
 		setIsModalOpenDelete(true);
 	};
 
@@ -288,18 +288,16 @@ function InstructorAssignmentPage() {
 		setSelectedRowKeys(newSelectedRowKeys);
 	};
 
-	const columns: TableColumnsType<AssignmentData> = [
+	const columns: TableColumnsType<assignmentData> = [
 		{
 			title: 'Mã lớp',
 			dataIndex: 'id',
-
 			width: '20%',
 		},
 		{
 			title: 'Tên lớp',
 			dataIndex: 'className',
-
-			width: '15%',
+			width: '10%',
 		},
 		{
 			title: 'Ngày bắt đầu',
@@ -312,15 +310,13 @@ function InstructorAssignmentPage() {
 			width: '15%',
 		},
 		{
-			title: 'Danh sách chủ đề',
+			title: 'Môn học',
 			dataIndex: 'subjects',
-			render: (_, record) => (
-				<div>
-					<Button type='link' onClick={() => handleEdit(record)}>
-						<Lists />
-					</Button>
-				</div>
-			),
+			width: '10%',
+		},
+		{
+			title: 'Giáo viên',
+			dataIndex: 'instructorName',
 			width: '15%',
 		},
 		{
@@ -345,21 +341,24 @@ function InstructorAssignmentPage() {
 		footer: { textAlign: 'center' as 'center' },
 	};
 
-	const rowSelection: TableRowSelection<AssignmentData> = {
+	const rowSelection: TableRowSelection<assignmentData> = {
 		selectedRowKeys,
 		onChange: onSelectChange,
 	};
 
-	const onChange: TableProps<AssignmentData>['onChange'] = (pagination, filters, sorter, extra) => {
+	const onChange: TableProps<assignmentData>['onChange'] = (pagination, filters, sorter, extra) => {
 		console.log('params', pagination, filters, sorter, extra);
 	};
 
-	const handleOkDelete = () => {
-		setDataAssignment((prev) =>
-			prev.filter((assignment) => !selectedRowKeys.includes(assignment.id)),
-		);
-		setSelectedRowKeys([]);
-		setIsModalOpenDelete(false);
+	const handleOkDelete = async () => {
+		try {
+			deleteAssignment(selectedDelete);
+			setSelectedRowKeys([]);
+			fetchDataAssignment();
+			setIsModalOpenDelete(false);
+		} catch (error) {
+			console.error('Error:', error);
+		}
 	};
 
 	const handleCancelDelete = () => {
@@ -371,15 +370,17 @@ function InstructorAssignmentPage() {
 		setActiveName(value.name);
 		setFormData((prev) => ({ ...prev, instructorName: value.name }));
 	};
+
 	const handleChangeSubject = (subject: string) => {
 		console.log('value', subject);
 		setActiveSubject(subject);
-		setSubjectList((prev) => [...prev, subject]);
 	};
+
 	return (
 		<div>
 			<>
 				<SideBarAssignment
+					dataAssignment={dataAssignment}
 					onSelectSubject={handleChangeSubject}
 					data={instructorData}
 					onTeacherSelect={handleSelectTeacher}
@@ -396,254 +397,12 @@ function InstructorAssignmentPage() {
 									type='primary'
 									icon={<Plus />}
 									size='middle'
-									onClick={() => setIsModalOpen(true)}
+									onClick={() => setIsModalOpenAdd(true)}
 								>
 									<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-white">
 										Thêm mới
 									</div>
 								</Button>
-
-								<Modal
-									title='Thêm phân công giảng dạy'
-									open={isModalOpen}
-									onOk={handleOk}
-									onCancel={handleCancel}
-									styles={modalStyles}
-									width={800}
-									footer={[
-										<Button className='w-40' key='back' onClick={handleCancel}>
-											Hủy
-										</Button>,
-										<Button className='w-40' key='submit' type='primary' onClick={handleOk}>
-											Lưu
-										</Button>,
-									]}
-								>
-									<div className='py-5'>
-										<div>
-											<div className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#cc5c00]">
-												Thông tin chung
-											</div>
-											<div className='flex items-center justify-between py-5'>
-												<div className='flex items-center gap-1'>
-													<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-														Niên khóa:{' '}
-													</div>
-													<Select
-														placeholder='Niên khóa'
-														style={{ width: 120 }}
-														value={formData.academicYear}
-														onChange={(value) => handleChangeDeclatation(value, 'academicYear')}
-														options={[
-															{ value: '2020-2021', label: '2020-2021' },
-															{ value: '2021-2022', label: '2021-2022' },
-															{ value: '2022-2023', label: '2022-2023' },
-															{ value: '2023-2024', label: '2023-2024' },
-															{ value: '2024-2025', label: '2024-2025' },
-															{ value: '2025-2026', label: '2025-2026' },
-														]}
-													/>
-												</div>
-												<div className='flex items-center gap-1'>
-													<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-														Khoa - Khối:{' '}
-														<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-															*
-														</span>
-													</div>
-													<Select
-														placeholder='Chọn khối'
-														style={{ width: 120 }}
-														value={formData.grade}
-														onChange={(value) => {
-															handleChangeDeclatation(value, 'grade');
-															setSelectedGrade(value);
-														}}
-														options={[
-															{ value: 'Khối 6', label: 'Khối 6' },
-															{ value: 'Khối 7', label: 'Khối 7' },
-															{ value: 'Khối 8', label: 'Khối 8' },
-															{ value: 'Khối 9', label: 'Khối 9' },
-															{ value: 'Khối 10', label: 'Khối 10' },
-															{ value: 'Khối 11', label: 'Khối 11' },
-															{ value: 'Khối 12', label: 'Khối 12' },
-														]}
-													/>
-												</div>
-											</div>
-											<div className='space-y-10'>
-												<div className='flex h-5 items-center'>
-													<div className='flex min-w-36 items-start justify-start'>
-														<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-															Tên lớp:
-															<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-																*
-															</span>
-														</div>
-													</div>
-													<Select
-														placeholder='Chọn lớp'
-														value={formData.className}
-														onChange={(value) => {
-															handleChangeDeclatation(value, 'className');
-														}}
-														options={optionClassName}
-														className='w-full'
-													/>
-												</div>
-
-												<div className='flex h-5 items-center'>
-													<div className='flex min-w-36 items-start justify-start'>
-														<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-															Số lượng học viên:
-															<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-																*
-															</span>
-														</div>
-													</div>
-													<Input
-														placeholder='Nhập số lượng'
-														value={formData.studentCount}
-														onChange={(e) =>
-															setFormData((prev) => ({
-																...prev,
-																studentCount: Number(e.target.value),
-															}))
-														}
-													/>
-												</div>
-
-												<div className='flex h-5 items-center'>
-													<div className='flex min-w-36 items-start justify-start'>
-														<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-															Phân loại lớp:
-															<span className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#ed2025]">
-																*
-															</span>
-														</div>
-													</div>
-													<Select
-														placeholder='Chọn phân loại'
-														value={formData.classType}
-														onChange={(value) => handleChangeDeclatation(value, 'classType')}
-														options={optionClassType}
-														className='w-full'
-													/>
-												</div>
-
-												<div className='flex h-5 items-center'>
-													<div className='flex min-w-36 items-start justify-start'>
-														<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-															Giáo viên chủ nhiệm:
-														</div>
-													</div>
-													<Select
-														placeholder='Chọn giáo viên'
-														value={formData.instructorName}
-														onChange={(value) => handleChangeDeclatation(value, 'instructorName')}
-														options={optionInstructor}
-														className='w-full'
-													/>
-												</div>
-
-												<div className='flex h-5 items-center'>
-													<div className='flex min-w-36 items-start justify-start'>
-														<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-															Mô tả:
-														</div>
-													</div>
-													<Input
-														placeholder='Nhập mô tả'
-														value={formData.description}
-														onChange={(e) =>
-															setFormData((prev) => ({ ...prev, description: e.target.value }))
-														}
-													/>
-												</div>
-											</div>
-
-											<div className='my-5 h-[0px] w-[756px] border border-[#c8c4c0]'></div>
-
-											<div>
-												<div className='flex items-center gap-2'>
-													<Checkbox checked={isInheritData} onChange={onChangeBox} />
-													<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#373839]">
-														Kế thừa dữ liệu:{' '}
-													</div>
-													<Select
-														placeholder='Niên khóa'
-														style={{ width: 120 }}
-														value={formData.inheritYear}
-														onChange={(value) => handleChangeDeclatation(value, 'inheritYear')}
-														options={[
-															{ value: '2020-2021', label: '2020-2021' },
-															{ value: '2021-2022', label: '2021-2022' },
-															{ value: '2022-2023', label: '2022-2023' },
-															{ value: '2023-2024', label: '2023-2024' },
-															{ value: '2024-2025', label: '2024-2025' },
-															{ value: '2025-2026', label: '2025-2026' },
-														]}
-													/>
-												</div>
-
-												<div className='mt-5 space-y-3'>
-													<p className="font-['Mulish'] text-lg font-extrabold tracking-tight text-[#cc5c00]">
-														Danh sách môn học
-													</p>
-													<div className='space-y-4'>
-														{subjectList.length > 0 && (
-															<div className='grid grid-cols-3 gap-4'>
-																{subjectList.map((sub) => (
-																	<div className='flex items-center gap-1' key={sub}>
-																		<div
-																			onClick={() => removeSubject(sub)}
-																			className='inline-flex h-6 w-6 cursor-pointer items-center justify-center overflow-hidden rounded-3xl border-2 border-[#0a7feb] bg-[#0a7feb] p-[3px]'
-																		>
-																			<Minus />
-																		</div>
-																		<div className="font-['Source Sans Pro'] text-base font-normal leading-tight text-[#373839]">
-																			{sub}
-																		</div>
-																	</div>
-																))}
-															</div>
-														)}
-														{showSelect && (
-															<Select
-																placeholder='Chọn môn học'
-																style={{ width: '100%' }}
-																onChange={addSubject}
-																className='mt-2'
-																options={[
-																	{ value: 'Toán học', label: 'Toán học' },
-																	{ value: 'Vật lý', label: 'Vật lý' },
-																	{ value: 'Hóa học', label: 'Hóa học' },
-																	{ value: 'Sinh học', label: 'Sinh học' },
-																	{ value: 'Lịch sử', label: 'Lịch sử' },
-																	{ value: 'Địa lý', label: 'Địa lý' },
-																	{ value: 'Tin học', label: 'Tin học' },
-																	{ value: 'Ngữ văn', label: 'Ngữ văn' },
-																	{ value: 'Tiếng Anh', label: 'Tiếng Anh' },
-																]}
-															/>
-														)}
-														<div
-															className='flex cursor-pointer gap-2'
-															onClick={() => setShowSelect(true)}
-														>
-															<div className='inline-flex h-6 w-6 items-center justify-center overflow-hidden rounded-3xl border-2 border-[#0a7feb] bg-[#0a7feb] p-[3px]'>
-																<Plus />
-															</div>
-															<div className="font-['Source Sans Pro'] text-base font-bold tracking-tight text-[#0a7feb]">
-																Thêm môn học mới
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</Modal>
 							</div>
 						</div>
 						<div className='mt-2 rounded-2xl bg-white p-4 shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
@@ -673,7 +432,7 @@ function InstructorAssignmentPage() {
 										},
 									}}
 								>
-									<Table<AssignmentData>
+									<Table<assignmentData>
 										rowSelection={rowSelection}
 										columns={columns}
 										dataSource={dataAssignmentFilter}
@@ -692,6 +451,33 @@ function InstructorAssignmentPage() {
 					</div>
 				</div>
 			</>
+
+			<AddAssignmentModal
+				isModalOpen={isModalOpenAdd}
+				handleOk={handleOkAdd}
+				handleCancel={handleCancelAdd}
+				formData={formData}
+				setFormData={setFormData}
+				showSelect={showSelect}
+				setShowSelect={setShowSelect}
+				isInheritData={isInheritData}
+				setIsInheritData={setIsInheritData}
+				optionClassName={optionClassName}
+				optionClassType={optionClassType}
+				optionInstructor={optionInstructor}
+				selectedGrade={selectedGrade}
+				setSelectedGrade={setSelectedGrade}
+			/>
+
+			<EditAssignmentModal
+				isModalOpen={isModalOpenEdit}
+				handleOk={handleOkEdit}
+				handleCancel={handleCancelEdit}
+				formData={formDataEdit}
+				setFormData={setFormDataEdit}
+				optionClassName={optionClassName}
+				optionInstructor={optionInstructor}
+			/>
 
 			<Modal
 				title='Xóa phân công'

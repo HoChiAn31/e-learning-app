@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { Radio, Input, Button } from 'antd';
 import ReactQuill from 'react-quill';
 import { Mail, Phone, Position } from '../../../components/icon';
+import { useUser } from '../../../context/UserContext';
+import { addContactForm } from '../../../firebase/shared/fetchContactForm';
 
 const SharedContactFormPage: React.FC = () => {
+	const { role } = useUser();
 	const [formType, setFormType] = useState<string>('Dịch vụ');
 	const [subject, setSubject] = useState<string>('');
 	const [message, setMessage] = useState<string>('');
@@ -12,10 +15,23 @@ const SharedContactFormPage: React.FC = () => {
 		setFormType(e.target.value);
 	};
 
-	const handleSubmit = () => {
-		console.log('Form Type:', formType);
-		console.log('Subject:', subject);
-		console.log('Message:', message);
+	const handleSubmit = async () => {
+		try {
+			const formData = {
+				role: role,
+				formType,
+				subject,
+				message,
+			};
+
+			await addContactForm(formData);
+
+			setFormType('');
+			setSubject('');
+			setMessage('');
+		} catch (error) {
+			console.error('Error submitting form:', error);
+		}
 	};
 
 	const quillModules = {
@@ -24,13 +40,12 @@ const SharedContactFormPage: React.FC = () => {
 			['bold', 'italic', 'underline'],
 			['link'],
 			[{ list: 'ordered' }, { list: 'bullet' }],
-			['clean'], // Remove formatting button
+			['clean'],
 		],
 	};
 
 	return (
 		<div className='relative flex h-[800px] items-center rounded-md bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>
-			{/* Main Form Section */}
 			<div className='flex-1 space-y-6 p-8'>
 				<div className='space-y-2'>
 					<div className="font-['Mulish'] text-5xl font-extrabold tracking-wide text-[#373839]">
@@ -42,13 +57,30 @@ const SharedContactFormPage: React.FC = () => {
 				</div>
 
 				<div className='rounded-lg'>
-					<Radio.Group onChange={handleFormTypeChange} value={formType} className='mb-4 space-x-8'>
-						<Radio value='Dịch vụ'>Dịch vụ</Radio>
-						<Radio value='Hỗ trợ'>Hỗ trợ</Radio>
-						<Radio value='Sample'>Sample</Radio>
-						<Radio value='Samples'>Samples</Radio>
-					</Radio.Group>
-
+					{role === 'student' && (
+						<Radio.Group
+							onChange={handleFormTypeChange}
+							value={formType}
+							className='mb-4 space-x-8'
+						>
+							<Radio value='Dịch vụ'>Dịch vụ</Radio>
+							<Radio value='Hỗ trợ'>Hỗ trợ</Radio>
+							<Radio value='Sample'>Sample</Radio>
+							<Radio value='Samples'>Samples</Radio>
+						</Radio.Group>
+					)}
+					{role === 'teacher' && (
+						<Radio.Group
+							onChange={handleFormTypeChange}
+							value={formType}
+							className='mb-4 space-x-8'
+						>
+							<Radio value='Đào tạo'>Đào tạo</Radio>
+							<Radio value='Học vụ'>Học vụ</Radio>
+							<Radio value='Sample'>Sample</Radio>
+							<Radio value='Samples'>Samples</Radio>
+						</Radio.Group>
+					)}
 					<Input
 						placeholder='Chủ đề'
 						className='mb-4 w-full'
@@ -72,7 +104,6 @@ const SharedContactFormPage: React.FC = () => {
 				</div>
 			</div>
 
-			{/* Sidebar Section */}
 			<div className='w-[420px]'>
 				<div className='sticky z-50 space-y-6'>
 					<div className='flex w-[484px] items-center justify-center bg-[#FEF3EF] py-40 text-gray-800 shadow-[0_3px_10px_rgb(0,0,0,0.2)]'>

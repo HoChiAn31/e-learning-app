@@ -31,7 +31,7 @@ const config = {
 	teacherClassAdd: '/teacher/class/add',
 	teacherClassMeeting: '/teacher/class/meeting',
 	teacherListTest: '/teacher/listTest/all',
-	teacherListTestAdd: '/teacher/listTestAdd',
+	teacherListTestAdd: '/teacher/listTest/add',
 	teacherExamSchedule: '/teacher/examSchedule',
 	teacherNotification: '/teacher/notification',
 

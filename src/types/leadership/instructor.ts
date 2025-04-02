@@ -120,6 +120,7 @@ export interface assignmentData {
 	description: string;
 	subjects: string[];
 	instructorName: string;
+	inheritYear?: string;
 }
 
 export interface assignmentFormData {
@@ -134,8 +135,23 @@ export interface assignmentFormData {
 	description: string;
 	subjects: string[];
 	instructorName?: string | null;
+	inheritYear?: string;
 }
-
+export interface assignmentFormDataEdit {
+	id?: string;
+	classCode: string;
+	className: string;
+	startDate: string;
+	endDate: string;
+	academicYear: string;
+	grade: string;
+	studentCount: number;
+	classType: string;
+	description: string;
+	subjects: string[];
+	instructorName?: string | null;
+	inheritYear?: string;
+}
 export interface examScheduleData {
 	id: string;
 	schoolYear: string | undefined;

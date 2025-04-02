@@ -1,6 +1,7 @@
 import { Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { InstructorData } from '../firebase/instructorProfileList/instructor';
+import { assignmentData } from '../types/leadership/instructor';
 
 const teacherOptions = [
 	{ value: null, label: 'Tất cả giáo viên' },
@@ -18,6 +19,7 @@ interface SideBarAssignmentProps {
 	onTeacherSelect: (teacher: { id: string; name: string }) => void;
 	activeTeacher?: string | null;
 	data: InstructorData[];
+	dataAssignment: assignmentData[];
 	onSelectSubject: (value: string) => void;
 }
 const subjects = [
@@ -36,6 +38,7 @@ const SideBarAssignment = ({
 	onTeacherSelect,
 	activeTeacher,
 	data,
+	dataAssignment,
 	onSelectSubject,
 }: SideBarAssignmentProps) => {
 	const [cardLinkData, setCardLinkData] = useState<InstructorData[]>([]);
@@ -50,7 +53,12 @@ const SideBarAssignment = ({
 	};
 	useEffect(() => {
 		if (selectSubject) {
-			const filter = data.filter((d) => d.secondarySubject.includes(selectSubject));
+			const filterAssignment = dataAssignment.filter((d) => d.subjects.includes(selectSubject));
+
+			const filter = data.filter((d) =>
+				filterAssignment.some((f) => d.fullName === f.instructorName),
+			);
+
 			setCardLinkData(filter);
 			onSelectSubject(selectSubject);
 		}

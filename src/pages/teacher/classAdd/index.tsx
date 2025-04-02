@@ -1,41 +1,67 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Checkbox, DatePicker, Form, Input, Select } from 'antd';
 import type { DatePickerProps } from 'antd/es/date-picker';
-import { DataType } from './types';
 import BreadcrumbLink from '../../../components/BreadcrumbLinkProps';
 import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
+import { InstructorData, getInstructors } from '../../../firebase/instructorProfileList/instructor';
+import { ClassSession } from '../../../types/teacher';
+import { addClassSession } from '../../../firebase/instructorProfileList/fetchClassSession';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 const TeacherClassAddPage: React.FC = () => {
-	const [form] = Form.useForm<DataType>();
+	const [optionInstructor, setOptionInstructor] = useState<{ value: string; label: string }[]>([]);
+	const [instructorData, setInstructorData] = useState<InstructorData[]>([]);
+	const [form] = Form.useForm<ClassSession>();
 
-	const onFinish = (values: DataType) => {
-		console.log('Received values:', values);
-		// Xử lý logic thêm buổi học mới ở đây
+	// Hàm xử lý khi submit form
+	const onFinish = async (values: ClassSession) => {
+		try {
+			await addClassSession(values); // Gọi hàm addClassSession với dữ liệu từ form
+			form.resetFields(); // Reset form sau khi thêm thành công
+		} catch (error) {
+			console.error('Error adding class session:', error);
+		}
 	};
+
+	const fetchInstructorData = async () => {
+		try {
+			const data = await getInstructors();
+			setInstructorData(data);
+		} catch (error) {
+			console.error('Error fetching data:', error);
+		}
+	};
+
+	useEffect(() => {
+		fetchInstructorData();
+	}, []);
+
+	useEffect(() => {
+		if (instructorData.length > 0) {
+			const filterOption = instructorData.map((d) => ({
+				value: d.fullName,
+				label: d.fullName,
+			}));
+			setOptionInstructor(filterOption);
+		}
+	}, [instructorData]);
 
 	const onReset = () => {
 		form.resetFields();
 	};
 
 	const onDateChange: DatePickerProps['onChange'] = (date, dateString) => {
-		console.log(date, dateString);
+		console.log(date, dateString); // Giữ lại để debug nếu cần
 	};
-	// const handleSetUrl = (e: React.MouseEvent<HTMLAnchorElement>) => {
-	// 	e.preventDefault();
-	// 	localStorage.setItem('activeMainTab', '/teacher/class');
-	// 	localStorage.setItem('activeSubTab', ' /list');
-	// 	window.location.href = '/teacher/class/list';
-	// };
+
 	return (
 		<div className=''>
 			<BreadcrumbLink
 				to='/teacher/class/list'
 				parentPage='Quản lý lớp học'
 				currentPage='Thêm buổi học mới'
-				// onClick={handleSetUrl}
 			/>
 
 			<div className='rounded-2xl bg-white px-[300px] py-6 shadow-[4px_4px_25px_4px_rgba(154,202,245,0.25)]'>
@@ -54,14 +80,14 @@ const TeacherClassAddPage: React.FC = () => {
 				>
 					<div className='flex items-center justify-between gap-5'>
 						<p className="font-['Source Sans Pro'] w-[200px] text-base font-bold text-[#373839]">
-							Mã lớp:
+							Chủ đề
 						</p>
 						<Form.Item
-							name='courseCode'
-							rules={[{ required: true, message: 'Vui lòng nhập mã lớp!' }]}
+							name='title'
+							rules={[{ required: true, message: 'Vui lòng nhập chủ đề!' }]}
 							className='mb-0 flex-1'
 						>
-							<Input placeholder='Nhập mã lớp' className='h-10 w-[590px]' />
+							<Input placeholder='Nhập chủ đề' className='h-10 w-[590px]' />
 						</Form.Item>
 					</div>
 
@@ -87,14 +113,11 @@ const TeacherClassAddPage: React.FC = () => {
 							rules={[{ required: true, message: 'Vui lòng chọn trợ giảng!' }]}
 							className='mb-0 flex-1'
 						>
-							<Select placeholder='Chọn trợ giảng' className='h-10 !w-[590px]'>
-								<Option value='NguyenVanA'>Nguyễn Văn A</Option>
-								<Option value='TranThiB'>Trần Thị B</Option>
-								<Option value='LeVanC'>Lê Văn C</Option>
-								<Option value='PhamThiD'>Phạm Thị D</Option>
-								<Option value='HoangVanE'>Hoàng Văn E</Option>
-								<Option value='BuiThiF'>Bùi Thị F</Option>
-							</Select>
+							<Select
+								placeholder='Chọn trợ giảng'
+								className='h-10 !w-[590px]'
+								options={optionInstructor}
+							/>
 						</Form.Item>
 					</div>
 
@@ -224,32 +247,11 @@ const TeacherClassAddPage: React.FC = () => {
 							<Form.Item name='meetingLink' className='mb-0 flex-1'>
 								<Input placeholder='Nhập link' className='h-10 w-[470px]' />
 							</Form.Item>
-
-							<Button
-								type='primary'
-								// htmlType='submit'
-								// style={{ backgroundColor: '#FF7506', borderColor: '#FF7506' }}
-								className='h-10'
-							>
+							<Button type='primary' className='h-10'>
 								Copy link
 							</Button>
 						</div>
 					</div>
-					{/* 
-					<Form.Item>
-						<div className='flex justify-center gap-4'>
-							<Button type='default' onClick={onReset}>
-								Hủy
-							</Button>
-							<Button
-								type='primary'
-								htmlType='submit'
-								style={{ backgroundColor: '#FF7506', borderColor: '#FF7506' }}
-							>
-								Lưu
-							</Button>
-						</div>
-					</Form.Item> */}
 				</Form>
 			</div>
 			<div className='flex items-center justify-center py-5'>
@@ -257,7 +259,7 @@ const TeacherClassAddPage: React.FC = () => {
 					<Button type='default' onClick={onReset} className='h-12 w-40'>
 						Hủy
 					</Button>
-					<Button type='primary' htmlType='submit' className='h-12 w-40'>
+					<Button type='primary' htmlType='submit' form='add_class_session' className='h-12 w-40'>
 						Lưu
 					</Button>
 				</div>

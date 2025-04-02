@@ -18,7 +18,7 @@ export const addAssignment = async (assignmentData: assignmentFormData): Promise
 			studentCount: assignmentData.studentCount,
 			classType: assignmentData.classType,
 			description: assignmentData.description,
-			subjects: assignmentData.subjects,
+			subjects: assignmentData.subjects[0],
 			instructorName: assignmentData.instructorName,
 		});
 		message.success('Thêm lớp học thành công!');

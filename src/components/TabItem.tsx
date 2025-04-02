@@ -1,6 +1,6 @@
 'use client';
 // import Link from 'next/link';
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 // import { ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -21,6 +21,8 @@ interface TabItemProps {
 	onCheckClick: () => void;
 	isSidebarSub?: boolean;
 	isSubTab?: boolean;
+	isSwitch?: boolean;
+	tabSwitch?: string;
 }
 
 const TabItem: FC<TabItemProps> = ({
@@ -36,6 +38,8 @@ const TabItem: FC<TabItemProps> = ({
 	onCheckClick,
 	isSidebarSub,
 	isSubTab = false,
+	isSwitch,
+	tabSwitch,
 }) => {
 	const [isExpanded, setIsExpanded] = useState(true);
 	const isActive = activeMainTab === tabName;
@@ -45,6 +49,7 @@ const TabItem: FC<TabItemProps> = ({
 	// console.log('activeMainTab', activeMainTab);
 	// console.log('activeSubTab', activeSubTab);
 	// console.log('subItems', subItems);
+
 	const handleClick = () => {
 		if (isSubTab) {
 			let firstPart, lastPart;
@@ -70,6 +75,10 @@ const TabItem: FC<TabItemProps> = ({
 			} else {
 				setActiveSubTab('');
 			}
+		}
+		if (isSwitch) {
+			setActiveMainTab(tabName);
+			setActiveSubTab(tabSwitch || '');
 		}
 		onCheckClick();
 	};
@@ -159,6 +168,7 @@ const TabItem: FC<TabItemProps> = ({
 			</div>
 		);
 	}
+
 	return (
 		<div className={`${'w-28'}`}>
 			<li
@@ -177,7 +187,7 @@ const TabItem: FC<TabItemProps> = ({
 					</div>
 				) : (
 					<Link
-						to={`${tabName}`}
+						to={isSwitch ? `${tabName}/${tabSwitch}` : `${tabName}`}
 						onClick={handleClick}
 						className={`flex w-full items-center gap-2 p-3 text-sm ${isIcon && 'justify-center'}`}
 					>
@@ -188,57 +198,6 @@ const TabItem: FC<TabItemProps> = ({
 					</Link>
 				)}
 			</li>
-			{/* {isActive && isExpanded && hasSubItems && (
-				<>
-					{!isIcon ? (
-						<ul className='ml-10 mt-2 space-y-2'>
-							{subItems.map((subItem) => (
-								<li
-									key={subItem.name}
-									className={`cursor-pointer ${
-										activeSubTab === subItem.name
-											? 'text-primary'
-											: 'text-gray-700 hover:text-primary'
-									}`}
-								>
-									<Link
-										to={`${tabName}/${subItem.name}`}
-										onClick={() => setActiveSubTab(subItem.name)}
-										className='flex items-center gap-2 px-2 py-1 text-sm'
-									>
-										{subItem.icon}
-										{!isIcon && subItem.label}
-									</Link>
-								</li>
-							))}
-						</ul>
-					) : (
-						<div className='absolute left-[64%] top-[16.5%]'>
-							<ul className='ml-10 mt-2 space-y-2 rounded-lg py-2 shadow-md'>
-								{subItems.map((subItem) => (
-									<li
-										key={subItem.name}
-										className={`cursor-pointer ${
-											activeSubTab === subItem.name
-												? 'text-primary'
-												: 'text-gray-700 hover:text-primary'
-										}`}
-									>
-										<Link
-											to={`${tabName}/${subItem.name}`}
-											onClick={() => setActiveSubTab(subItem.name)}
-											className='flex items-center gap-2 px-2 py-2 text-sm'
-										>
-											{subItem.icon}
-											{!isIcon && subItem.label}
-										</Link>
-									</li>
-								))}
-							</ul>
-						</div>
-					)}
-				</>
-			)} */}
 		</div>
 	);
 };
